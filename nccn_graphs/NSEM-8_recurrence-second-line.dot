@@ -1,0 +1,33 @@
+// NSEM-8 — Nonseminoma: Recurrence and Second-Line Therapy
+digraph NSEM8 {
+  rankdir=LR; labelloc="t"; label="NSEM-8 · Nonseminoma — Recurrence & Second-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  branch [label="Prior therapy", shape=diamond, fillcolor="#F9E79F"];
+
+  pf [label="Prior first-line chemotherapy", fillcolor="#F5B7B1"];
+  np [label="No prior first-line chemotherapy", fillcolor="#F5B7B1"];
+  pa [label="Prior adjuvant therapy\n(1 cycle BEP only)", fillcolor="#F5B7B1"];
+  branch -> pf; branch -> np; branch -> pa;
+
+  // prior first-line → early vs late relapse
+  early [label="Early relapse\n(≤2 yr after primary Tx)", shape=diamond, fillcolor="#FCF3CF"];
+  late  [label="Late relapse\n(>2 yr after primary Tx)", shape=diamond, fillcolor="#FCF3CF"];
+  pf -> early; pf -> late;
+
+  early_tx [label="SECOND-LINE THERAPY\l• Clinical trial\l• Chemotherapy:\l   ‣ Conventional-dose (VeIP × 4 or TIP × 4)\l   ‣ High-dose chemotherapy\l• Consider surgery if resectable with normal/\l  mildly elevated markers\l• Recommend sperm banking\l", fillcolor="#D5F5E3"];
+  late_tx  [label="SECOND-LINE THERAPY\l• Surgical treatment if resectable,\l  regardless of markers (preferred)\l• Clinical trial, if unresectable\l• Chemotherapy:\l   ‣ Conventional-dose (VeIP × 4 or TIP × 4)\l   ‣ High-dose chemotherapy\l• Recommend sperm banking\l", fillcolor="#D5F5E3"];
+  early -> early_tx; late -> late_tx;
+
+  mgmt [label="Post Second-Line Therapy\nManagement → NSEM-9", fillcolor="#EAECEE"];
+  early_tx -> mgmt; late_tx -> mgmt;
+
+  np_tx [label="Treat per risk status on NSEM-6\n+ recommend sperm banking", fillcolor="#D5F5E3"];
+  pa_tx [label="First-line chemotherapy → NSEM-6", fillcolor="#D5F5E3"];
+  np -> np_tx; pa -> pa_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Preferably treat recurrent nonseminoma at a center with expertise.\nFor select patients, RPLND may be appropriate. Includes best supportive/palliative care.\nTIP=Paclitaxel/Ifosfamide/Cisplatin · VeIP=Vinblastine/Ifosfamide/Cisplatin. Regimens: TEST-F."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,48 @@
+// NSEM-3 — Nonseminoma: Stage IIA and IIB — Primary Treatment
+digraph NSEM3 {
+  rankdir=LR; labelloc="t"; label="NSEM-3 · Nonseminoma — Stage IIA / IIB";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  // Stage IIA
+  iia [label="Stage IIA", fillcolor="#F9E79F"];
+  iia_neg [label="Markers negative", shape=diamond, fillcolor="#FCF3CF"];
+  iia_pos [label="Persistent marker elevation", shape=diamond, fillcolor="#FCF3CF"];
+  iia -> iia_neg; iia -> iia_pos;
+
+  iia_rplnd [label="Nerve-sparing RPLND", fillcolor="#D5F5E3"];
+  iia_chemo [label="First-line chemotherapy:\nBEP × 3 cycles or EP × 4 cycles", fillcolor="#D5F5E3"];
+  iia_neg -> iia_rplnd; iia_neg -> iia_chemo;
+  iia_pos_tx [label="Primary Treatment → NSEM-6", fillcolor="#D5F5E3"];
+  iia_pos -> iia_pos_tx;
+
+  // Stage IIB
+  iib [label="Stage IIB", fillcolor="#F9E79F"];
+  iib_neg [label="Markers negative", shape=diamond, fillcolor="#FCF3CF"];
+  iib_pos [label="Persistent marker elevation", shape=diamond, fillcolor="#FCF3CF"];
+  iib -> iib_neg; iib -> iib_pos;
+
+  iib_within [label="Lymph node metastases within\nlymphatic drainage sites", shape=diamond, fillcolor="#FCF3CF"];
+  iib_aberr  [label="Multifocal, symptomatic, or LN\nmetastases with aberrant drainage", shape=diamond, fillcolor="#FCF3CF"];
+  iib_neg -> iib_within; iib_neg -> iib_aberr;
+
+  iib_chemo1 [label="First-line chemotherapy:\nBEP × 3 or EP × 4 cycles", fillcolor="#D5F5E3"];
+  iib_rplnd  [label="Nerve-sparing RPLND\nin highly selected cases", fillcolor="#D5F5E3"];
+  iib_within -> iib_chemo1; iib_within -> iib_rplnd;
+
+  iib_chemo2 [label="First-line chemotherapy:\nBEP × 3 or EP × 4 cycles", fillcolor="#D5F5E3"];
+  iib_aberr -> iib_chemo2;
+
+  iib_pos_tx [label="Primary Treatment → NSEM-6", fillcolor="#D5F5E3"];
+  iib_pos -> iib_pos_tx;
+
+  // Destinations
+  post5 [label="Postsurgical Management → NSEM-5", fillcolor="#EAECEE"];
+  post4 [label="Post First-Line Chemotherapy\nManagement → NSEM-4", fillcolor="#EAECEE"];
+  iia_rplnd -> post5; iib_rplnd -> post5;
+  iia_chemo -> post4; iib_chemo1 -> post4; iib_chemo2 -> post4;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="RPLND preferred for stage II GCT with somatic-type malignancy; consider RPLND for\nteratoma predominance with normal markers. Select CS IIA with borderline nodes:\nwait 4-8 wks + repeat imaging to confirm stage. BEP/EP — see TEST-E."];
+  { rank=sink; note; }
+}

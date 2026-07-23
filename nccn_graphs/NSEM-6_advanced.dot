@@ -1,0 +1,49 @@
+// NSEM-6 — Nonseminoma: Stage IS, IIA-IIIC & Brain Mets — Primary Treatment (by risk)
+digraph NSEM6 {
+  rankdir=LR; labelloc="t"; label="NSEM-6 · Nonseminoma — Advanced Disease (by risk) + Brain Metastases";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  risk [label="Risk classification\n(TEST-D)", shape=diamond, fillcolor="#F9E79F"];
+
+  good [label="Good risk:\nStage IS, IIA, IIB, IIC, IIIA", fillcolor="#FCF3CF"];
+  poor [label="Intermediate & poor risk:\nStage IIIB, IIIC", fillcolor="#FCF3CF"];
+  risk -> good; risk -> poor;
+
+  good_tx [label="First-line chemotherapy:\nBEP × 3 cycles (cat 1)\nor EP × 4 cycles (cat 1)", fillcolor="#D5F5E3"];
+  poor_tx [label="First-line chemotherapy:\nBEP × 4 cycles (cat 1, preferred)\nor VIP × 4 cycles (cat 1)", fillcolor="#D5F5E3"];
+  good -> good_tx; poor -> poor_tx;
+
+  // Post-chemo assessment
+  assess [label="Postchemotherapy assessment", shape=diamond, fillcolor="#F9E79F"];
+  good_tx -> assess; poor_tx -> assess;
+
+  orig_is [label="If original stage IS", shape=diamond, fillcolor="#FCF3CF"];
+  orig_n  [label="If original stage T any,\nN1–3, M0–1", shape=diamond, fillcolor="#FCF3CF"];
+  resid   [label="Residual masses with or without\nabnormal AFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  assess -> orig_is; assess -> orig_n; assess -> resid;
+
+  is_surv [label="Surveillance", fillcolor="#D5F5E3"];
+  orig_is -> is_surv;
+
+  n_opt [label="Negative markers, no mass or residual <1 cm →\nSurveillance; or Surveillance / Nerve-sparing\nbilateral RPLND in selected cases (cat 2B)", fillcolor="#D5F5E3"];
+  orig_n -> n_opt;
+
+  nsem7 [label="Postchemotherapy\nManagement → NSEM-7", fillcolor="#EAECEE"];
+  resid -> nsem7;
+
+  fu10 [label="Follow-up Table 10 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  is_surv -> fu10; n_opt -> fu10;
+
+  recur [label="For recurrence, see\nSecond-Line Therapy (NSEM-8)", fillcolor="#F5B7B1"];
+  fu10 -> recur;
+
+  // Brain mets branch
+  brain [label="Brain metastases", fillcolor="#F9E79F"];
+  brain_tx [label="First-line chemotherapy as for poor-risk\n± RT ± surgery, if clinically indicated", fillcolor="#D5F5E3"];
+  brain -> brain_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Referral to high-volume center recommended for poor-risk (consider for intermediate).\nMediastinal primary nonseminoma = poor risk. If intermediate risk is based only on LDH\n1.5-3× ULN, BEP × 3 or EP × 4 can be considered. BEP/EP/VIP — see TEST-E."];
+  { rank=sink; note; }
+}

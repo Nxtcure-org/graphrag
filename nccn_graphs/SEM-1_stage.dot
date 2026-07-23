@@ -1,0 +1,32 @@
+// SEM-1 — Pure Seminoma: Postdiagnostic Workup and Clinical Stage
+digraph SEM1 {
+  rankdir=LR; labelloc="t"; label="SEM-1 · Pure Seminoma — Postdiagnostic Workup & Clinical Stage";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dx [label="Pure seminoma\n(pure seminoma histology,\nAFP normal; may have\nelevated beta-hCG)", fillcolor="#D6EAF8"];
+
+  workup [label="POSTDIAGNOSTIC WORKUP\l• Abdomen/pelvis CT or MRI\l• Chest x-ray\l• Chest CT if: positive abd CT/MRI or abnormal CXR\l• Repeat beta-hCG, LDH, AFP\l  (staging based on post-orchiectomy values)\l• Brain MRI (± contrast), if clinically indicated\l• Recommend sperm banking, if indicated\l", fillcolor="#D6EAF8"];
+
+  stage [label="CLINICAL STAGE\n(AJCC TNM)", shape=diamond, fillcolor="#F9E79F"];
+
+  s_iaib [label="Stage IA, IB", fillcolor="#F9E79F"];
+  s_is   [label="Stage IS", fillcolor="#F9E79F"];
+  s_ii   [label="Stage IIA, IIB", fillcolor="#F9E79F"];
+  s_iic  [label="Stage IIC, III", fillcolor="#F9E79F"];
+
+  p2a [label="Primary Treatment\n& Follow-up → SEM-2", fillcolor="#D5F5E3"];
+  p2b [label="Primary Treatment\n& Follow-up → SEM-2", fillcolor="#D5F5E3"];
+  p3  [label="Primary Treatment\n& Follow-up → SEM-3", fillcolor="#D5F5E3"];
+  p4  [label="Primary Treatment\n& Follow-up → SEM-4", fillcolor="#D5F5E3"];
+
+  dx -> workup -> stage;
+  stage -> s_iaib -> p2a;
+  stage -> s_is   -> p2b;
+  stage -> s_ii   -> p3;
+  stage -> s_iic  -> p4;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Mediastinal primary seminoma: treat by gonadal-seminoma risk status\n(EP x4 or BEP x3). For select CS IIA with borderline retroperitoneal\nnodes, wait 4-8 wks and repeat imaging to confirm stage."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,80 @@
+// NCCN Testicular Cancer Guidelines v2.2026 — MASTER MAP
+// How the individual protocol pages connect. Render: dot -Tsvg 00_overview.dot -o 00_overview.svg
+// NOTE: derived from NCCN Guidelines for personal/clinical comprehension; not for redistribution.
+digraph nccn_overview {
+  rankdir=LR;
+  labelloc="t";
+  label="NCCN Testicular Cancer v2.2026 — Protocol Map";
+  fontname="Helvetica-Bold"; fontsize=16;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.08"];
+  edge [fontname="Helvetica", fontsize=9, color="#566573"];
+
+  TEST1 [label="TEST-1\nSuspicious mass → workup →\norchiectomy → histology", fillcolor="#D6EAF8"];
+
+  // Seminoma spine
+  subgraph cluster_sem {
+    label="PURE SEMINOMA"; style="rounded,filled"; fillcolor="#FBFCFC"; fontname="Helvetica-Bold"; color="#5DADE2";
+    SEM1 [label="SEM-1\nWorkup & clinical stage", fillcolor="#D5F5E3"];
+    SEM2 [label="SEM-2\nStage IA/IB, IS", fillcolor="#D5F5E3"];
+    SEM3 [label="SEM-3\nStage IIA/IIB", fillcolor="#D5F5E3"];
+    SEM4 [label="SEM-4\nStage IIC/III", fillcolor="#D5F5E3"];
+    SEM5 [label="SEM-5\nPost 1st-line chemo mgmt", fillcolor="#EAECEE"];
+    SEM6 [label="SEM-6\nRecurrence / 2nd-line", fillcolor="#F5B7B1"];
+    SEM7 [label="SEM-7\nPost 2nd-line mgmt", fillcolor="#EAECEE"];
+    SEM8 [label="SEM-8\nThird-line therapy", fillcolor="#F1948A"];
+    SEM1->SEM2; SEM1->SEM3; SEM1->SEM4;
+    SEM4->SEM5; SEM3->SEM5 [style=dotted]; SEM5->SEM6->SEM7->SEM8;
+  }
+
+  // Nonseminoma spine
+  subgraph cluster_nsem {
+    label="NONSEMINOMA (NSGCT)"; style="rounded,filled"; fillcolor="#FBFCFC"; fontname="Helvetica-Bold"; color="#48C9B0";
+    NSEM1 [label="NSEM-1\nWorkup & clinical stage", fillcolor="#D5F5E3"];
+    NSEM2 [label="NSEM-2\nStage I ± risk factors, IS", fillcolor="#D5F5E3"];
+    NSEM3 [label="NSEM-3\nStage IIA/IIB", fillcolor="#D5F5E3"];
+    NSEM4 [label="NSEM-4\nPost 1st-line chemo (II)", fillcolor="#EAECEE"];
+    NSEM5 [label="NSEM-5\nPostsurgical mgmt (pN0-3)", fillcolor="#EAECEE"];
+    NSEM6 [label="NSEM-6\nAdvanced (risk) + brain mets", fillcolor="#D5F5E3"];
+    NSEM7 [label="NSEM-7\nResponse after primary Tx", fillcolor="#EAECEE"];
+    NSEM8 [label="NSEM-8\nRecurrence / 2nd-line", fillcolor="#F5B7B1"];
+    NSEM9 [label="NSEM-9\nPost 2nd-line mgmt", fillcolor="#EAECEE"];
+    NSEM10 [label="NSEM-10\nThird-line therapy", fillcolor="#F1948A"];
+    NSEM1->NSEM2; NSEM1->NSEM3; NSEM1->NSEM6;
+    NSEM2->NSEM5; NSEM2->NSEM6;
+    NSEM3->NSEM4; NSEM3->NSEM5; NSEM3->NSEM6;
+    NSEM6->NSEM7; NSEM4->NSEM8 [style=dotted]; NSEM6->NSEM8; NSEM7->NSEM8;
+    NSEM8->NSEM9->NSEM10;
+  }
+
+  // Shared reference pages
+  subgraph cluster_ref {
+    label="REFERENCE PAGES"; style="rounded,filled"; fillcolor="#FEF9E7"; fontname="Helvetica-Bold"; color="#F4D03F";
+    TESTD [label="TEST-D\nRisk classification\n(good/intermediate/poor)", fillcolor="#FDEBD0"];
+    TESTA [label="TEST-A\nFollow-up: seminoma", fillcolor="#FDEBD0"];
+    TESTB [label="TEST-B\nFollow-up: nonseminoma", fillcolor="#FDEBD0"];
+    TESTE [label="TEST-E\n1st-line chemo regimens", fillcolor="#FDEBD0"];
+    TESTF [label="TEST-F\n2nd-line chemo regimens", fillcolor="#FDEBD0"];
+    TESTG [label="TEST-G\n3rd-line systemic therapy", fillcolor="#FDEBD0"];
+  }
+
+  TEST1 -> SEM1 [label="pure seminoma\n(AFP normal)"];
+  TEST1 -> NSEM1 [label="NSGCT / seminoma\nwith elevated AFP"];
+
+  SEM4 -> TESTD [style=dashed]; NSEM6 -> TESTD [style=dashed];
+  SEM4 -> TESTE [style=dashed]; NSEM6 -> TESTE [style=dashed];
+  SEM6 -> TESTF [style=dashed]; NSEM8 -> TESTF [style=dashed];
+  SEM8 -> TESTG [style=dashed]; NSEM10 -> TESTG [style=dashed];
+  SEM2 -> TESTA [style=dashed]; NSEM2 -> TESTB [style=dashed];
+
+  // Legend
+  subgraph cluster_legend {
+    label="Legend"; fontname="Helvetica-Bold"; style="rounded"; color="#909497";
+    L1 [label="Workup / entry", fillcolor="#D6EAF8"];
+    L2 [label="Diagnosis / stage / treatment", fillcolor="#D5F5E3"];
+    L3 [label="Management / follow-up", fillcolor="#EAECEE"];
+    L4 [label="Recurrence", fillcolor="#F5B7B1"];
+    L5 [label="Third-line / salvage", fillcolor="#F1948A"];
+    L6 [label="Reference page (dashed link)", fillcolor="#FDEBD0"];
+    L1->L2->L3->L4->L5->L6 [style=invis];
+  }
+}

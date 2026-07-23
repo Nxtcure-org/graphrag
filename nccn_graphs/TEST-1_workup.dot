@@ -1,0 +1,28 @@
+// TEST-1 — Workup, Primary Treatment, and Pathologic Diagnosis
+digraph TEST1 {
+  rankdir=LR; labelloc="t"; label="TEST-1 · Workup / Primary Treatment / Pathologic Diagnosis";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  mass [label="Suspicious\ntesticular mass", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• History & physical (H&P)\l• Testicular ultrasound\l• Alpha-fetoprotein (AFP)\l• Beta-hCG (quantitative)\l• Lactate dehydrogenase (LDH)\l• Chemistry profile\l", fillcolor="#D6EAF8"];
+
+  tx [label="PRIMARY TREATMENT\l• Consider abdomen/pelvis CT (contrast) or MRI\l• Radical inguinal orchiectomy\l• Discuss sperm banking, if indicated\l• Discuss testicular prosthesis\l• If bilateral abnormalities: consider inguinal\l  exploration of contralateral testis\l", fillcolor="#D5F5E3"];
+
+  path [label="PATHOLOGIC\nDIAGNOSIS", shape=diamond, fillcolor="#F9E79F"];
+
+  sem [label="Pure seminoma\n(pure seminoma histology and\nAFP normal; may have elevated beta-hCG)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  nsem [label="Nonseminomatous germ cell tumor (NSGCT)\n(mixed seminoma/nonseminoma tumors and\nseminoma histology with elevated AFP)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  sem_next [label="Postdiagnostic Workup\n& Clinical Stage → SEM-1", fillcolor="#D6EAF8"];
+  nsem_next [label="Postdiagnostic Workup\n& Clinical Stage → NSEM-1", fillcolor="#D6EAF8"];
+
+  mass -> workup -> tx -> path;
+  path -> sem -> sem_next;
+  path -> nsem -> nsem_next;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="If rapidly rising beta-hCG/AFP with disseminated disease,\nchemotherapy may be started before biopsy/orchiectomy;\norchiectomy performed at completion of chemotherapy.\nTSS (partial orchiectomy) may be considered in select cases (TEST-H)."];
+  { rank=sink; note; }
+}

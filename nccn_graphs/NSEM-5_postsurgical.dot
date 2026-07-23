@@ -1,0 +1,43 @@
+// NSEM-5 — Nonseminoma: Postsurgical Management (after primary nerve-sparing RPLND)
+digraph NSEM5 {
+  rankdir=LR; labelloc="t"; label="NSEM-5 · Nonseminoma — Postsurgical Management (primary nerve-sparing RPLND)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  src [label="Stage IA, IB (± risk factors),\nIIA, IIB treated with\nprimary nerve-sparing RPLND", fillcolor="#D6EAF8"];
+
+  pN0 [label="pN0", shape=diamond, fillcolor="#F9E79F"];
+  pN1 [label="pN1", shape=diamond, fillcolor="#F9E79F"];
+  pN2 [label="pN2", shape=diamond, fillcolor="#F9E79F"];
+  pN3 [label="pN3", shape=diamond, fillcolor="#F9E79F"];
+  src -> pN0; src -> pN1; src -> pN2; src -> pN3;
+
+  o0 [label="Surveillance", fillcolor="#D5F5E3"];
+  fu0 [label="Follow-up Table 9 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pN0 -> o0 -> fu0;
+
+  o1a [label="Surveillance (preferred)", fillcolor="#D5F5E3"];
+  o1b [label="Chemotherapy: EP × 2 cycles", fillcolor="#D5F5E3"];
+  pN1 -> o1a; pN1 -> o1b;
+  fu1a [label="Follow-up Table 9 (TEST-B 2/3)\nor Table 12 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu1b [label="Follow-up Table 11 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  o1a -> fu1a; o1b -> fu1b;
+
+  o2a [label="Chemotherapy: EP × 2 cycles", fillcolor="#D5F5E3"];
+  o2b [label="Surveillance", fillcolor="#D5F5E3"];
+  pN2 -> o2a; pN2 -> o2b;
+  fu2a [label="Follow-up Table 11 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu2b [label="Follow-up Table 12 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  o2a -> fu2a; o2b -> fu2b;
+
+  o3a [label="Chemotherapy\n(EP × 2; or BEP 2-3 / EP 2-4 cycles)", fillcolor="#D5F5E3"];
+  o3b [label="Surveillance", fillcolor="#D5F5E3"];
+  pN3 -> o3a; pN3 -> o3b;
+  fu3a [label="Follow-up Table 11 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu3b [label="Follow-up Table 12 (TEST-B 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  o3a -> fu3a; o3b -> fu3b;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="pN2/pN3: surveillance preferred for pure teratoma. pN3 chemo is a rare circumstance\nwith limited data (no consensus regimen). EP = Etoposide/Cisplatin."];
+  { rank=sink; note; }
+}

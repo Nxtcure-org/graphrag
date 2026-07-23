@@ -1,0 +1,56 @@
+// SEM-5 — Pure Seminoma: Stage IIA-III after first-line chemo — Post First-Line Management
+digraph SEM5 {
+  rankdir=LR; labelloc="t"; label="SEM-5 · Seminoma — Post First-Line Chemotherapy Management (Stage IIA–III)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  eval [label="Restaging after first-line chemo:\l• C/A/P CT or MRI\l• Serum tumor markers\l", fillcolor="#D6EAF8"];
+
+  r_none [label="No residual mass, OR residual ≤3 cm\nwith normal AFP & beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  r_big  [label="Residual mass >3 cm\nwith normal AFP & beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  r_prog [label="Progressive disease\n(growing mass or rising markers)", shape=diamond, fillcolor="#F9E79F"];
+
+  eval -> r_none; eval -> r_big; eval -> r_prog;
+
+  // no/small residual
+  surv1 [label="Surveillance", fillcolor="#D5F5E3"];
+  fu_a  [label="Follow-up Table 3 (TEST-A 2/3)\nor Table 6 (TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  r_none -> surv1 -> fu_a;
+
+  // large residual
+  surv2 [label="Surveillance", fillcolor="#D5F5E3"];
+  pet   [label="Consider FDG-PET/CT\n(≥6 wks post-chemo)", fillcolor="#D5F5E3"];
+  r_big -> surv2; r_big -> pet;
+
+  pet_neg [label="Negative / indeterminate", shape=diamond, fillcolor="#FCF3CF"];
+  pet_pos [label="Positive", shape=diamond, fillcolor="#FCF3CF"];
+  pet -> pet_neg; pet -> pet_pos;
+
+  surv3 [label="Surveillance", fillcolor="#D5F5E3"];
+  pet_neg -> surv3;
+
+  action [label="Repeat imaging in 6–12 wks\nOR resection of residual mass\nOR biopsy", fillcolor="#D5F5E3"];
+  pet_pos -> action;
+
+  viable [label="Positive for\nviable seminoma", shape=diamond, fillcolor="#FCF3CF"];
+  nonviable [label="Negative for\nviable seminoma", shape=diamond, fillcolor="#FCF3CF"];
+  action -> viable; action -> nonviable;
+
+  complete [label="Complete resection →\nConsider 2 cycles adjuvant chemotherapy\n(EP/TIP/VIP/VeIP)", fillcolor="#D5F5E3"];
+  incomplete [label="Incomplete resection, positive biopsy,\nor progression → Second-Line Therapy (SEM-6)", fillcolor="#F5B7B1"];
+  viable -> complete; viable -> incomplete;
+
+  fu_b [label="Follow-up Table 6 (TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  nonviable -> fu_b;
+
+  // progression + recurrence exits
+  sl [label="Second-Line Therapy (SEM-6)", fillcolor="#F5B7B1"];
+  r_prog -> sl;
+
+  recur [label="For recurrence, see\nSecond-Line Therapy (SEM-6)", fillcolor="#F5B7B1"];
+  fu_a -> recur; surv3 -> fu_b; complete -> fu_b; fu_b -> recur;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Rare nonseminomatous elements on resection: if non-teratomatous, manage as viable seminoma.\nEP/TIP/VIP/VeIP regimens — see TEST-E/F. Consider referral to high-volume center."];
+  { rank=sink; note; }
+}

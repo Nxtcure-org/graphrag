@@ -1,0 +1,35 @@
+// NSEM-4 — Nonseminoma: Stage IIA/IIB after first-line chemo — Post First-Line Management
+digraph NSEM4 {
+  rankdir=LR; labelloc="t"; label="NSEM-4 · Nonseminoma — Post First-Line Chemotherapy Mgmt (Stage IIA/IIB)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  eval [label="Stage IIA/IIB treated with first-line chemo:\l• Abdomen/pelvis CT or MRI\l• Consider chest CT/MRI or chest x-ray\l", fillcolor="#D6EAF8"];
+
+  d_small [label="Negative markers with no mass\nor residual <1 cm (transaxial long axis)", shape=diamond, fillcolor="#F9E79F"];
+  d_big   [label="Negative markers with\nresidual ≥1 cm", shape=diamond, fillcolor="#F9E79F"];
+  eval -> d_small; eval -> d_big;
+
+  small_opt [label="Surveillance (preferred)\nor Nerve-sparing bilateral RPLND\nin selected cases (category 2B)", fillcolor="#D5F5E3"];
+  big_opt   [label="Nerve-sparing bilateral RPLND", fillcolor="#D5F5E3"];
+  d_small -> small_opt; d_big -> big_opt;
+
+  // RPLND histology outcomes
+  histo [label="RPLND histology", shape=diamond, fillcolor="#FCF3CF"];
+  small_opt -> histo; big_opt -> histo;
+
+  ter [label="Teratoma or necrosis", shape=diamond, fillcolor="#FCF3CF"];
+  res [label="Residual embryonal, yolk sac,\nchoriocarcinoma, or seminoma element", shape=diamond, fillcolor="#FCF3CF"];
+  histo -> ter; histo -> res;
+
+  ter_tx [label="Surveillance", fillcolor="#D5F5E3"];
+  res_tx [label="Chemotherapy (preferred) × 2 cycles\n(EP or TIP or VIP or VeIP)\nor Surveillance for select patients", fillcolor="#D5F5E3"];
+  ter -> ter_tx; res -> res_tx;
+
+  fu10 [label="Follow-up Table 10 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ter_tx -> fu10; res_tx -> fu10;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Craniocaudal axis should not be used for residual-mass measurement.\nSurveillance reasonable if all residual masses resected have <10% viable cancer.\nEP/TIP/VIP/VeIP — see TEST-E/F. FDG-PET/CT not indicated for nonseminoma."];
+  { rank=sink; note; }
+}

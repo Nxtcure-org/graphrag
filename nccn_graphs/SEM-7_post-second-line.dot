@@ -1,0 +1,52 @@
+// SEM-7 — Pure Seminoma: Post Second-Line Therapy Management
+digraph SEM7 {
+  rankdir=LR; labelloc="t"; label="SEM-7 · Seminoma — Post Second-Line Therapy Management";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  eval [label="Restaging:\l• C/A/P CT or MRI\l• Serum tumor markers\l", fillcolor="#D6EAF8"];
+
+  r_none [label="No residual mass, OR residual ≤3 cm\nwith normal AFP & beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  r_big  [label="Residual mass >3 cm\nwith normal AFP & beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  r_prog [label="Progressive disease\n(growing mass or rising markers)", shape=diamond, fillcolor="#F9E79F"];
+  eval -> r_none; eval -> r_big; eval -> r_prog;
+
+  surv1 [label="Surveillance", fillcolor="#D5F5E3"];
+  fu_a [label="Follow-up Table 6 (TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  r_none -> surv1 -> fu_a;
+
+  surv2 [label="Surveillance", fillcolor="#D5F5E3"];
+  pet [label="Consider FDG-PET/CT\n(≥6 wks post-chemo)", fillcolor="#D5F5E3"];
+  r_big -> surv2; r_big -> pet;
+
+  pet_neg [label="Negative / indeterminate", shape=diamond, fillcolor="#FCF3CF"];
+  pet_pos [label="Positive", shape=diamond, fillcolor="#FCF3CF"];
+  pet -> pet_neg; pet -> pet_pos;
+
+  surv3 [label="Surveillance", fillcolor="#D5F5E3"];
+  pet_neg -> surv3;
+
+  action [label="Repeat imaging in 6–12 wks\nOR resection of residual mass OR biopsy", fillcolor="#D5F5E3"];
+  pet_pos -> action;
+
+  viable [label="Positive for viable seminoma", shape=diamond, fillcolor="#FCF3CF"];
+  nonviable [label="Negative for viable seminoma", shape=diamond, fillcolor="#FCF3CF"];
+  action -> viable; action -> nonviable;
+
+  complete [label="Complete resection", fillcolor="#D5F5E3"];
+  incomplete [label="Incomplete resection or progression →\nThird-Line Therapy (SEM-8)", fillcolor="#F1948A"];
+  viable -> complete; viable -> incomplete;
+
+  fu_b [label="Follow-up Table 3 (TEST-A 2/3)\nor Table 6 (TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  complete -> fu_b; nonviable -> fu_b; surv3 -> fu_b;
+
+  tl [label="Third-Line Therapy (SEM-8)", fillcolor="#F1948A"];
+  r_prog -> tl;
+
+  recur [label="For recurrence, see\nThird-Line Therapy (SEM-8)", fillcolor="#F1948A"];
+  fu_a -> recur; fu_b -> recur;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Rare nonseminomatous elements on resection: if non-teratomatous, manage as viable seminoma."];
+  { rank=sink; note; }
+}

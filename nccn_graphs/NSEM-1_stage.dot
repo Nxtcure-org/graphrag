@@ -1,0 +1,29 @@
+// NSEM-1 — Nonseminoma: Postdiagnostic Workup and Clinical Stage
+digraph NSEM1 {
+  rankdir=LR; labelloc="t"; label="NSEM-1 · Nonseminoma (NSGCT) — Postdiagnostic Workup & Clinical Stage";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dx [label="NSGCT\n(mixed seminoma/nonseminoma tumors,\nor seminoma histology with elevated AFP)", fillcolor="#D6EAF8"];
+
+  workup [label="POSTDIAGNOSTIC WORKUP\l• C/A/P CT or MRI\l• Repeat beta-hCG, LDH, AFP\l  (staging based on post-orchiectomy values)\l• Brain MRI, if clinically indicated\l• Recommend sperm banking, if indicated\l", fillcolor="#D6EAF8"];
+
+  stage [label="CLINICAL STAGE", shape=diamond, fillcolor="#F9E79F"];
+
+  s1  [label="Stage I with and\nwithout risk factors", fillcolor="#F9E79F"];
+  s2  [label="Stage IIA, IIB", fillcolor="#F9E79F"];
+  s6  [label="Stage IS, IIC, IIIA,\nIIIB, IIIC, and\nbrain metastasis", fillcolor="#F9E79F"];
+
+  p2 [label="Primary Treatment → NSEM-2", fillcolor="#D5F5E3"];
+  p3 [label="Primary Treatment → NSEM-3", fillcolor="#D5F5E3"];
+  p6 [label="Primary Treatment → NSEM-6", fillcolor="#D5F5E3"];
+
+  dx -> workup -> stage;
+  stage -> s1 -> p2;
+  stage -> s2 -> p3;
+  stage -> s6 -> p6;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="FDG-PET/CT is NOT indicated for nonseminoma. Mediastinal primary nonseminoma is\npoor-risk → treat with VIP or BEP with careful pulmonary monitoring.\nRisk factors for recurrence: lymphovascular invasion, invasion of spermatic cord/scrotum."];
+  { rank=sink; note; }
+}

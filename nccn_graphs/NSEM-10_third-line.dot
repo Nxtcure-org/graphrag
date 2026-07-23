@@ -1,0 +1,22 @@
+// NSEM-10 — Nonseminoma: Third-Line Therapy
+digraph NSEM10 {
+  rankdir=LR; labelloc="t"; label="NSEM-10 · Nonseminoma — Recurrence & Third-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  branch [label="Prior therapy", shape=diamond, fillcolor="#F9E79F"];
+
+  conv [label="Prior first- and second-line\nconventional-dose chemotherapy", fillcolor="#F1948A"];
+  hd   [label="Prior high-dose chemotherapy", fillcolor="#F1948A"];
+  late [label="Late relapse\n(>2 yr after second-line chemo)", fillcolor="#F1948A"];
+  branch -> conv; branch -> hd; branch -> late;
+
+  conv_tx [label="THIRD-LINE THERAPY\l• Clinical trial\l• High-dose chemotherapy (preferred)\l• Consider surgical treatment if solitary site\l", fillcolor="#D5F5E3"];
+  hd_tx [label="THIRD-LINE THERAPY\l• Clinical trial (preferred)\l• Conventional-dose third-line chemotherapy\l• Consider surgical treatment if solitary site\l• Molecular testing (MSI/MMR, TMB; NGS + IHC)\l  for biomarker-driven therapy if progression\l", fillcolor="#D5F5E3"];
+  late_tx [label="THIRD-LINE THERAPY\l• Surgical treatment if resectable (preferred)\l• Chemotherapy:\l   ‣ Conventional-dose therapy\l   ‣ High-dose chemotherapy (if not previously received)\l", fillcolor="#D5F5E3"];
+  conv -> conv_tx; hd -> hd_tx; late -> late_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Third-line systemic regimens: TEST-G. Pan-cancer/tumor-agnostic treatments may be\nconsidered for actionable mutations. Includes best supportive/palliative care.\nPreferably treat at a center with expertise."];
+  { rank=sink; note; }
+}

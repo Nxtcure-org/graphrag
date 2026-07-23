@@ -1,0 +1,53 @@
+// SEM-3 — Pure Seminoma: Stage IIA and IIB — Primary Treatment & Follow-up
+digraph SEM3 {
+  rankdir=LR; labelloc="t"; label="SEM-3 · Pure Seminoma — Stage IIA / IIB";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  ii [label="Stage IIA / IIB", fillcolor="#F9E79F"];
+  size [label="Nodal size", shape=diamond, fillcolor="#F9E79F"];
+  lt3 [label="< 3 cm", fillcolor="#F9E79F"];
+  gt3 [label="3–5 cm", fillcolor="#F9E79F"];
+
+  ii -> size; size -> lt3; size -> gt3;
+
+  // < 3 cm options
+  rt    [label="RT to para-aortic and ipsilateral iliac nodes\n30 Gy (1–2 cm) or 36 Gy (2–3 cm)", fillcolor="#D5F5E3"];
+  chemo [label="First-line chemotherapy:\nBEP × 3 cycles or EP × 4 cycles", fillcolor="#D5F5E3"];
+  rplnd [label="Nerve-sparing RPLND\n(category 2B for 2–3 cm)", fillcolor="#D5F5E3"];
+  carbort [label="Carboplatin + RT\n(category 2B)", fillcolor="#D5F5E3"];
+
+  lt3 -> rt; lt3 -> chemo; lt3 -> rplnd; lt3 -> carbort;
+
+  // RPLND pathologic nodal outcomes
+  pN0 [label="pN0", shape=diamond, fillcolor="#FCF3CF"];
+  pN1 [label="pN1", shape=diamond, fillcolor="#FCF3CF"];
+  pN2 [label="pN2", shape=diamond, fillcolor="#FCF3CF"];
+  pN3 [label="pN3", shape=diamond, fillcolor="#FCF3CF"];
+  rplnd -> pN0; rplnd -> pN1; rplnd -> pN2; rplnd -> pN3;
+
+  o0 [label="Surveillance", fillcolor="#D5F5E3"];
+  o1 [label="Surveillance (preferred)\nor Adjuvant chemotherapy (cat 2B)\n[EP × 2]", fillcolor="#D5F5E3"];
+  o2 [label="Surveillance\nor Adjuvant chemotherapy [EP × 2]", fillcolor="#D5F5E3"];
+  o3 [label="Surveillance (cat 2B)\nor Adjuvant chemotherapy (preferred) [EP × 2]", fillcolor="#D5F5E3"];
+  pN0 -> o0; pN1 -> o1; pN2 -> o2; pN3 -> o3;
+
+  // Follow-up + 3-5cm
+  chemo3 [label="First-line chemotherapy:\nBEP × 3 cycles or EP × 4 cycles", fillcolor="#D5F5E3"];
+  gt3 -> chemo3;
+
+  fu3  [label="Follow-up Table 3\n(TEST-A 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu45 [label="Follow-up Table 4 (TEST-A 2/3)\nor Table 5 (TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu6  [label="Follow-up Table 6\n(TEST-A 3/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  rt -> fu3; chemo -> fu3; carbort -> fu3;
+  o0 -> fu45; o1 -> fu45; o2 -> fu45; o3 -> fu45;
+  chemo3 -> fu6;
+
+  recur [label="For recurrence, treat according to\nextent of disease at relapse", fillcolor="#F5B7B1"];
+  fu3 -> recur; fu45 -> recur; fu6 -> recur;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Shared decision-making for IIA/IIB (recurrence rates, dual-therapy potential).\nAdjuvant chemo after RPLND is based on nonseminoma data (EP × 2; evolving).\nBEP=Bleomycin/Etoposide/Cisplatin · EP=Etoposide/Cisplatin"];
+  { rank=sink; note; }
+}

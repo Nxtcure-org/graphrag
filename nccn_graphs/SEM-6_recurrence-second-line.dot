@@ -1,0 +1,18 @@
+// SEM-6 — Pure Seminoma: Recurrence and Second-Line Therapy
+digraph SEM6 {
+  rankdir=LR; labelloc="t"; label="SEM-6 · Seminoma — Recurrence & Second-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  prior [label="Prior first-line\nchemotherapy", fillcolor="#F5B7B1"];
+
+  sl [label="SECOND-LINE THERAPY\l• Clinical trial\l• Chemotherapy:\l   ‣ Conventional-dose second-line\l     (VeIP × 4 cycles or TIP × 4 cycles)\l   ‣ High-dose chemotherapy\l• Recommend sperm banking, if indicated\l", fillcolor="#D5F5E3"];
+
+  mgmt [label="Post Second-Line Therapy\nManagement → SEM-7", fillcolor="#EAECEE"];
+
+  prior -> sl -> mgmt;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Preferably treat recurrent seminoma at a center with expertise.\nIncludes best supportive / palliative care. Second-line regimens: TEST-F.\nTIP=Paclitaxel/Ifosfamide/Cisplatin · VeIP=Vinblastine/Ifosfamide/Cisplatin"];
+  { rank=sink; note; }
+}

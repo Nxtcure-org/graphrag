@@ -1,0 +1,40 @@
+// NSEM-2 — Nonseminoma: Stage I with/without risk factors, Stage IS
+digraph NSEM2 {
+  rankdir=LR; labelloc="t"; label="NSEM-2 · Nonseminoma — Stage I ± Risk Factors, Stage IS";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  // Stage I without risk factors
+  s1no [label="Stage I\nwithout risk factors", fillcolor="#F9E79F"];
+  a_surv [label="Surveillance (preferred)", fillcolor="#D5F5E3"];
+  a_rplnd [label="Nerve-sparing RPLND", fillcolor="#D5F5E3"];
+  a_chemo [label="Adjuvant chemotherapy:\nBEP × 1 cycle", fillcolor="#D5F5E3"];
+  s1no -> a_surv; s1no -> a_rplnd; s1no -> a_chemo;
+
+  fu7 [label="Follow-up Table 7 (TEST-B 1/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  post5a [label="Postsurgical Management → NSEM-5", fillcolor="#EAECEE"];
+  fu9a [label="Follow-up Table 9 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  a_surv -> fu7; a_rplnd -> post5a; a_chemo -> fu9a;
+
+  // Stage I with risk factors
+  s1yes [label="Stage I\nwith risk factors", fillcolor="#F9E79F"];
+  b_surv [label="Surveillance", fillcolor="#D5F5E3"];
+  b_chemo [label="Adjuvant chemotherapy:\nBEP × 1 cycle", fillcolor="#D5F5E3"];
+  b_rplnd [label="Nerve-sparing RPLND", fillcolor="#D5F5E3"];
+  s1yes -> b_surv; s1yes -> b_chemo; s1yes -> b_rplnd;
+
+  fu8 [label="Follow-up Table 8 (TEST-B 1/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu9b [label="Follow-up Table 9 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  post5b [label="Postsurgical Management → NSEM-5", fillcolor="#EAECEE"];
+  b_surv -> fu8; b_chemo -> fu9b; b_rplnd -> post5b;
+
+  // Stage IS
+  is [label="Stage IS", fillcolor="#F9E79F"];
+  is_m [label="Highly elevated or\npersistently rising markers", shape=diamond, fillcolor="#FCF3CF"];
+  is_p [label="Primary Treatment → NSEM-6", fillcolor="#D5F5E3"];
+  is -> is_m -> is_p;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="RPLND preferred as primary Tx for stage I GCT with somatic-type malignancy.\nStage I pure teratoma + normal markers → surveillance or RPLND.\nRisk factors: lymphovascular invasion, spermatic cord/scrotal invasion (± embryonal predominance).\nBEP = Bleomycin/Etoposide/Cisplatin"];
+  { rank=sink; note; }
+}

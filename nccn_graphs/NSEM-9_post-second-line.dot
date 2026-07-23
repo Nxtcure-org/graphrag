@@ -1,0 +1,46 @@
+// NSEM-9 — Nonseminoma: Post Second-Line Therapy Management
+digraph NSEM9 {
+  rankdir=LR; labelloc="t"; label="NSEM-9 · Nonseminoma — Post Second-Line Therapy Management";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  src [label="Prior second-line therapy", fillcolor="#D6EAF8"];
+
+  cr  [label="Complete response, negative markers,\nno mass or residual <1 cm on CT", shape=diamond, fillcolor="#F9E79F"];
+  pn  [label="Partial response, residual masses\nwith NORMAL AFP & beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  pab [label="Partial response, residual masses\nwith ABNORMAL AFP and/or beta-hCG", shape=diamond, fillcolor="#F9E79F"];
+  src -> cr; src -> pn; src -> pab;
+
+  cr_tx [label="Surveillance, or Nerve-sparing bilateral\nRPLND in selected cases (cat 2B)\n→ Surveillance", fillcolor="#D5F5E3"];
+  cr -> cr_tx;
+
+  pn_surg [label="Surgical resection of\nall residual masses", fillcolor="#D5F5E3"];
+  pn -> pn_surg;
+  pn_ter [label="Teratoma or necrosis → Surveillance", fillcolor="#D5F5E3"];
+  pn_res [label="Residual embryonal, yolk sac, chorio-\ncarcinoma, or seminoma element → Surveillance", fillcolor="#D5F5E3"];
+  pn_surg -> pn_ter; pn_surg -> pn_res;
+
+  pab_rising [label="Elevated and rising\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  pab_stable [label="Elevated but stable\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  pab_norm   [label="Mildly elevated and normalizing\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  pab -> pab_rising; pab -> pab_stable; pab -> pab_norm;
+
+  pab_rising_tx [label="Third-Line Therapy (TEST-G)", fillcolor="#F1948A"];
+  pab_stable_tx [label="Surveillance", fillcolor="#D5F5E3"];
+  pab_rising -> pab_rising_tx; pab_stable -> pab_stable_tx;
+
+  pab_norm_surg [label="Consider surgical resection\nof all residual masses", fillcolor="#D5F5E3"];
+  pab_norm -> pab_norm_surg;
+  pab_ter [label="Teratoma or necrosis → Surveillance", fillcolor="#D5F5E3"];
+  pab_res [label="Residual embryonal, yolk sac, chorio-\ncarcinoma, or seminoma element → Surveillance", fillcolor="#D5F5E3"];
+  pab_norm_surg -> pab_ter; pab_norm_surg -> pab_res;
+
+  fu10 [label="Follow-up Table 10 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  recur [label="For recurrence, see\nThird-Line Therapy (NSEM-10)", fillcolor="#F1948A"];
+  cr_tx -> fu10; pn_ter -> fu10; pn_res -> fu10; pab_stable_tx -> fu10; pab_ter -> fu10; pab_res -> fu10;
+  fu10 -> recur;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Teratoma with somatic-type malignancy → histology-directed therapy at high-volume GCT unit.\nFDG-PET/CT has no role in nonseminoma. Refer to high-volume center for abnormal-marker residual masses."];
+  { rank=sink; note; }
+}

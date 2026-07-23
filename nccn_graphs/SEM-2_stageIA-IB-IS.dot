@@ -1,0 +1,31 @@
+// SEM-2 — Pure Seminoma: Stage IA, IB, and IS — Primary Treatment & Follow-up
+digraph SEM2 {
+  rankdir=LR; labelloc="t"; label="SEM-2 · Pure Seminoma — Stage IA, IB, and IS";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  iaib [label="Stage IA, IB", fillcolor="#F9E79F"];
+
+  surv   [label="Surveillance for pT1–pT3 tumors\n(strongly preferred)", fillcolor="#D5F5E3"];
+  carbo  [label="Single-agent Carboplatin\n(AUC = 7 × 1 cycle or AUC = 7 × 2 cycles)", fillcolor="#D5F5E3"];
+  rt     [label="Radiation therapy (RT)\n(see TEST-C)", fillcolor="#D5F5E3"];
+
+  fu1 [label="Follow-up: Seminoma\nTable 1 (TEST-A 1/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu2a [label="Follow-up: Seminoma\nTable 2 (TEST-A 1/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  fu2b [label="Follow-up: Seminoma\nTable 2 (TEST-A 1/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  recur [label="For recurrence, treat according to\nextent of disease at relapse", fillcolor="#F5B7B1"];
+
+  iaib -> surv  -> fu1;
+  iaib -> carbo -> fu2a;
+  iaib -> rt    -> fu2b;
+  fu1 -> recur; fu2a -> recur; fu2b -> recur;
+
+  is [label="Stage IS", fillcolor="#F9E79F"];
+  is_mgmt [label="Repeat elevated serum tumor markers\nand assess with imaging:\l• Chest/abdomen/pelvis (C/A/P) CT (contrast)\l  to scan for evaluable disease\l• Repeat scrotal ultrasound to rule out a\l  contralateral testis mass (if none in last 3 mo)\l", fillcolor="#D5F5E3"];
+  is -> is_mgmt;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Recurrence: patients previously on surveillance may be treated with RT or\nchemotherapy per extent of disease; those who had carboplatin or RT should\nreceive first-line cisplatin-based chemotherapy (TEST-E). Do not treat on LDH alone."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,39 @@
+// TEST-D — Risk Classification for Advanced Disease (post-orchiectomy)
+// Source: IGCCCG (International Germ Cell Consensus Classification). Rendered as a reference table.
+digraph TESTD {
+  rankdir=TB; labelloc="t"; label="TEST-D · Risk Classification for Advanced Disease (post-orchiectomy)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=plaintext, fontname="Helvetica"];
+
+  table [label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+      <TR>
+        <TD BGCOLOR="#2E4053"><FONT COLOR="white"><B>Risk Status</B></FONT></TD>
+        <TD BGCOLOR="#2E4053"><FONT COLOR="white"><B>Nonseminoma</B></FONT></TD>
+        <TD BGCOLOR="#2E4053"><FONT COLOR="white"><B>Seminoma</B></FONT></TD>
+        <TD BGCOLOR="#2E4053"><FONT COLOR="white"><B>Chemotherapy Regimens</B></FONT></TD>
+      </TR>
+      <TR>
+        <TD BGCOLOR="#ABEBC6"><B>Good Risk</B></TD>
+        <TD BGCOLOR="#EAFAF1" ALIGN="LEFT">Testicular or retroperitoneal primary tumor<BR/>AND No nonpulmonary visceral metastases<BR/>AND post-orchiectomy markers — ALL of:<BR/>&#8226; AFP &lt; 1,000 ng/mL<BR/>&#8226; hCG &lt; 5,000 IU/L<BR/>&#8226; LDH &lt; 1.5 × ULN</TD>
+        <TD BGCOLOR="#EAFAF1" ALIGN="LEFT">Any primary site<BR/>AND No nonpulmonary visceral metastases<BR/>AND Normal AFP, any hCG, any LDH</TD>
+        <TD BGCOLOR="#EAFAF1" ALIGN="LEFT">BEP × 3 cycles<BR/>or EP × 4 cycles</TD>
+      </TR>
+      <TR>
+        <TD BGCOLOR="#F9E79F"><B>Intermediate Risk</B></TD>
+        <TD BGCOLOR="#FEF9E7" ALIGN="LEFT">Testicular or retroperitoneal primary tumor<BR/>AND No nonpulmonary visceral metastases<BR/>AND post-orchiectomy markers — ANY of:<BR/>&#8226; AFP 1,000–10,000 ng/mL<BR/>&#8226; hCG 5,000–50,000 IU/L<BR/>&#8226; LDH 1.5–10 × ULN</TD>
+        <TD BGCOLOR="#FEF9E7" ALIGN="LEFT">Any primary site<BR/>AND Nonpulmonary visceral metastases<BR/>AND Normal AFP, any hCG, any LDH</TD>
+        <TD BGCOLOR="#FEF9E7" ALIGN="LEFT">BEP × 4 cycles<BR/>or VIP × 4 cycles</TD>
+      </TR>
+      <TR>
+        <TD BGCOLOR="#F5B7B1"><B>Poor Risk</B></TD>
+        <TD BGCOLOR="#FDEDEC" ALIGN="LEFT">Mediastinal primary tumor<BR/>OR Nonpulmonary visceral metastases<BR/>OR post-orchiectomy markers — ANY of:<BR/>&#8226; AFP &gt; 10,000 ng/mL<BR/>&#8226; hCG &gt; 50,000 IU/L<BR/>&#8226; LDH &gt; 10 × ULN</TD>
+        <TD BGCOLOR="#FDEDEC" ALIGN="LEFT">No patients classified as poor prognosis</TD>
+        <TD BGCOLOR="#FDEDEC" ALIGN="LEFT">BEP × 4 cycles<BR/>or VIP × 4 cycles</TD>
+      </TR>
+    </TABLE>
+  >];
+
+  legend [shape=note, fillcolor="#FEF9E7", style=filled, fontsize=9, label="Markers are post-orchiectomy. Good-risk seminoma with LDH &gt;2.5× ULN has worse prognosis —\nconsider intensification. BEP=Bleomycin/Etoposide/Cisplatin · EP=Etoposide/Cisplatin ·\nVIP=Etoposide/Ifosfamide/Cisplatin. Source: IGCCCG (J Clin Oncol 1997;15:594-603)."];
+  table -> legend [style=invis];
+}

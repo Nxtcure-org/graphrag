@@ -1,0 +1,25 @@
+// SEM-4 — Pure Seminoma: Stage IIC and III — Primary Treatment
+digraph SEM4 {
+  rankdir=LR; labelloc="t"; label="SEM-4 · Pure Seminoma — Stage IIC / III";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  iic [label="Stage IIC, III", fillcolor="#F9E79F"];
+  risk [label="Risk classification\n(TEST-D)", shape=diamond, fillcolor="#F9E79F"];
+
+  good [label="Good risk", fillcolor="#FCF3CF"];
+  inter [label="Intermediate risk", fillcolor="#FCF3CF"];
+
+  good_tx [label="First-line chemotherapy:\nBEP × 3 cycles (category 1)\nor EP × 4 cycles (category 1)", fillcolor="#D5F5E3"];
+  inter_tx [label="First-line chemotherapy:\nBEP × 4 cycles (category 1, preferred)\nor VIP × 4 cycles", fillcolor="#D5F5E3"];
+
+  mgmt [label="Post First-Line Chemotherapy\nManagement and Follow-up → SEM-5", fillcolor="#EAECEE"];
+
+  iic -> risk;
+  risk -> good -> good_tx -> mgmt;
+  risk -> inter -> inter_tx -> mgmt;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Seminoma intermediate risk = nonpulmonary visceral metastases (no poor-risk seminoma).\nConsider intensification for good risk with LDH >2.5× ULN.\nBEP=Bleomycin/Etoposide/Cisplatin · EP=Etoposide/Cisplatin · VIP=Etoposide/Ifosfamide/Cisplatin"];
+  { rank=sink; note; }
+}

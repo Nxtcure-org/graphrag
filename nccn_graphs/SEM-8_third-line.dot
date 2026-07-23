@@ -1,0 +1,22 @@
+// SEM-8 — Pure Seminoma: Third-Line Therapy
+digraph SEM8 {
+  rankdir=LR; labelloc="t"; label="SEM-8 · Seminoma — Recurrence & Third-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  branch [label="Prior therapy", shape=diamond, fillcolor="#F9E79F"];
+
+  b1 [label="Prior first- and second-line\nconventional-dose chemotherapy", fillcolor="#F1948A"];
+  b2 [label="Prior high-dose chemotherapy", fillcolor="#F1948A"];
+  branch -> b1; branch -> b2;
+
+  t1 [label="THIRD-LINE THERAPY\l• Clinical trial\l• High-dose chemotherapy (preferred)\l• Conventional-dose third-line chemotherapy\l• Molecular testing (MSI/MMR, TMB; NGS + IHC)\l  for biomarker-driven therapy if progression\l• RT in select patients (TEST-C)\l• Consider surgical treatment if resectable\l  solitary site\l", fillcolor="#D5F5E3"];
+
+  t2 [label="THIRD-LINE THERAPY\l• Clinical trial (preferred)\l• Conventional-dose third-line chemotherapy\l• Molecular testing (MSI/MMR, TMB; NGS + IHC)\l  for biomarker-driven therapy if progression\l• RT in select patients (TEST-C)\l• Consider surgical treatment if resectable\l  solitary site\l", fillcolor="#D5F5E3"];
+
+  b1 -> t1; b2 -> t2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Third-line systemic regimens: TEST-G. Pan-cancer/tumor-agnostic treatments\nmay be considered for actionable mutations. Includes best supportive/palliative care."];
+  { rank=sink; note; }
+}

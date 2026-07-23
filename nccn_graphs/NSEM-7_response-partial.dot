@@ -1,0 +1,47 @@
+// NSEM-7 — Nonseminoma: Postchemotherapy Management of Partial Response to Primary Treatment
+digraph NSEM7 {
+  rankdir=LR; labelloc="t"; label="NSEM-7 · Nonseminoma — Response After Primary Treatment (residual masses)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.13,0.08"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  // Branch A: normal markers
+  a [label="Partial response, residual masses\nwith NORMAL AFP and beta-hCG", fillcolor="#F9E79F"];
+  a_surg [label="Surgical resection of\nall residual masses", fillcolor="#D5F5E3"];
+  a -> a_surg;
+  a_ter [label="Teratoma or necrosis", shape=diamond, fillcolor="#FCF3CF"];
+  a_res [label="Residual embryonal, yolk sac,\nchoriocarcinoma, or seminoma element", shape=diamond, fillcolor="#FCF3CF"];
+  a_surg -> a_ter; a_surg -> a_res;
+  a_ter_tx [label="Surveillance", fillcolor="#D5F5E3"];
+  a_res_tx [label="Chemotherapy × 2 cycles\n(EP or TIP or VIP or VeIP)\nor Surveillance for select patients", fillcolor="#D5F5E3"];
+  a_ter -> a_ter_tx; a_res -> a_res_tx;
+
+  // Branch B: abnormal markers
+  b [label="Partial response, residual masses\nwith ABNORMAL AFP and/or beta-hCG", fillcolor="#F9E79F"];
+  b_rising [label="Elevated and rising\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  b_stable [label="Elevated but stable\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  b_norm   [label="Mildly elevated and normalizing\nAFP and/or beta-hCG", shape=diamond, fillcolor="#FCF3CF"];
+  b -> b_rising; b -> b_stable; b -> b_norm;
+
+  b_rising_tx [label="Second-Line Therapy (TEST-F)\nor Surgery in highly select cases", fillcolor="#F5B7B1"];
+  b_stable_tx [label="Close surveillance\nor Surgery in highly select cases", fillcolor="#D5F5E3"];
+  b_rising -> b_rising_tx; b_stable -> b_stable_tx;
+
+  b_norm_surg [label="Consider surgical resection\nof all residual masses", fillcolor="#D5F5E3"];
+  b_norm -> b_norm_surg;
+  b_ter [label="Teratoma or necrosis", shape=diamond, fillcolor="#FCF3CF"];
+  b_res [label="Residual embryonal, yolk sac,\nchoriocarcinoma, or seminoma element", shape=diamond, fillcolor="#FCF3CF"];
+  b_norm_surg -> b_ter; b_norm_surg -> b_res;
+  b_ter_tx [label="Surveillance", fillcolor="#D5F5E3"];
+  b_res_tx [label="Chemotherapy × 2 cycles\n(EP or TIP or VIP or VeIP)\nor Surveillance for select patients", fillcolor="#D5F5E3"];
+  b_ter -> b_ter_tx; b_res -> b_res_tx;
+
+  // Follow-up + recurrence
+  fu10 [label="Follow-up Table 10 (TEST-B 2/3)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  recur [label="For recurrence, see\nSecond-Line Therapy (NSEM-8)", fillcolor="#F5B7B1"];
+  a_ter_tx -> fu10; a_res_tx -> fu10; b_stable_tx -> fu10; b_ter_tx -> fu10; b_res_tx -> fu10;
+  fu10 -> recur;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Refer to high-volume center for residual masses with abnormal markers.\nTeratoma with somatic-type malignancy → histology-directed therapy at high-volume GCT unit.\nSurgery in highly select cases: resectable retroperitoneal-only disease, factors precluding chemo, cystic components."];
+  { rank=sink; note; }
+}

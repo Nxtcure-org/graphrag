@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCCN Testicular Cancer — GraphRAG</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --panel:#ffffff; --ink:#1f2d3d; --muted:#6b7a8d;
+    --line:#e1e6ea; --accent:#0b7285; --accent-soft:#e3f2f4;
+    --clinical:#c0392b; --nav:#8e9bab; --warn-bg:#fff4e5; --warn-ink:#8a5300;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  .banner{background:var(--warn-bg);color:var(--warn-ink);padding:6px 14px;font-size:12.5px;border-bottom:1px solid #f0d9b5}
+  .app{display:grid;grid-template-columns:230px minmax(360px,1fr) minmax(380px,1.1fr);height:calc(100vh - 31px)}
+  .col{overflow:auto;padding:14px 16px}
+  .nav{background:#fbfcfd;border-right:1px solid var(--line)}
+  .center{border-right:1px solid var(--line)}
+  .source{background:#fbfcfd}
+  h1{font-size:15px;margin:0 0 10px;letter-spacing:.2px}
+  .group{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:14px 0 4px}
+  .nav a{display:block;padding:4px 8px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:13px;cursor:pointer}
+  .nav a:hover{background:var(--accent-soft)}
+  .nav a.active{background:var(--accent);color:#fff}
+  .ask{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  textarea{width:100%;min-height:60px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font:inherit;resize:vertical}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .toggle button{border:0;background:#fff;padding:6px 14px;cursor:pointer;font:inherit;color:var(--muted)}
+  .toggle button.on{background:var(--accent);color:#fff}
+  .go{margin-left:auto;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 18px;font:inherit;font-weight:600;cursor:pointer}
+  .go:disabled{opacity:.5;cursor:progress}
+  .hint{font-size:12px;color:var(--muted)}
+  .answer h2{font-size:16px;margin:16px 0 4px}
+  .sec{margin:12px 0;padding-left:10px;border-left:3px solid var(--line)}
+  .sec h3{font-size:13.5px;margin:0 0 4px;color:var(--accent)}
+  .sec .body{white-space:pre-wrap}
+  .sec .body strong{font-weight:650}
+  .sec pre{background:#f6f8fa;border:1px solid var(--line);border-radius:6px;padding:8px;overflow:auto;font-size:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{font-size:11.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
+  .chip.clinical{border-color:var(--clinical);color:var(--clinical)}
+  .chip.clinical:hover{background:#fdece9}
+  .chip.nav{color:var(--nav)}
+  .chip.report{border-color:var(--accent);color:var(--accent)}
+  .meta{font-size:12px;color:var(--muted);margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+  .src-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .badge{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:600}
+  .legend{font-size:11.5px;color:var(--muted)}
+  .legend b{color:var(--clinical)}
+  #svg{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;overflow:auto}
+  #svg svg{max-width:100%;height:auto}
+  .empty{color:var(--muted);font-style:italic;padding:20px 4px}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="banner">⚠ Reference aid generated from NCCN Testicular Cancer v2.2026 via a lossy knowledge graph — <b>not a substitute for the guideline or clinical judgment.</b></div>
+<div class="app">
+
+  <!-- LEFT: navigation -->
+  <nav class="col nav" id="nav">
+    <h1>Protocols</h1>
+    <div id="pagelist"></div>
+  </nav>
+
+  <!-- CENTER: query + answer -->
+  <main class="col center">
+    <div class="ask">
+      <textarea id="q" placeholder="e.g. After a brain scan, what should be done? · What is first-line chemo for advanced disease?"></textarea>
+      <div class="row">
+        <span class="toggle">
+          <button id="m-local" class="on" onclick="setMethod('local')">Specific</button>
+          <button id="m-global" onclick="setMethod('global')">Thematic</button>
+        </span>
+        <span class="hint" id="method-hint">Specific: entity-level (best for “what do I do for X”).</span>
+        <button class="go" id="go" onclick="ask()">Ask</button>
+      </div>
+    </div>
+    <div class="answer" id="answer">
+      <div class="empty">Ask a question, or pick a protocol on the left to view its flowchart.</div>
+    </div>
+  </main>
+
+  <!-- RIGHT: source flowchart -->
+  <section class="col source">
+    <div class="src-head">
+      <div><strong>Source flowchart</strong> <span class="badge" id="page-badge">—</span></div>
+      <div class="legend"><b>▬ red</b> = cited path</div>
+    </div>
+    <div id="svg"><div class="empty">The cited pathway will be highlighted here.</div></div>
+  </section>
+
+</div>
+
+<script>
+const PAGES = {
+  "Workup": [["TEST-1","Workup & diagnosis"]],
+  "Seminoma": [["SEM-1","Workup & clinical stage"],["SEM-2","Stage IA / IB / IS"],["SEM-3","Stage IIA / IIB"],
+    ["SEM-4","Stage IIC / III"],["SEM-5","Post first-line chemo"],["SEM-6","Recurrence / 2nd-line"],
+    ["SEM-7","Post 2nd-line"],["SEM-8","Third-line"]],
+  "Nonseminoma": [["NSEM-1","Workup & clinical stage"],["NSEM-2","Stage I ± risk, IS"],["NSEM-3","Stage IIA / IIB"],
+    ["NSEM-4","Post first-line chemo"],["NSEM-5","Postsurgical (pN0-3)"],["NSEM-6","Advanced + brain mets"],
+    ["NSEM-7","Response after primary Tx"],["NSEM-8","Recurrence / 2nd-line"],["NSEM-9","Post 2nd-line"],
+    ["NSEM-10","Third-line"]],
+};
+let method = "local";
+
+function setMethod(m){
+  method = m;
+  document.getElementById("m-local").classList.toggle("on", m==="local");
+  document.getElementById("m-global").classList.toggle("on", m==="global");
+  document.getElementById("method-hint").textContent = m==="local"
+    ? "Specific: entity-level (best for “what do I do for X”)."
+    : "Thematic: map-reduce over community reports (broad questions; may cite reports, not one page).";
+}
+
+// build left nav
+const pl = document.getElementById("pagelist");
+for (const [grp, items] of Object.entries(PAGES)){
+  const g = document.createElement("div"); g.className="group"; g.textContent=grp; pl.appendChild(g);
+  for (const [code, label] of items){
+    const a = document.createElement("a"); a.textContent = `${code} · ${label}`;
+    a.dataset.code = code;
+    a.onclick = () => { setActive(a); loadFlowchart(code, [], []); };
+    pl.appendChild(a);
+  }
+}
+function setActive(a){ document.querySelectorAll(".nav a").forEach(x=>x.classList.remove("active")); if(a) a.classList.add("active"); }
+
+function mdLite(text){
+  // strip inline [Data: ...] markers (shown as chips instead), light markdown
+  text = text.replace(/\[Data:[^\]]*\]/g, "").replace(/[ \t]+\n/g,"\n").trim();
+  const lines = text.split("\n"); let out=""; let tbl=[];
+  const flushTbl=()=>{ if(tbl.length){ out+="<pre>"+tbl.join("\n").replace(/</g,"&lt;")+"</pre>"; tbl=[]; } };
+  for (let ln of lines){
+    if (ln.includes(" | ") || /^\s*\|/.test(ln)){ tbl.push(ln); continue; } else flushTbl();
+    ln = ln.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+    if (/^\s*[-•]\s+/.test(ln)) ln = "• " + ln.replace(/^\s*[-•]\s+/,"");
+    out += ln + "\n";
+  }
+  flushTbl();
+  return out;
+}
+
+function renderAnswer(d){
+  const el = document.getElementById("answer");
+  if (d.error){ el.innerHTML = `<div class="empty">Error: ${d.error}</div>`; return; }
+  let html = "";
+  if (d.title) html += `<h2>${d.title}</h2>`;
+  for (const s of d.sections){
+    if (!s.content && !s.heading) continue;
+    html += `<div class="sec">`;
+    if (s.heading) html += `<h3>${s.heading}</h3>`;
+    html += `<div class="body">${mdLite(s.content)}</div>`;
+    html += `</div>`;
+  }
+  // provenance chips from resolved evidence
+  const ev = d.evidence || {edges:[],nodes:[]};
+  const clinical = ev.edges.filter(e=>e.kind==="clinical");
+  const nav = ev.edges.filter(e=>e.kind==="structural");
+  const reports = (d.citations||[]).find(c=>/report/i.test(c.dataset));
+  html += `<div class="meta"><strong>Evidence</strong> — source page: <b>${ev.primary_page||"—"}</b>`;
+  html += `<div class="chips">`;
+  for (const e of clinical) html += `<span class="chip clinical" title="Relationship ${e.id} on ${e.page}" onclick='focusEdge(${JSON.stringify(e)})'>${e.source} → ${e.target}</span>`;
+  for (const n of (ev.nodes||[])) html += `<span class="chip clinical" title="Entity ${n.id}" onclick='focusNode(${JSON.stringify(n)})'>${n.title}</span>`;
+  if (reports) html += `<span class="chip report" title="community reports">${reports.ids.length} report(s)</span>`;
+  html += `</div>`;
+  if (nav.length) html += `<div class="chips">`+nav.map(e=>`<span class="chip nav" title="structural edge ${e.id}">${e.source} → ${e.target}</span>`).join("")+`</div>`;
+  const t = d.context && d.context.tables ? Object.entries(d.context.tables).map(([k,v])=>`${k}:${v}`).join(" · ") : "";
+  if (t) html += `<div style="margin-top:6px">context — ${t}</div>`;
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+async function loadFlowchart(page, nodes, edges){
+  const badge = document.getElementById("page-badge");
+  const svg = document.getElementById("svg");
+  if (!page){ badge.textContent="—"; svg.innerHTML=`<div class="empty">No single source page for this answer (thematic answers cite community reports).</div>`; return; }
+  badge.textContent = page;
+  svg.innerHTML = `<div class="empty"><span class="spinner" style="border-color:#0b7285;border-top-color:transparent"></span>rendering ${page}…</div>`;
+  const r = await fetch("/flowchart", {method:"POST", headers:{"content-type":"application/json"},
+    body: JSON.stringify({page, nodes, edges})});
+  if (!r.ok){ svg.innerHTML = `<div class="empty">Could not render ${page}.</div>`; return; }
+  svg.innerHTML = await r.text();
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("active", a.dataset.code===page));
+}
+
+function highlightFromEvidence(ev){
+  const clinical = ev.edges.filter(e=>e.kind==="clinical");
+  const nodes = new Set(); const edges=[];
+  clinical.forEach(e=>{nodes.add(e.source);nodes.add(e.target);edges.push([e.source,e.target]);});
+  (ev.nodes||[]).forEach(n=>nodes.add(n.title));
+  loadFlowchart(ev.primary_page, [...nodes], edges);
+}
+function focusEdge(e){ if(e.page) loadFlowchart(e.page, [e.source,e.target], [[e.source,e.target]]); }
+function focusNode(n){ const p=(n.pages||[]).find(x=>true); if(p) loadFlowchart(p,[n.title],[]); }
+
+async function ask(){
+  const q = document.getElementById("q").value.trim();
+  if (!q) return;
+  const go = document.getElementById("go");
+  go.disabled = true; go.innerHTML = `<span class="spinner"></span>Asking…`;
+  document.getElementById("answer").innerHTML = `<div class="empty"><span class="spinner" style="border-color:#0b7285;border-top-color:transparent"></span>Querying GraphRAG (${method})… this can take ~30s.</div>`;
+  try{
+    const r = await fetch("/query", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({query:q, method})});
+    const d = await r.json();
+    renderAnswer(d);
+    if (d.evidence && d.evidence.primary_page) highlightFromEvidence(d.evidence);
+    else loadFlowchart(null);
+  }catch(err){
+    document.getElementById("answer").innerHTML = `<div class="empty">Request failed: ${err}</div>`;
+  }finally{
+    go.disabled=false; go.textContent="Ask";
+  }
+}
+document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter"&&(e.metaKey||e.ctrlKey)) ask(); });
+</script>
+</body>
+</html>

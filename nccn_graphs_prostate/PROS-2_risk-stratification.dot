@@ -1,0 +1,38 @@
+// PROS-2 — Initial Risk Stratification and Staging Workup for Clinically Localized Disease
+digraph PROS2 {
+  rankdir=LR; labelloc="t"; label="PROS-2 · Initial Risk Stratification & Staging Workup (Clinically Localized)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Clinically localized\nprostate cancer", fillcolor="#D6EAF8"];
+  rg [label="RISK GROUP\n(Clinical/Pathologic Features, ST-1)", shape=diamond, fillcolor="#F9E79F"];
+
+  low  [label="Low\ncT1–cT2a; Grade Group 1;\nPSA <10 ng/mL", fillcolor="#F9E79F"];
+  fint [label="Favorable Intermediate\nNo high/very-high features; ≥1 IRF;\nGrade Group 1–2; <50% biopsy cores +", fillcolor="#F9E79F"];
+  uint [label="Unfavorable Intermediate\n2–3 IRFs; Grade Group 3;\n≥50% biopsy cores +", fillcolor="#F9E79F"];
+  high [label="High\ncT3–cT4; Grade Group 4/5;\nPSA >20 ng/mL", fillcolor="#F9E79F"];
+  vhigh[label="Very High\n≥2 of: cT3–cT4; Grade Group 4/5;\nPSA >40 ng/mL", fillcolor="#F9E79F"];
+
+  eval_low [label="Additional Evaluation\nConfirmatory testing can assess\nappropriateness of active surveillance\n(PROS-F 2 of 5)", fillcolor="#EAECEE"];
+  eval_fint [label="Additional Evaluation\nConfirmatory testing can assess\nappropriateness of active surveillance\n(PROS-F 2 of 5)", fillcolor="#EAECEE"];
+  eval_uint [label="Additional Evaluation\nSoft tissue imaging & consider bone imaging\nIf regional mets → PROS-7\nIf distant mets → PROS-14 / PROS-15", fillcolor="#EAECEE"];
+  eval_high [label="Additional Evaluation\nBone and soft tissue imaging\nIf regional mets → PROS-7\nIf distant mets → PROS-14 / PROS-15", fillcolor="#EAECEE"];
+
+  t3 [label="Initial Therapy\nLow-Risk → PROS-3", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t4 [label="Initial Therapy\nFavorable Intermediate → PROS-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t5 [label="Initial Therapy\nUnfavorable Intermediate → PROS-5", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t6a [label="Initial Therapy\nHigh → PROS-6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t6b [label="Initial Therapy\nVery High → PROS-6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> rg;
+  rg -> low;  rg -> fint; rg -> uint; rg -> high; rg -> vhigh;
+  low  -> eval_low -> t3;
+  fint -> eval_fint -> t4;
+  uint -> eval_uint -> t5;
+  high -> eval_high -> t6a;
+  vhigh -> eval_high -> t6b;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="IRF = intermediate risk factor (cT2b–cT2c, Grade Group 2 or 3, PSA 10–20).\nFavorable intermediate: confirmatory testing can assess appropriateness of active surveillance (PROS-F 2 of 5).\nTumor-based molecular assays and germline testing assist risk stratification (PROS-H)."];
+  { rank=sink; note; }
+}

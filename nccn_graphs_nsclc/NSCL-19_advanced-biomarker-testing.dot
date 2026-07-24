@@ -1,0 +1,26 @@
+// NSCL-19 — Advanced or Metastatic Disease: Histologic Subtype and Biomarker Testing
+digraph NSCL19 {
+  rankdir=LR; labelloc="t"; label="NSCL-19 · Advanced/Metastatic — Histologic Subtype & Biomarker Testing";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  adv [label="Advanced or\nmetastatic disease", fillcolor="#F5B7B1"];
+  establish [label="• Establish histologic subtype with adequate tissue\l  for biomarker testing (consider rebiopsy or plasma)\l• Smoking cessation counseling\l• Integrate palliative care\l", fillcolor="#D6EAF8"];
+  histo [label="HISTOLOGIC SUBTYPE", shape=diamond, fillcolor="#F9E79F"];
+  adv -> establish -> histo;
+
+  adeno [label="Adenocarcinoma, large cell,\nNSCLC NOS", fillcolor="#FCF3CF"];
+  squam [label="Squamous cell carcinoma", fillcolor="#FCF3CF"];
+  histo -> adeno; histo -> squam;
+
+  adeno_test [label="BIOMARKER TESTING (part of MGPT)\l• EGFR mutation (cat 1), ALK (cat 1), KRAS,\l  ROS1, BRAF, NTRK1/2/3, MET exon 14 skipping,\l  RET (cat 1), ERBB2 (HER2), NRG1, HER2 (IHC),\l  HGF receptor (c-Met) IHC\l• PD-L1 testing (category 1)\l", fillcolor="#D6EAF8"];
+  squam_test [label="CONSIDER BIOMARKER TESTING (part of MGPT)\l• EGFR, ALK, KRAS, ROS1, BRAF, NTRK1/2/3,\l  MET exon 14 skipping, RET, ERBB2 (HER2),\l  NRG1, HER2 (IHC)\l• PD-L1 testing (category 1)\l", fillcolor="#D6EAF8"];
+  adeno -> adeno_test; squam -> squam_test;
+
+  results [label="Testing Results\n→ NSCL-20", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adeno_test -> results; squam_test -> results;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Complete biomarker testing via biopsy and/or plasma. Concurrent tissue+plasma\nacceptable. MGPT (multigene panel testing) strongly advised. For urgent therapy\nstart with pending testing, consider holding immunotherapy for one cycle unless\nconfirmed no driver mutations present. See NSCL-H, NSCL-I."];
+  { rank=sink; note; }
+}

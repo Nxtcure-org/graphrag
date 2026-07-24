@@ -1,0 +1,41 @@
+// DIAG-3 — Incidental Subsolid Nodule(s) on Chest CT: Follow-up
+digraph DIAG3 {
+  rankdir=LR; labelloc="t"; label="DIAG-3 · Subsolid Nodule(s) on Chest CT — Follow-up";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  start [label="Incidental finding:\nsubsolid nodule(s) on chest CT", fillcolor="#D6EAF8"];
+  type [label="Nodule type", shape=diamond, fillcolor="#F9E79F"];
+  pgg [label="Solitary pure\nground-glass nodules", fillcolor="#FCF3CF"];
+  ps [label="Solitary part-solid\nnodules", fillcolor="#FCF3CF"];
+  mult [label="Multiple\nsubsolid nodules", fillcolor="#FCF3CF"];
+  start -> type; type -> pgg; type -> ps; type -> mult;
+
+  // pure ground glass
+  pgg_lt6 [label="<6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  pgg_ge6 [label="≥6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  pgg -> pgg_lt6; pgg -> pgg_ge6;
+  pgg_lt6_o [label="No routine follow-up", fillcolor="#EAECEE"];
+  pgg_ge6_o [label="CT at 6–12 mo to confirm no growth\nor solid component, then CT every 2 y until 5 y", fillcolor="#D6EAF8"];
+  pgg_lt6 -> pgg_lt6_o; pgg_ge6 -> pgg_ge6_o;
+
+  // part-solid
+  ps_lt6 [label="<6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  ps_ge6 [label="≥6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  ps -> ps_lt6; ps -> ps_ge6;
+  ps_lt6_o [label="No routine follow-up", fillcolor="#EAECEE"];
+  ps_ge6_o [label="CT at 3–6 mo to confirm no growth/change;\nif solid component ≥6 mm, consider FDG-PET/CT or biopsy", fillcolor="#D6EAF8"];
+  ps_lt6 -> ps_lt6_o; ps_ge6 -> ps_ge6_o;
+
+  // multiple
+  m_lt6 [label="<6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  m_ge6 [label="≥6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  mult -> m_lt6; mult -> m_ge6;
+  m_lt6_o [label="CT at 3–6 mo; if stable,\nconsider CT at 2 and 4 y", fillcolor="#D6EAF8"];
+  m_ge6_o [label="CT at 3–6 mo; subsequent management\nbased on most suspicious nodule(s)", fillcolor="#D6EAF8"];
+  m_lt6 -> m_lt6_o; m_ge6 -> m_ge6_o;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Non-solid (ground-glass) nodules may require longer follow-up to exclude\nindolent adenocarcinoma. Consider follow-up imaging at 12 mo for individuals\nat high risk of lung cancer."];
+  { rank=sink; note; }
+}

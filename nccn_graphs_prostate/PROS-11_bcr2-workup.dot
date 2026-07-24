@@ -1,0 +1,34 @@
+// PROS-11 — Workup for Second Biochemical Recurrence (BCR2)
+digraph PROS11 {
+  rankdir=LR; labelloc="t"; label="PROS-11 · Workup for Second Biochemical Recurrence (BCR2)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Second Biochemical\nRecurrence (BCR2)", fillcolor="#F5B7B1"];
+  imaging [label="Perform imaging for staging", fillcolor="#EAECEE"];
+  stage [label="Stage", shape=diamond, fillcolor="#F9E79F"];
+  entry -> imaging -> stage;
+
+  n0m0 [label="N0M0 CSPC", fillcolor="#FCF3CF"];
+  m0crpc [label="M0 CRPC (N0 or N1)", fillcolor="#FCF3CF"];
+  n1m0 [label="N1M0 CSPC", fillcolor="#FCF3CF"];
+  m1 [label="M1", shape=diamond, fillcolor="#FCF3CF"];
+  stage -> n0m0; stage -> m0crpc; stage -> n1m0; stage -> m1;
+
+  pros12 [label="Treatment and Monitoring for Second\nBiochemical Recurrence (N0M0) → PROS-12", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros16 [label="Workup and Treatment of\nM0 CRPC → PROS-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n0m0 -> pros12; m0crpc -> pros16;
+
+  oligo [label="Oligometastatic CSPC", fillcolor="#FCF3CF"];
+  poly [label="Polymetastatic CSPC", fillcolor="#FCF3CF"];
+  m1crpc [label="M1 CRPC", fillcolor="#FCF3CF"];
+  n1m0 -> oligo;
+  m1 -> oligo; m1 -> poly; m1 -> m1crpc;
+
+  pros13 [label="Metachronous Oligometastatic\nCSPC → PROS-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros14 [label="Low-Volume M1 or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros17 [label="M1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  oligo -> pros13; poly -> pros14; poly -> pros15; m1crpc -> pros17;
+}

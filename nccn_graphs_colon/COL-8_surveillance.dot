@@ -1,0 +1,31 @@
+// COL-8 — Surveillance
+digraph COL8 {
+  rankdir=LR; labelloc="t"; label="COL-8 · Surveillance";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="PATHOLOGIC STAGE", shape=diamond, fillcolor="#F9E79F"];
+
+  s1 [label="Stage I", fillcolor="#FCF3CF"];
+  s23 [label="Stage II, III", fillcolor="#FCF3CF"];
+  s4 [label="Stage IV", fillcolor="#FCF3CF"];
+  stage -> s1; stage -> s23; stage -> s4;
+
+  sv1 [label="SURVEILLANCE\l• Colonoscopy at 1 y after surgery\l  - If advanced adenoma, repeat in 1 y\l  - If no advanced adenoma, repeat in 3 y,\l    then every 5 y\l", fillcolor="#EAECEE"];
+  s1 -> sv1;
+
+  sv23 [label="SURVEILLANCE\l• H&P every 3-6 mo x2 y, then every 6 mo (total 5 y)\l• CEA every 3-6 mo x2 y, then every 6 mo (total 5 y)\l• C/A/P CT every 6-12 mo (total 5 y; cat 2B if <12 mo)\l• Colonoscopy at 1 y (or 3-6 mo if no complete\l  preop colonoscopy); repeat per findings\l• FDG-PET/CT is not indicated\l", fillcolor="#EAECEE"];
+  s23 -> sv23;
+
+  sv4 [label="SURVEILLANCE\l• H&P every 3-6 mo x2 y, then every 6 mo (total 5 y)\l• CEA every 3-6 mo x2 y, then every 6 mo (total 5 y)\l• C/A/P CT every 3-6 mo x2 y, then every 6-12 mo\l  (total 5 y; cat 2B if <6 mo)\l• Colonoscopy at 1 y; repeat per findings\l• FDG-PET/CT is not indicated\l", fillcolor="#EAECEE"];
+  s4 -> sv4;
+
+  recur [label="Serial CEA elevation or\ndocumented recurrence", fillcolor="#F5B7B1"];
+  workup [label="Workup and treatment → COL-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  sv1 -> recur; sv23 -> recur; sv4 -> recur;
+  recur -> workup;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="ctDNA is not recommended for surveillance. Advanced adenoma = villous polyp,\npolyp >1 cm, or high-grade dysplasia. Stage IV managed nonoperatively with\ncomplete clinical response: begin colonoscopy surveillance from documentation.\nSee Principles of Survivorship (COL-H)."];
+  { rank=sink; note; }
+}

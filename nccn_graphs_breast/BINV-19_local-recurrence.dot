@@ -1,0 +1,31 @@
+// BINV-19 — Treatment of Local Recurrence: In-Breast or Chest Wall Recurrence
+digraph BINV19 {
+  rankdir=LR; labelloc="t"; label="BINV-19 · Treatment of Local Recurrence — In-Breast or Chest Wall (No overt axillary recurrence)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  bcs [label="Initial surgery: BCS", fillcolor="#F5B7B1"];
+  mast [label="Initial surgery: Mastectomy", fillcolor="#F5B7B1"];
+
+  bcs_nort [label="Prior RT: No", shape=diamond, fillcolor="#FCF3CF"];
+  bcs_rt [label="Prior RT: Yes", shape=diamond, fillcolor="#FCF3CF"];
+  mast_nort [label="Prior RT: No", shape=diamond, fillcolor="#FCF3CF"];
+  mast_rt [label="Prior RT: Yes", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_bcs_nort [label="Consider systemic therapy to best response,\nthen repeat BCS or mastectomy + consider surgical\naxillary staging + RT after BCS (BINV-3)", fillcolor="#F1948A"];
+  tx_bcs_rt [label="Consider systemic therapy to best response, then\ntotal mastectomy + consider surgical axillary\nstaging + repeat RT if feasible/indicated", fillcolor="#F1948A"];
+  tx_mast_nort [label="Consider systemic therapy to best response, then\nsurgical resection if feasible + consider surgical\naxillary staging + PMRT (BINV-3)", fillcolor="#F1948A"];
+  tx_mast_rt [label="Consider systemic therapy to best response, then\nsurgical resection if feasible + consider surgical\naxillary staging + repeat RT if feasible/indicated", fillcolor="#F1948A"];
+
+  adj [label="Consider appropriate adjuvant systemic therapy\nas clinically indicated (BINV-K, M, P, Q) and\nSupportive Care. See BINV-28 (Survivorship).", fillcolor="#EAECEE"];
+
+  bcs -> bcs_nort -> tx_bcs_nort;
+  bcs -> bcs_rt -> tx_bcs_rt;
+  mast -> mast_nort -> tx_mast_nort;
+  mast -> mast_rt -> tx_mast_rt;
+  tx_bcs_nort -> adj; tx_bcs_rt -> adj; tx_mast_nort -> adj; tx_mast_rt -> adj;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="For regional ± local recurrence, see BINV-20."];
+  { rank=sink; note; }
+}

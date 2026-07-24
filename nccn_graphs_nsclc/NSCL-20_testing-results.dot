@@ -1,0 +1,31 @@
+// NSCL-20 — Testing Results: Biomarker-Directed Routing
+digraph NSCL20 {
+  rankdir=LR; labelloc="t"; label="NSCL-20 · Testing Results — Biomarker-Directed Routing";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  results [label="TESTING RESULTS", shape=diamond, fillcolor="#F9E79F"];
+
+  egfr1 [label="EGFR exon 19 deletion or L858R positive\n→ NSCL-21", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  egfr2 [label="EGFR S768I, L861Q, and/or G719X positive\n→ NSCL-24", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  egfr3 [label="EGFR exon 20 insertion positive\n→ NSCL-25", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  kras [label="KRAS G12C positive\n→ NSCL-26", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  alk [label="ALK gene fusion positive\n→ NSCL-27", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ros1 [label="ROS1 gene fusion positive\n→ NSCL-30", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  braf [label="BRAF V600E positive\n→ NSCL-32", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ntrk [label="NTRK1/2/3 gene fusion positive\n→ NSCL-33", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  met [label="MET exon 14 skipping positive\n→ NSCL-34", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ret [label="RET gene fusion positive\n→ NSCL-35", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  erbb2 [label="ERBB2 (HER2) mutation positive\n→ NSCL-36", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  nrg1 [label="NRG1 gene fusion positive\n→ NSCL-37", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pdl1pos [label="PD-L1 ≥1% and negative for actionable biomarkers\n→ NSCL-38", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pdl1neg [label="PD-L1 <1% and negative for actionable biomarkers\n→ NSCL-39", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  results -> egfr1; results -> egfr2; results -> egfr3; results -> kras; results -> alk;
+  results -> ros1; results -> braf; results -> ntrk; results -> met; results -> ret;
+  results -> erbb2; results -> nrg1; results -> pdl1pos; results -> pdl1neg;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Complete biomarker testing includes EGFR, KRAS, ALK, ROS1, BRAF, NTRK1/2/3,\nMET, RET, ERBB2 (HER2), and NRG1 via biopsy and/or plasma testing.\nTreatment is guided by available results. See Principles of Biomarker Analysis (NSCL-H)."];
+  { rank=sink; note; }
+}

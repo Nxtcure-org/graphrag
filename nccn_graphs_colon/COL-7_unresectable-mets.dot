@@ -1,0 +1,32 @@
+// COL-7 — pMMR/MSS: Unresectable Synchronous Liver and/or Lung Metastases Only
+digraph COL7 {
+  rankdir=LR; labelloc="t"; label="COL-7 · pMMR/MSS — Unresectable Synchronous Liver/Lung Metastases (Treatment & Adjuvant)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Unresectable synchronous liver\nand/or lung metastases only\npMMR/MSS", fillcolor="#F5B7B1"];
+
+  sys [label="SYSTEMIC THERAPY\l• FOLFIRI or FOLFOX or CAPEOX or\l  FOLFIRINOX ± bevacizumab\l• or FOLFIRI or FOLFOX ± cetuximab or\l  panitumumab (KRAS/NRAS/BRAF WT and\l  left-sided tumors only)\l• Consider colon resection only if imminent risk\l  of obstruction, bleeding, perforation, symptoms\l", fillcolor="#F1948A"];
+
+  reeval [label="Re-evaluate for conversion to\nresectable every 2 mo (if conversion\nis a reasonable goal)", shape=diamond, fillcolor="#F9E79F"];
+
+  converted [label="Converted to resectable", fillcolor="#FCF3CF"];
+  remains [label="Remains unresectable", fillcolor="#FCF3CF"];
+
+  present -> sys -> reeval;
+  reeval -> converted; reeval -> remains;
+
+  conv_resect [label="Synchronized or staged resection\n(preferred) and/or local therapy of\ncolon and metastatic cancer", fillcolor="#D5F5E3"];
+  converted -> conv_resect;
+
+  conv_adj [label="Systemic therapy ± biologic therapy\n(COL-D) (cat 2B for biologic)\nor Consider observation or\nshortened course of chemotherapy", fillcolor="#EAECEE"];
+  surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  conv_resect -> conv_adj -> surv;
+
+  rem_tx [label="Systemic therapy (COL-D)\nand consider local therapy\nfor select patients", fillcolor="#F1948A"];
+  remains -> rem_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Biologic therapy only appropriate for continuation of favorable response\nfrom conversion therapy. Cetuximab/panitumumab only for left-sided tumors\n(splenic flexure to rectum). BRAF non-V600E may be considered for anti-EGFR.\nBevacizumab: 6-wk interval before elective surgery; re-init 6-8 wks post-op."];
+  { rank=sink; note; }
+}

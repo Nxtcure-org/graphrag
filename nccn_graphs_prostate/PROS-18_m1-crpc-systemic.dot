@@ -1,0 +1,24 @@
+// PROS-18 — Systemic Therapy for M1 CRPC: Adenocarcinoma
+digraph PROS18 {
+  rankdir=LR; labelloc="t"; label="PROS-18 · Systemic Therapy for M1 CRPC — Adenocarcinoma";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="M1 CRPC: Adenocarcinoma\n(from PROS-17)", fillcolor="#F5B7B1"];
+  line [label="Line of therapy", shape=diamond, fillcolor="#F9E79F"];
+  entry -> line;
+
+  preARPI [label="PRE-ARPI\l• Preferred: Abiraterone / Enzalutamide (cat 1)\l• Other Recommended: Docetaxel (cat 1)\l• Biomarker-directed: BRCA — Niraparib/abiraterone,\l  Olaparib/abiraterone, Talazoparib/enzalutamide (cat 1);\l  HRRm (non-BRCA) — Talazoparib/enzalutamide\l• Bone metastases: Radium-223/enzalutamide\l", fillcolor="#F1948A"];
+
+  postpre [label="POST-ARPI / PRE-DOCETAXEL\l• Preferred: Docetaxel (cat 1)\l• BRCA: Olaparib / Rucaparib (cat 1, preferred);\l  Niraparib/abiraterone (2B); Talazoparib/enzalutamide (2B)\l• HRRm (non-BRCA): Olaparib; Talazoparib/enzalutamide (2B)\l• PSMA-positive: Lu-177-PSMA-617\l• Aggressive variant: Cabazitaxel/carboplatin\l", fillcolor="#F1948A"];
+
+  postpost [label="POST-ARPI / POST-DOCETAXEL\l• Preferred: Cabazitaxel (cat 1); Docetaxel rechallenge\l• BRCA: Olaparib (cat 1); Rucaparib\l• HRRm (non-BRCA): Olaparib\l• PSMA-positive: Lu-177-PSMA-617 (cat 1)\l• Aggressive variant: Cabazitaxel/carboplatin\l• Palliation: Mitoxantrone\l", fillcolor="#F1948A"];
+
+  line -> preARPI [label="Pre-ARPI"];
+  line -> postpre [label="Post-ARPI / Pre-docetaxel"];
+  line -> postpost [label="Post-ARPI / Post-docetaxel"];
+
+  addl [label="ADDITIONAL OPTIONS (irrespective of prior ARPI/docetaxel)\l• Asymptomatic without visceral mets: Sipuleucel-T\l• Oligometastatic/oligoprogressive: MDT + mCRPC systemic therapy\l• Symptomatic bone-predominant: Radium-223 (cat 1)\l• MSI-H/dMMR: Pembrolizumab (2B)\l", fillcolor="#F1948A"];
+  { rank=sink; addl; }
+}

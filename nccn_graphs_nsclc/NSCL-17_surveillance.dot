@@ -1,0 +1,27 @@
+// NSCL-17 — Surveillance After Completion of Definitive Therapy
+digraph NSCL17 {
+  rankdir=LR; labelloc="t"; label="NSCL-17 · Surveillance After Definitive Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  noevid [label="No evidence of clinical/radiographic disease", fillcolor="#EAECEE"];
+
+  surv1 [label="SURVEILLANCE — Stage I–II\n(primary treatment included surgery ± systemic therapy)\l• H&P and chest CT ± contrast every 6 mo for 2–3 y,\l  then H&P + low-dose non-contrast chest CT annually\l", fillcolor="#EAECEE"];
+  surv2 [label="SURVEILLANCE — Stage I–II (RT), or Stage III/IV\n(oligometastatic, all sites treated with definitive intent)\l• H&P and chest CT ± contrast every 3–6 mo for 3 y,\l  then every 6 mo for 2 y, then annual low-dose CT\l• Residual/new abnormalities may need more frequent imaging\l", fillcolor="#EAECEE"];
+  common [label="• Smoking cessation advice, counseling, pharmacotherapy\l• FDG-PET/CT not routinely indicated\l• Brain MRI ± contrast as clinically indicated (risk assessment)\l• Cancer Survivorship Care (NSCL-G)\l", fillcolor="#EAECEE"];
+
+  noevid -> surv1; noevid -> surv2; noevid -> common;
+
+  recur [label="Recurrence", shape=diamond, fillcolor="#F9E79F"];
+  recur_workup [label="• FDG-PET/CT\l• Brain MRI ± contrast\l", fillcolor="#D6EAF8"];
+  surv1 -> recur; surv2 -> recur; common -> recur;
+  recur -> recur_workup;
+
+  loco [label="Locoregional recurrence\n→ Therapy for Recurrence NSCL-18", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dist [label="Distant metastases\n→ Therapy for Recurrence NSCL-18", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  recur_workup -> loco; recur_workup -> dist;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Timing of CT scans within Guidelines parameters is a clinical decision.\nHigh-risk factors include EGFR mutations, ALK gene fusions, and node-positive disease.\nFor FDG-PET/CT problem-solving after RT, histopathologic confirmation is needed when possible."];
+  { rank=sink; note; }
+}

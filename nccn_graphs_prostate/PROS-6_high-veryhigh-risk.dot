@@ -1,0 +1,45 @@
+// PROS-6 — High- or Very-High-Risk Group: Initial Therapy
+digraph PROS6 {
+  rankdir=LR; labelloc="t"; label="PROS-6 · High- or Very-High-Risk Group — Initial Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="High- or Very-High-Risk Group", fillcolor="#D6EAF8"];
+  surv [label="Expected patient survival", shape=diamond, fillcolor="#F9E79F"];
+  entry -> surv;
+
+  // >5 y or symptomatic
+  rt [label="RT + ADT (12–36 mo) (category 1)\nor\nRT + ADT (24 mo) + abiraterone\n(for very-high-risk only)", fillcolor="#D5F5E3"];
+  rp [label="RP", fillcolor="#D5F5E3"];
+  surv -> rt [label=">5 y or symptomatic"];
+  surv -> rp [label=">5 y or symptomatic"];
+
+  rt_bcr [label="Biochemical recurrence", fillcolor="#F5B7B1"];
+  rt_nobcr [label="No biochemical recurrence", fillcolor="#EAECEE"];
+  rt -> rt_bcr; rt -> rt_nobcr;
+  pros10 [label="Radiation Therapy\nRecurrence → PROS-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  mon8 [label="Monitoring for Initial\nDefinitive Therapy → PROS-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  rt_bcr -> pros10; rt_nobcr -> mon8;
+
+  undet [label="Undetectable PSA", shape=diamond, fillcolor="#FCF3CF"];
+  psaper [label="PSA persistence", fillcolor="#F5B7B1"];
+  rp -> undet; rp -> psaper;
+  noadv [label="No adverse features and\nno lymph node metastases", fillcolor="#FCF3CF"];
+  adv [label="Adverse feature(s) or\nlymph node metastases", fillcolor="#FCF3CF"];
+  undet -> noadv; undet -> adv;
+  adv_mon [label="Monitoring (category 1,\npreferred for adverse features)\n→ PROS-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adv_tx [label="OR Consider treatment\n→ PROS-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros9 [label="Radical Prostatectomy PSA\nPersistence/Recurrence → PROS-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  noadv -> mon8; adv -> adv_mon; adv -> adv_tx; psaper -> pros9;
+
+  // <=5 y and asymptomatic
+  obs [label="Observation\nor\nRT ± ADT", fillcolor="#EAECEE"];
+  surv -> obs [label="≤5 y and asymptomatic"];
+  symprog [label="Symptomatic progression", fillcolor="#F5B7B1"];
+  obs -> symprog;
+  m13 [label="Metachronous Oligometastatic\nM1 CSPC → PROS-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m14 [label="Low-Volume M1 (Metachronous or\nSynchronous) or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  symprog -> m13; symprog -> m14; symprog -> m15;
+}

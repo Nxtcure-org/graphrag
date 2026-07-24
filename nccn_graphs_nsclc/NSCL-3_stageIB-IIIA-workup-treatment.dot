@@ -1,0 +1,39 @@
+// NSCL-3 — Stage IB / I central / II / IIB / IIIA: Evaluation and Initial Treatment
+digraph NSCL3 {
+  rankdir=LR; labelloc="t"; label="NSCL-3 · Stage IB–IIIA — Evaluation / Initial Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IB (peripheral T2a N0);\nStage I central (T1–T2a N0);\nStage II (T1–T2ab N1; T2b N0);\nStage IIB (T1 N2a; T3 N0); Stage IIIA (T3 N1)", fillcolor="#D6EAF8"];
+
+  workup [label="PRETREATMENT EVALUATION\l• Evaluate for perioperative therapy\l• Biomarker testing (EGFR, ALK, RET, PD-L1)\l• PFTs; bronchoscopy\l• Pathologic lymph node evaluation\l• FDG-PET/CT (if not done)\l• Brain MRI ± contrast (stage II, IIIA; IB optional)\l", fillcolor="#D6EAF8"];
+
+  nodes [label="Nodal status", shape=diamond, fillcolor="#F9E79F"];
+  n01 [label="N0 or N1", fillcolor="#FCF3CF"];
+  n23 [label="N2 or N3", fillcolor="#FCF3CF"];
+  stage -> workup -> nodes; nodes -> n01; nodes -> n23;
+
+  op [label="Operable", shape=diamond, fillcolor="#FCF3CF"];
+  inop [label="Medically inoperable / high risk;\nor decline surgery after consult", fillcolor="#FCF3CF"];
+  n01 -> op; n01 -> inop;
+
+  surg [label="Surgical resection + lymph node\ndissection or sampling after\npreoperative systemic therapy, if planned", fillcolor="#D5F5E3"];
+  surg_ref [label="Findings at Surgery\n→ NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  op -> surg -> surg_ref;
+
+  inop_node [label="Nodal status (inoperable)", shape=diamond, fillcolor="#FCF3CF"];
+  inop -> inop_node;
+  rt [label="Definitive RT, preferably SABR", fillcolor="#D5F5E3"];
+  adj [label="Consider adjuvant systemic therapy\nfor high-risk stage II (especially T2b–3)", fillcolor="#EAECEE"];
+  surv [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n1_ref [label="N1 → NSCL-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  inop_node -> rt [label="N0"]; rt -> adj -> surv;
+  inop_node -> n1_ref [label="N1"];
+
+  n23_ref [label="Stage IIB/IIIA/IIIB (NSCL-8)\nor Stage IIIB/IIIC (NSCL-13)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n23 -> n23_ref;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Surgical resection first option for operable negative-node patients;\nSABR alternative via shared decision-making. If SABR not feasible,\ndefinitive RT or concurrent chemoradiation may be considered.\nSee Principles of Perioperative Systemic Therapy (NSCL-E)."];
+  { rank=sink; note; }
+}

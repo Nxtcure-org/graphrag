@@ -18,13 +18,15 @@ Run with GRAPHRAG_API_KEY set in the environment.
 from __future__ import annotations
 
 import asyncio
+import sys
 from pathlib import Path
 
 import graphrag.index.workflows  # noqa: F401  (registers built-in workflows)
 from graphrag.api import build_index
 from graphrag.config.load_config import load_config
 
-ROOT = Path(__file__).parent / "nccn_graphrag"
+# project root: first CLI arg, else the testicular default
+ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent / "nccn_graphrag"
 WORKFLOWS = [
     "finalize_graph",
     "create_communities",

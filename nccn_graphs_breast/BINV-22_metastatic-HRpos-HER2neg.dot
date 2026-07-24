@@ -1,0 +1,27 @@
+// BINV-22 — Systemic Treatment of Metastatic Disease: ER/PR-Positive, HER2-Negative
+digraph BINV22 {
+  rankdir=LR; labelloc="t"; label="BINV-22 · Metastatic — ER/PR-Positive, HER2-Negative (First-line)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  crisis [label="Visceral crisis", shape=diamond, fillcolor="#F9E79F"];
+  nocrisis [label="No visceral crisis", shape=diamond, fillcolor="#F9E79F"];
+
+  tx_crisis [label="Cytotoxic therapy\n(see BINV-Q)", fillcolor="#D5F5E3"];
+
+  et1y [label="Endocrine therapy\nwithin 1 y", shape=diamond, fillcolor="#FCF3CF"];
+  no_et1y [label="No prior endocrine\ntherapy within 1 y", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_et1y [label="Switch endocrine therapy + CDK4/6i\nOr PIK3CA mutation: fulvestrant/inavolisib/palbociclib\nOr ESR1 mutation: ESR1-targeted therapy\n(if premenopausal, consider ovarian ablation/suppression)\nor Cytotoxic therapy (see BINV-Q)", fillcolor="#D5F5E3"];
+  tx_no_et1y [label="Endocrine therapy + CDK4/6i\n(if premenopausal, consider ovarian\nablation/suppression) (see BINV-P)", fillcolor="#D5F5E3"];
+
+  cont [label="Continue systemic therapy until progression\nor unacceptable toxicity.\nSee BINV-28 for Principles of Survivorship.", fillcolor="#EAECEE"];
+  prog [label="Progression → BINV-23", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  crisis -> tx_crisis;
+  nocrisis -> et1y -> tx_et1y;
+  nocrisis -> no_et1y -> tx_no_et1y;
+  tx_crisis -> cont; tx_et1y -> cont; tx_no_et1y -> cont;
+  cont -> prog;
+}

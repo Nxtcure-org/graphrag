@@ -1,7 +1,9 @@
 # Copyright (c) 2024 Microsoft Corporation.
 # Licensed under the MIT License
 
-"""Render a protocol flowchart as SVG, optionally highlighting a cited path.
+"""Render a protocol flowchart as SVG or Cytoscape JSON, optionally highlighting
+a cited path. All functions take the guideline's Graphviz directory so one
+backend can serve multiple guidelines.
 
 Rebuilds a page's DOT from its source .dot (via `dot -Tjson`), recolors the
 requested nodes/edges, and re-runs `dot -Tsvg`. Footnote annotations are
@@ -16,11 +18,9 @@ import subprocess
 from functools import lru_cache
 from pathlib import Path
 
-GRAPHS = Path(__file__).resolve().parent.parent / "nccn_graphs"
-_CODE = re.compile(r"(TEST-1|SEM-\d+|NSEM-\d+[A-Z]?)")
+_CODE = re.compile(r"^([A-Z]{2,6}-\d+[A-Z]?)")
 HL = "#c0392b"  # highlight color (server-rendered SVG variant)
 
-# fillcolor -> semantic node type (mirrors the converter)
 COLOR_TYPE = {
     "#D6EAF8": "Workup", "#D5F5E3": "Treatment", "#ABEBC6": "Treatment",
     "#EAFAF1": "Treatment", "#F9E79F": "Decision", "#FCF3CF": "Decision",
@@ -38,14 +38,35 @@ def _first_line(label: str) -> str:
     return ""
 
 
-@lru_cache(maxsize=1)
-def page_files() -> dict[str, str]:
+def _natkey(code: str):
+    m = re.match(r"([A-Za-z]+)-?(\d+)?([A-Za-z]*)", code)
+    if not m:
+        return (code, 0, "")
+    return (m.group(1), int(m.group(2) or 0), m.group(3) or "")
+
+
+@lru_cache(maxsize=None)
+def page_files(graphs_dir: str) -> dict[str, str]:
+    """code -> dot path for a guideline's directory."""
     out: dict[str, str] = {}
-    for f in sorted(GRAPHS.glob("*.dot")):
+    for f in sorted(Path(graphs_dir).glob("*.dot")):
+        if f.stem.startswith("00_"):
+            continue
         m = _CODE.match(f.stem)
         if m:
             out.setdefault(m.group(1), str(f))
     return out
+
+
+@lru_cache(maxsize=None)
+def page_index(graphs_dir: str) -> tuple:
+    """Ordered tuple of {code,label} for a guideline (natural-sorted by code)."""
+    items = []
+    for code, path in page_files(graphs_dir).items():
+        _, _, label = _parse(path)
+        items.append({"code": code, "label": label or code})
+    items.sort(key=lambda it: _natkey(it["code"]))
+    return tuple(items)
 
 
 def _parse(path: str):
@@ -56,16 +77,14 @@ def _parse(path: str):
         if "nodes" in o or "subgraphs" in o:
             continue
         if o.get("shape") == "note" or o.get("name", "").startswith("note"):
-            continue  # drop footnotes
+            continue
         nodes[o["_gvid"]] = o
     return nodes, doc.get("edges", []), doc.get("label", "")
 
 
-def build_svg(page: str, hl_nodes: set[str] | None = None,
+def build_svg(graphs_dir: str, page: str, hl_nodes: set[str] | None = None,
               hl_edges: set[str] | None = None) -> str | None:
-    """Return SVG for `page`; highlight node titles in hl_nodes and edges
-    (as "source|target" first-line titles) in hl_edges."""
-    files = page_files()
+    files = page_files(graphs_dir)
     if page not in files:
         return None
     hl_nodes = hl_nodes or set()
@@ -110,11 +129,10 @@ def build_svg(page: str, hl_nodes: set[str] | None = None,
                           capture_output=True, text=True, check=True).stdout
 
 
-def build_graph(page: str, hl_nodes: set[str] | None = None,
+def build_graph(graphs_dir: str, page: str, hl_nodes: set[str] | None = None,
                 hl_edges: set[str] | None = None) -> dict | None:
-    """Return the page as Cytoscape.js elements, with `hl` flags on the cited
-    path. Consumed by the LiveView client-side interactive renderer."""
-    files = page_files()
+    """Return the page as Cytoscape.js elements, with `hl` flags on the cited path."""
+    files = page_files(graphs_dir)
     if page not in files:
         return None
     hl_nodes = hl_nodes or set()

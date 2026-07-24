@@ -1,0 +1,42 @@
+// BINV-7 — HR-Positive / HER2-Negative, Premenopausal, pT1-3 AND pN0
+digraph BINV7 {
+  rankdir=LR; labelloc="t"; label="BINV-7 · HR-Positive / HER2-Negative — Premenopausal (pT1-3 AND pN0)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Ductal/NST, Lobular, Mixed, Micropapillary\nHR-positive / HER2-negative, premenopausal", fillcolor="#D6EAF8"];
+
+  pt1a [label="pT1a (≤0.5 cm) and pN0", shape=diamond, fillcolor="#F9E79F"];
+  mid [label="pT1b-T3 (>0.5 cm) and pN0", shape=diamond, fillcolor="#F9E79F"];
+
+  tx_pt1a [label="Consider adjuvant endocrine\ntherapy (category 2B)", fillcolor="#D5F5E3"];
+
+  chemo_q [label="Determine if candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  notcand [label="Not a candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  cand [label="If candidate: strongly consider\n21-gene RT-PCR assay (category 1)", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_notcand [label="Adjuvant endocrine therapy ± ovarian\nsuppression/ablation. Consider ribociclib\nfor eligible patients.", fillcolor="#D5F5E3"];
+
+  notdone [label="Not done", shape=diamond, fillcolor="#FCF3CF"];
+  rs_low [label="Recurrence\nscore ≤15", shape=diamond, fillcolor="#FCF3CF"];
+  rs_mid [label="Recurrence\nscore 16-25", shape=diamond, fillcolor="#FCF3CF"];
+  rs_high [label="Recurrence\nscore ≥26", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_notdone [label="Adjuvant chemotherapy followed by endocrine\ntherapy (category 1). Consider ribociclib.", fillcolor="#D5F5E3"];
+  tx_low [label="Adjuvant endocrine therapy ± ovarian\nsuppression/ablation. Consider ribociclib.", fillcolor="#D5F5E3"];
+  tx_mid [label="Adjuvant endocrine therapy ± ovarian\nsuppression/ablation. Consider ribociclib.", fillcolor="#D5F5E3"];
+  tx_high [label="Adjuvant chemotherapy followed by endocrine\ntherapy ± ovarian suppression/ablation.\nConsider ribociclib.", fillcolor="#D5F5E3"];
+
+  rt [label="Adjuvant whole breast RT (BINV-2)\nor PMRT (BINV-3). See BINV-I.\nFollow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> pt1a -> tx_pt1a;
+  entry -> mid -> chemo_q;
+  chemo_q -> notcand -> tx_notcand;
+  chemo_q -> cand;
+  cand -> notdone -> tx_notdone;
+  cand -> rs_low -> tx_low;
+  cand -> rs_mid -> tx_mid;
+  cand -> rs_high -> tx_high;
+  tx_pt1a -> rt; tx_notcand -> rt; tx_notdone -> rt; tx_low -> rt; tx_mid -> rt; tx_high -> rt;
+}

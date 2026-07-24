@@ -29,9 +29,11 @@ from pathlib import Path
 
 import pandas as pd
 
-# Flowchart pages only. Exclude 00_overview (meta-map) and TEST-D (an HTML
-# table node, not a flow). These 19 are the clinical decision algorithms.
-INCLUDE_PREFIXES = ("TEST-1", "SEM-", "NSEM-")
+# A flowchart page is any .dot whose name starts with an NCCN algorithm code
+# like TEST-1, SEM-3, BINV-1, PROS-2, COL-1, NSCL-4, DIAG-1. (Requires a digit
+# after the dash, so table/appendix pages like TEST-D are excluded, as are
+# 00_* overview files.)
+CODE_RE = re.compile(r"^[A-Z]{2,6}-\d+[A-Z]?")
 
 # fillcolor -> entity type
 COLOR_TYPE = {
@@ -71,9 +73,9 @@ def norm(title: str) -> str:
 
 
 def page_code(path: Path) -> str:
-    """SEM-3_stageIIA-IIB.dot -> SEM-3."""
-    m = re.match(r"(TEST-1|SEM-\d+|NSEM-\d+[A-Z]?)", path.stem)
-    return m.group(1) if m else path.stem
+    """SEM-3_stageIIA-IIB.dot -> SEM-3 ; BINV-1_workup.dot -> BINV-1."""
+    m = CODE_RE.match(path.stem)
+    return m.group(0) if m else path.stem
 
 
 def parse_dot(path: Path):
@@ -114,19 +116,21 @@ def main(argv: list[str] | None = None) -> int:
     argv = argv if argv is not None else sys.argv[1:]
     graphs_dir = Path(argv[0]) if argv else Path("nccn_graphs")
     out_dir = Path(argv[1]) if len(argv) > 1 else Path("nccn_graphrag/output")
+    doc_id = argv[2] if len(argv) > 2 else "nccn-testicular-v2.2026"
+    doc_name = argv[3] if len(argv) > 3 else "NCCN Testicular Cancer"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     files = sorted(
         f for f in graphs_dir.glob("*.dot")
-        if f.stem.startswith(INCLUDE_PREFIXES)
+        if CODE_RE.match(f.stem) and not f.stem.startswith("00_")
     )
     if not files:
-        print(f"error: no matching .dot files in {graphs_dir}", file=sys.stderr)
+        print(f"error: no code-named .dot files in {graphs_dir}", file=sys.stderr)
         return 2
 
     page_codes = {page_code(f) for f in files}
-    # regex to detect references to other protocol pages in node text
-    ref_re = re.compile(r"\b(TEST-1|SEM-\d+|NSEM-\d+[A-Z]?)\b")
+    # detect references to other protocol pages mentioned in node text
+    ref_re = re.compile(r"\b([A-Z]{2,6}-\d+[A-Z]?)\b")
 
     # entities keyed by normalized title (dedupe across pages)
     ents: dict[str, dict] = {}
@@ -167,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
     for path in files:
         code = page_code(path)
         nodes, edges, graph_label = parse_dot(path)
-        anchor_title = graph_label or f"NCCN Testicular Cancer {code}"
+        anchor_title = graph_label or f"{doc_name} {code}"
         code2anchor[code] = anchor_title
         parsed.append((code, nodes, edges, anchor_title))
 
@@ -176,7 +180,7 @@ def main(argv: list[str] | None = None) -> int:
         # a page-anchor entity connects everything documented on this page and
         # gives the otherwise-fragmented pages a connected spine via references
         add_entity(f"__page__{code.lower()}", anchor_title, "Protocol Page",
-                   f"NCCN Testicular Cancer protocol page {code}. {anchor_title}", code)
+                   f"{doc_name} protocol page {code}. {anchor_title}", code)
 
         page_lines = []
         referenced: set[str] = set()
@@ -202,14 +206,14 @@ def main(argv: list[str] | None = None) -> int:
         for ref in referenced:
             add_rel(anchor_title, code2anchor[ref], f"{code} refers to {ref}", code)
 
-        graph_title = f"NCCN Testicular Cancer — {code}"
+        graph_title = f"{doc_name} — {code}"
         page_text = graph_title + "\n" + "\n".join(page_lines)
         text_units.append({
             "id": code,
             "human_readable_id": len(text_units),
             "text": page_text,
             "n_tokens": max(1, len(page_text.split())),
-            "document_id": "nccn-testicular-v2.2026",
+            "document_id": doc_id,
             "entity_ids": [],          # backlinks not needed for global search
             "relationship_ids": [],
             "covariate_ids": [],
@@ -242,9 +246,9 @@ def main(argv: list[str] | None = None) -> int:
     text_units_df = pd.DataFrame(text_units)
 
     documents_df = pd.DataFrame([{
-        "id": "nccn-testicular-v2.2026",
+        "id": doc_id,
         "human_readable_id": 0,
-        "title": "NCCN Testicular Cancer Guidelines v2.2026",
+        "title": f"{doc_name} Guidelines",
         "text": "\n\n".join(t["text"] for t in text_units),
         "text_unit_ids": [t["id"] for t in text_units],
         "creation_date": "2026-06-16",

@@ -1,0 +1,33 @@
+// NSCL-11 — Separate Pulmonary Nodule(s) and Multiple Lung Cancers Evaluation
+digraph NSCL11 {
+  rankdir=LR; labelloc="t"; label="NSCL-11 · Separate Pulmonary Nodule(s) / Multiple Lung Cancers";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  sep [label="Separate pulmonary nodule(s), same lobe\n(T3, N0–1) or ipsilateral non-primary lobe (T4, N0–1)", fillcolor="#D6EAF8"];
+  sep_tx [label="Surgery after preoperative\nsystemic therapy, if planned", fillcolor="#D5F5E3"];
+  sep_ref [label="Findings at Surgery → NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  sep -> sep_tx -> sep_ref;
+
+  contra [label="Stage IVA (N0, M1a):\ncontralateral lung (solitary nodule)", fillcolor="#D6EAF8"];
+  contra_tx [label="Treat as two primary lung tumors\nif both curable; see Initial Evaluation (NSCL-1)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  contra -> contra_tx;
+
+  susp [label="Suspected multiple lung cancers\n(biopsy-proven lesions or history of lung cancer)", fillcolor="#D6EAF8"];
+  susp_workup [label="EVALUATION\l• Chest CT with contrast\l• FDG-PET/CT (if not done)\l• Brain MRI ± contrast\l", fillcolor="#D6EAF8"];
+  susp_dec [label="Disease outside chest?", shape=diamond, fillcolor="#F9E79F"];
+  susp -> susp_workup -> susp_dec;
+
+  out [label="Disease outside chest\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  susp_dec -> out [label="yes"];
+
+  noout [label="No disease outside chest:\nPathologic lymph node evaluation", shape=diamond, fillcolor="#FCF3CF"];
+  susp_dec -> noout [label="no"];
+  n01 [label="N0–1 → Initial Treatment NSCL-12", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n23 [label="N2–3 → Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  noout -> n01; noout -> n23;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Lesions with different cell types are usually different primary tumors.\nSingle contralateral nodules with features suggestive of synchronous primary\namenable to local therapy should be treated as probable separate primaries (NSCL-12).\nMGPT using NGS may allow determination of clonal relatedness."];
+  { rank=sink; note; }
+}

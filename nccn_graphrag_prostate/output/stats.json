@@ -1,0 +1,32 @@
+{
+    "total_runtime": 57.70915699005127,
+    "num_documents": 0,
+    "update_documents": 0,
+    "input_load_time": 0,
+    "workflows": {
+        "finalize_graph": {
+            "overall": 0.2571561336517334,
+            "peak_memory_bytes": 2012385,
+            "memory_delta_bytes": 1320812,
+            "tracemalloc_overhead_bytes": 995952
+        },
+        "create_communities": {
+            "overall": 0.23742365837097168,
+            "peak_memory_bytes": 816779,
+            "memory_delta_bytes": 294602,
+            "tracemalloc_overhead_bytes": 749936
+        },
+        "create_community_reports": {
+            "overall": 43.605611085891724,
+            "peak_memory_bytes": 46184534,
+            "memory_delta_bytes": 43655459,
+            "tracemalloc_overhead_bytes": 26536528
+        },
+        "generate_text_embeddings": {
+            "overall": 13.539827108383179,
+            "peak_memory_bytes": 83933878,
+            "memory_delta_bytes": 31757191,
+            "tracemalloc_overhead_bytes": 17599552
+        }
+    }
+}

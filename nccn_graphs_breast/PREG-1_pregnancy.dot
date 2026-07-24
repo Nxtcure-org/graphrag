@@ -1,0 +1,39 @@
+// PREG-1 — Breast Cancer During Pregnancy: Workup, Presentation, Treatment
+digraph PREG1 {
+  rankdir=LR; labelloc="t"; label="PREG-1 · Breast Cancer During Pregnancy — Workup, Presentation & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  workup [label="WORKUP (if indicated)\l• Chest x-ray (with abdominal shielding)\l• Abdominal ultrasound to assess liver metastases\l• Consider non-contrast MRI of spine if indicated\l  for bone metastases\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  present [label="If pregnant with confirmed\nbreast cancer;\nNo distant metastases on staging", fillcolor="#D6EAF8"];
+
+  trimester [label="CLINICAL\nPRESENTATION", shape=diamond, fillcolor="#F9E79F"];
+
+  t1 [label="First trimester", shape=diamond, fillcolor="#FCF3CF"];
+  t2 [label="Second trimester /\nEarly third trimester", shape=diamond, fillcolor="#FCF3CF"];
+  t3 [label="Late third trimester", shape=diamond, fillcolor="#FCF3CF"];
+
+  t1_disc [label="Discuss termination:\nNon-therapeutic", shape=diamond, fillcolor="#FCF3CF"];
+  t1_cont [label="Continuing pregnancy", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_t1 [label="Mastectomy + axillary\nstaging (see PREG-2)", fillcolor="#D5F5E3"];
+  tx_t2 [label="Mastectomy or BCS + axillary staging (see PREG-2)\nor Preoperative chemotherapy, mastectomy,\nor BCS + axillary staging (see PREG-2)", fillcolor="#D5F5E3"];
+  tx_t3 [label="Mastectomy or BCS + axillary\nstaging (see PREG-2)", fillcolor="#D5F5E3"];
+
+  adj_t1 [label="Begin adjuvant chemotherapy in 2nd trimester\n± RT postpartum ± adjuvant endocrine therapy\npostpartum (see PREG-2)", fillcolor="#D5F5E3"];
+  adj_t2 [label="Adjuvant chemotherapy ± RT postpartum\n± adjuvant endocrine therapy postpartum\n(see PREG-2)", fillcolor="#D5F5E3"];
+  adj_t3 [label="Adjuvant chemotherapy ± RT postpartum\n± adjuvant endocrine therapy postpartum\n(see PREG-2)", fillcolor="#D5F5E3"];
+
+  workup -> present -> trimester;
+  trimester -> t1;
+  trimester -> t2 -> tx_t2 -> adj_t2;
+  trimester -> t3 -> tx_t3 -> adj_t3;
+  t1 -> t1_disc;
+  t1 -> t1_cont;
+  t1_cont -> tx_t1 -> adj_t1;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="CT scans, nuclear imaging (bone scan/PET/CT), and contrast-enhanced MRI\nare contraindicated during pregnancy. RT should not be administered during\nany trimester. Chemotherapy not given during the first trimester."];
+  { rank=sink; note; }
+}

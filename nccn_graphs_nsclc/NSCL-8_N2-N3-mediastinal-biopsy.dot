@@ -1,0 +1,32 @@
+// NSCL-8 — N2/N3 Disease: Pretreatment Evaluation and Mediastinal Biopsy Findings
+digraph NSCL8 {
+  rankdir=LR; labelloc="t"; label="NSCL-8 · N2/N3 Evaluation & Mediastinal Biopsy Findings";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IIB (T1 N2a); IIIA (T1 N2b; T2–T3 N2a);\nIIIB (T2–T3 N2b)", fillcolor="#D6EAF8"];
+  workup [label="PRETREATMENT EVALUATION\l• Evaluate for perioperative therapy\l• Biomarker testing (EGFR, ALK, RET, PD-L1)\l• PFTs; bronchoscopy\l• Pathologic lymph node evaluation\l• FDG-PET/CT (if not done)\l• Brain MRI ± contrast\l", fillcolor="#D6EAF8"];
+  biopsy [label="MEDIASTINAL BIOPSY FINDINGS\n& RESECTABILITY", shape=diamond, fillcolor="#F9E79F"];
+  stage -> workup -> biopsy;
+
+  neg [label="Nodes negative\n→ Treatment NSCL-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n12 [label="N1 or N2 nodes positive, M0\n→ Treatment NSCL-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n3 [label="N3 nodes positive, M0\n→ Stage IIIB/IIIC NSCL-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  mets [label="Metastatic disease\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  biopsy -> neg; biopsy -> n12; biopsy -> n3; biopsy -> mets;
+
+  // Second entry: separate pulmonary nodules
+  sep [label="Separate pulmonary nodule(s)\n(stage IIB, IIIA, IV);\nIIIA ipsilateral non-primary lobe (T4 N0–1);\nStage IV contralateral lung", fillcolor="#D6EAF8"];
+  sep_workup [label="EVALUATION\l• Evaluate for perioperative therapy\l• Biomarker testing (EGFR, ALK, RET, PD-L1)\l• PFTs; bronchoscopy; pathologic node eval\l• Brain MRI ± contrast; FDG-PET/CT\l", fillcolor="#D6EAF8"];
+  sep_dec [label="Findings", shape=diamond, fillcolor="#F9E79F"];
+  sep -> sep_workup -> sep_dec;
+
+  sep_a [label="Separate nodule(s) same lobe (T3 N0–1)\nor ipsilateral non-primary lobe (T4 N0–1)\n→ Treatment NSCL-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  sep_b [label="Stage IVA (N0 M1a): contralateral lung\n(solitary nodule) → Treatment NSCL-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  sep_c [label="Extrathoracic metastatic disease\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  sep_dec -> sep_a; sep_dec -> sep_b; sep_dec -> sep_c;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="An EBUS-TBNA negative for malignancy in a clinically PET/CT-positive\nmediastinum should undergo mediastinoscopy prior to surgical resection.\nPositive FDG-PET/CT for mediastinal/distant disease needs pathologic confirmation."];
+  { rank=sink; note; }
+}

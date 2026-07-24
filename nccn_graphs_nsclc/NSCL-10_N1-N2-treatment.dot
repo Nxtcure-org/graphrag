@@ -1,0 +1,50 @@
+// NSCL-10 — N1 and N2 Nodes Positive (M0): Treatment
+digraph NSCL10 {
+  rankdir=LR; labelloc="t"; label="NSCL-10 · N1 / N2 Nodes Positive (M0) — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  // N1
+  n1 [label="T1–3, N1 nodes positive, M0", fillcolor="#D6EAF8"];
+  n1_dec [label="Operability", shape=diamond, fillcolor="#F9E79F"];
+  n1 -> n1_dec;
+  n1_op [label="Operable", fillcolor="#FCF3CF"];
+  n1_inop [label="Medically inoperable / high risk;\nor decline surgery", fillcolor="#FCF3CF"];
+  n1_dec -> n1_op; n1_dec -> n1_inop;
+
+  n1_surg [label="Neoadjuvant systemic therapy (preferred),\nthen surgical resection + node dissection/sampling\nor Surgical resection + node dissection/sampling", fillcolor="#D5F5E3"];
+  n1_surg_ref [label="Findings at Surgery → NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n1_op -> n1_surg -> n1_surg_ref;
+
+  n1_crt [label="Definitive concurrent\nchemoradiation (category 1)", fillcolor="#D5F5E3"];
+  n1_consol [label="Durvalumab (if no EGFR exon 19 del/L858R)\nor Osimertinib (if EGFR exon 19 del/L858R)", fillcolor="#D5F5E3"];
+  surv1 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n1_inop -> n1_crt -> n1_consol -> surv1;
+
+  // N2
+  n2 [label="T1–3, N2 nodes positive, M0", fillcolor="#D6EAF8"];
+  n2_opt [label="Treatment option", shape=diamond, fillcolor="#F9E79F"];
+  n2 -> n2_opt;
+
+  n2_crt [label="Definitive concurrent\nchemoradiation (category 1)", fillcolor="#D5F5E3"];
+  n2_consol [label="Durvalumab (if no EGFR exon 19 del/L858R)\n(cat 1) or Osimertinib (if EGFR exon 19 del/L858R) (cat 1)", fillcolor="#D5F5E3"];
+  surv2 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n2_opt -> n2_crt -> n2_consol -> surv2;
+
+  n2_sys [label="Systemic therapy ± RT", fillcolor="#D5F5E3"];
+  n2_opt -> n2_sys;
+  n2_prog [label="Progression?", shape=diamond, fillcolor="#FCF3CF"];
+  n2_sys -> n2_prog;
+  n2_nop [label="No apparent progression", fillcolor="#FCF3CF"];
+  n2_prog -> n2_nop [label="no"];
+  n2_surg [label="Surgery → Findings NSCL-4\nor Consider RT → Surveillance NSCL-17", fillcolor="#D5F5E3"];
+  n2_nop -> n2_surg;
+
+  n2_local [label="Progression: Local\n→ RT (if feasible) ± systemic therapy", fillcolor="#F5B7B1"];
+  n2_syst [label="Progression: Systemic\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#F5B7B1"];
+  n2_prog -> n2_local [label="local"]; n2_prog -> n2_syst [label="systemic"];
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Resectability determined by thoracic surgery evaluation before therapy.\nSelected N2 patients (fit, single-station, non-bulky N2, requiring only lobectomy)\nmay be considered for systemic therapy followed by surgery. Chest CT ± PET/CT to evaluate progression."];
+  { rank=sink; note; }
+}

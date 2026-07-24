@@ -1,0 +1,42 @@
+// NSCL-18 — Therapy for Recurrence and Metastasis (local therapy / symptom control)
+digraph NSCL18 {
+  rankdir=LR; labelloc="t"; label="NSCL-18 · Therapy for Recurrence and Metastasis";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  loco [label="Locoregional recurrence or\nsymptomatic local disease", shape=diamond, fillcolor="#F9E79F"];
+
+  endo [label="Endobronchial obstruction:\nLaser/stent/surgery, external-beam RT or\nbrachytherapy, photodynamic therapy", fillcolor="#F5B7B1"];
+  resec [label="Resectable recurrence:\nReresection (preferred), external-beam RT or SABR", fillcolor="#F5B7B1"];
+  med [label="Mediastinal LN recurrence", shape=diamond, fillcolor="#FCF3CF"];
+  svc [label="SVC obstruction:\nConcurrent chemoradiation ± SVC stent,\nexternal-beam RT ± stent, SVC stent", fillcolor="#F5B7B1"];
+  hemop [label="Severe hemoptysis:\nExternal-beam RT/brachytherapy, laser/photodynamic\ntherapy or embolization, surgery", fillcolor="#F5B7B1"];
+  loco -> endo; loco -> resec; loco -> med; loco -> svc; loco -> hemop;
+
+  med_noprior [label="No prior RT:\nConcurrent chemoradiation", fillcolor="#F5B7B1"];
+  med_prior [label="Prior RT:\nAdvanced/metastatic → NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  med -> med_noprior [label="no prior RT"]; med -> med_prior [label="prior RT"];
+
+  restage [label="Restage: Chest CT with contrast,\nBrain MRI ± contrast, FDG-PET/CT", shape=diamond, fillcolor="#FCF3CF"];
+  endo -> restage; resec -> restage; med_noprior -> restage; svc -> restage; hemop -> restage;
+
+  nodiss [label="No evidence of disseminated disease\n→ Observation or Advanced/metastatic NSCL-19\n(category 2B)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  diss [label="Evidence of disseminated disease\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  restage -> nodiss; restage -> diss;
+
+  // Distant metastases
+  distant [label="Distant metastases", shape=diamond, fillcolor="#F9E79F"];
+  d_local [label="Localized symptoms:\nPalliative external-beam RT", fillcolor="#F5B7B1"];
+  d_brain [label="Diffuse brain metastases:\nPalliative external-beam RT", fillcolor="#F5B7B1"];
+  d_bone [label="Bone metastasis:\nIf fracture risk, orthopedic stabilization + palliative RT;\nconsider bisphosphonate or denosumab", fillcolor="#F5B7B1"];
+  d_lim [label="Limited metastasis\n→ Stage IVA M1b / IVB M1c (NSCL-15)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  d_pleural [label="Pleural or disseminated metastases\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  distant -> d_local; distant -> d_brain; distant -> d_bone; distant -> d_lim; distant -> d_pleural;
+
+  d_adv [label="Advanced/metastatic\ndisease → NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  d_local -> d_adv; d_brain -> d_adv; d_bone -> d_adv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="See NCCN Guidelines for CNS Cancers for brain metastases.\nAn FDA-approved biosimilar is an appropriate substitute.\nSee NSCL-B (surgery), NSCL-C (RT), NSCL-D (IGTA), NSCL-F (chemoradiation)."];
+  { rank=sink; note; }
+}

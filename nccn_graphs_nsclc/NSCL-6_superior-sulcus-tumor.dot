@@ -1,0 +1,44 @@
+// NSCL-6 — Superior Sulcus Tumor: Initial and Adjuvant Treatment
+digraph NSCL6 {
+  rankdir=LR; labelloc="t"; label="NSCL-6 · Superior Sulcus Tumor — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  t3 [label="Superior sulcus tumor\n(T3 invasion, N0–1)", fillcolor="#D6EAF8"];
+  t3_tx [label="Preoperative concurrent\nchemoradiation", fillcolor="#D5F5E3"];
+  t3_adj [label="Surgery + Adjuvant\nsystemic therapy (NSCL-E)", fillcolor="#D5F5E3"];
+  t3_surv [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t3 -> t3_tx -> t3_adj -> t3_surv;
+
+  t4 [label="Superior sulcus tumor\n(T4 invasion, N0–1)", fillcolor="#D6EAF8"];
+  t4_dec [label="Resectability", shape=diamond, fillcolor="#F9E79F"];
+  t4 -> t4_dec;
+
+  pr [label="Possibly resectable", fillcolor="#FCF3CF"];
+  unres [label="Unresectable", fillcolor="#FCF3CF"];
+  t4_dec -> pr; t4_dec -> unres;
+
+  pr_tx [label="Preoperative concurrent\nchemoradiation", fillcolor="#D5F5E3"];
+  pr_reeval [label="Surgical reevaluation\n(chest CT ± FDG-PET/CT)", shape=diamond, fillcolor="#FCF3CF"];
+  pr -> pr_tx -> pr_reeval;
+
+  pr_res [label="Resectable", fillcolor="#FCF3CF"];
+  pr_unres [label="Unresectable", fillcolor="#FCF3CF"];
+  pr_reeval -> pr_res; pr_reeval -> pr_unres;
+
+  pr_res_o [label="Surgery + Adjuvant\nsystemic therapy (NSCL-E)", fillcolor="#D5F5E3"];
+  pr_unres_o [label="Complete definitive\nchemoradiation", fillcolor="#D5F5E3"];
+  surv1 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pr_res -> pr_res_o -> surv1;
+
+  unres_tx [label="Definitive concurrent\nchemoradiation", fillcolor="#D5F5E3"];
+  unres -> unres_tx;
+
+  consol [label="Durvalumab (if no EGFR exon 19 del /\nL858R) (category 1)\nor Osimertinib (category 1) (if EGFR\nexon 19 del / L858R mutation)", fillcolor="#D5F5E3"];
+  surv2 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pr_unres -> pr_unres_o -> consol; unres_tx -> consol; consol -> surv2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="For patients with sequential chemoradiation, durvalumab can be considered as\nconsolidation immunotherapy or, if EGFR exon 19 deletion or L858R mutation,\nosimertinib is recommended. See Concurrent Chemoradiation Regimens (NSCL-F)."];
+  { rank=sink; note; }
+}

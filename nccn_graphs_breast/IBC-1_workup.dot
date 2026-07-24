@@ -1,0 +1,19 @@
+// IBC-1 — Inflammatory Breast Cancer: Clinical Presentation and Workup
+digraph IBC1 {
+  rankdir=LR; labelloc="t"; label="IBC-1 · Inflammatory Breast Cancer — Clinical Presentation & Workup";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Clinical / pathologic\ndiagnosis of IBC", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• History & physical exam by multidisciplinary team;\l  obtain medical photography\l• CBC; comprehensive metabolic panel (LFTs, alk phos)\l• Pathology review\l• Determination of ER/PR status and HER2 status\l• Fertility counseling if premenopausal\l• Genetic counseling if at risk\l• Assess for distress\l• Imaging: bilateral diagnostic mammogram, ultrasound;\l  chest CT ± contrast; abdomen ± pelvis CT/MRI;\l  bone scan or FDG-PET/CT; breast MRI (optional)\l", fillcolor="#D6EAF8"];
+
+  preop [label="Preoperative/Adjuvant Therapy\nRegimens (BINV-L)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  next [label="Response to Preoperative Therapy\n& Treatment → IBC-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> preop -> next;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="A pertuzumab-containing regimen may be administered preoperatively\nto patients with HER2-positive IBC."];
+  { rank=sink; note; }
+}

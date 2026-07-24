@@ -1,0 +1,23 @@
+// PROS-13 — Workup and Treatment of Metachronous Oligometastatic M1 CSPC
+digraph PROS13 {
+  rankdir=LR; labelloc="t"; label="PROS-13 · Metachronous Oligometastatic M1 CSPC — Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  workup [label="WORKUP FOR METASTASES\l• Physical exam\l• Imaging for staging\l• Perform/collect PSA and calculate PSADT\l• Estimate life expectancy (PROS-A)\l• Germline and somatic genetic testing\l• Obtain family history\l• Assess quality-of-life measures\l", fillcolor="#D6EAF8"];
+
+  tx [label="MDT ± ADT\nor\nFor M1 only, treat as metachronous\nlow-volume M1 (see PROS-14)", fillcolor="#D5F5E3"];
+  workup -> tx;
+
+  mon [label="MONITORING\l• PE + PSA every 3–6 mo\l• Imaging for symptoms\l• Consider periodic imaging to\l  monitor treatment response\l", fillcolor="#EAECEE"];
+  tx -> mon;
+
+  prog [label="Progression", shape=diamond, fillcolor="#F9E79F"];
+  mon -> prog;
+
+  pros14 [label="Low-Volume M1 or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros17 [label="M1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog -> pros14; prog -> pros15; prog -> pros17;
+}

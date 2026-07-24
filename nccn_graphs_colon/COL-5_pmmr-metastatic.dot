@@ -1,0 +1,41 @@
+// COL-5 — pMMR/MSS: Findings & Treatment for Metastatic Synchronous Adenocarcinoma
+digraph COL5 {
+  rankdir=LR; labelloc="t"; label="COL-5 · pMMR/MSS — Metastatic Synchronous Adenocarcinoma (Findings & Treatment)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Suspected or proven metastatic\nsynchronous adenocarcinoma\n(any T, any N, M1) · pMMR/MSS", fillcolor="#F5B7B1"];
+
+  findings [label="FINDINGS", shape=diamond, fillcolor="#F9E79F"];
+  f_liverlung [label="Synchronous liver only\nand/or lung only metastases", fillcolor="#FCF3CF"];
+  f_abd [label="Synchronous abdominal/\nperitoneal metastases", fillcolor="#FCF3CF"];
+  f_other [label="Synchronous unresectable\nmetastases of other sites", fillcolor="#FCF3CF"];
+
+  present -> findings;
+  findings -> f_liverlung; findings -> f_abd; findings -> f_other;
+
+  // liver/lung branch
+  resect [label="Resectable", shape=diamond, fillcolor="#FCF3CF"];
+  unres [label="Unresectable\n(potentially convertible or\nunconvertible)", shape=diamond, fillcolor="#FCF3CF"];
+  f_liverlung -> resect; f_liverlung -> unres;
+  col6 [label="Treatment and adjuvant\ntherapy → COL-6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  col7 [label="Treatment and adjuvant\ntherapy → COL-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  resect -> col6; unres -> col7;
+
+  // abdominal/peritoneal branch
+  a_nonobstr [label="Nonobstructing", fillcolor="#FCF3CF"];
+  a_obstr [label="Obstructed or imminent\nobstruction", fillcolor="#FCF3CF"];
+  f_abd -> a_nonobstr; f_abd -> a_obstr;
+  a_obstr_tx [label="Colon resection\nor Diverting ostomy\nor Bypass of impending obstruction\nor Stenting", fillcolor="#D5F5E3"];
+  a_obstr -> a_obstr_tx;
+  sysD1 [label="Systemic therapy (COL-D)", fillcolor="#F1948A"];
+  a_nonobstr -> sysD1; a_obstr_tx -> sysD1;
+
+  // other sites
+  sysD2 [label="Systemic therapy (COL-D)", fillcolor="#F1948A"];
+  f_other -> sysD2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Consider colon resection for other-site synchronous mets only if imminent\nrisk of obstruction, significant bleeding, perforation, or other significant\ntumor-related symptoms. See Surgery (COL-C)."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,56 @@
+// NSCL-4 — Findings at Surgery and Adjuvant Treatment
+digraph NSCL4 {
+  rankdir=LR; labelloc="t"; label="NSCL-4 · Findings at Surgery / Adjuvant Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  findings [label="FINDINGS AT SURGERY\n(by stage & margins)", shape=diamond, fillcolor="#F9E79F"];
+
+  // Stage IA
+  ia_r0 [label="Stage IA (T1 N0)\nMargins negative (R0)", fillcolor="#FCF3CF"];
+  ia_pos [label="Stage IA (T1 N0)\nMargins positive (R1, R2)", fillcolor="#FCF3CF"];
+  ia_r0_o [label="Observe", fillcolor="#EAECEE"];
+  ia_pos_o [label="Reresection (preferred)\nor RT (category 2B)", fillcolor="#D5F5E3"];
+  findings -> ia_r0 -> ia_r0_o; findings -> ia_pos -> ia_pos_o;
+
+  // Stage IB
+  ib_r0 [label="Stage IB (T2a N0)\nMargins negative (R0)", fillcolor="#FCF3CF"];
+  ib_pos [label="Stage IB (T2a N0)\nMargins positive (R1, R2)", fillcolor="#FCF3CF"];
+  ib_r0_o [label="Observe\nor Adjuvant systemic therapy (NSCL-E)", fillcolor="#EAECEE"];
+  ib_pos_o [label="Reresection (preferred) ± systemic therapy\nor RT ± systemic therapy", fillcolor="#D5F5E3"];
+  findings -> ib_r0 -> ib_r0_o; findings -> ib_pos -> ib_pos_o;
+
+  // Stage IIA
+  iia_r0 [label="Stage IIA (T2b N0; T1 N1)\nMargins negative (R0)", fillcolor="#FCF3CF"];
+  iia_pos [label="Stage IIA\nMargins positive (R1, R2)", fillcolor="#FCF3CF"];
+  iia_r0_o [label="Observe\nor Adjuvant systemic therapy (NSCL-E)", fillcolor="#EAECEE"];
+  iia_pos_o [label="Reresection (preferred) ± systemic therapy\nor RT ± systemic therapy", fillcolor="#D5F5E3"];
+  findings -> iia_r0 -> iia_r0_o; findings -> iia_pos -> iia_pos_o;
+
+  // Stage IIB
+  iib_r0 [label="Stage IIB (T1 N2a; T2a–T2b N1; T3 N0)\nMargins negative (R0)", fillcolor="#FCF3CF"];
+  iib_r1 [label="Stage IIB\nMargins positive R1", fillcolor="#FCF3CF"];
+  iib_r2 [label="Stage IIB\nMargins positive R2", fillcolor="#FCF3CF"];
+  iib_r0_o [label="Adjuvant systemic therapy (NSCL-E)", fillcolor="#D5F5E3"];
+  iib_r1_o [label="Reresection + systemic therapy\nor Chemoradiation (sequential or concurrent)", fillcolor="#D5F5E3"];
+  iib_r2_o [label="Reresection + systemic therapy\nor Concurrent chemoradiation", fillcolor="#D5F5E3"];
+  findings -> iib_r0 -> iib_r0_o; findings -> iib_r1 -> iib_r1_o; findings -> iib_r2 -> iib_r2_o;
+
+  // Stage IIIA / IIIB
+  iii_r0 [label="Stage IIIA / IIIB\nMargins negative (R0)", fillcolor="#FCF3CF"];
+  iii_r1 [label="Stage IIIA / IIIB\nMargins positive R1", fillcolor="#FCF3CF"];
+  iii_r2 [label="Stage IIIA / IIIB\nMargins positive R2", fillcolor="#FCF3CF"];
+  iii_r0_o [label="Adjuvant systemic therapy (NSCL-E)\nor Sequential chemotherapy + consider RT", fillcolor="#D5F5E3"];
+  iii_r1_o [label="Chemoradiation\n(sequential or concurrent)", fillcolor="#D5F5E3"];
+  iii_r2_o [label="Concurrent chemoradiation", fillcolor="#D5F5E3"];
+  findings -> iii_r0 -> iii_r0_o; findings -> iii_r1 -> iii_r1_o; findings -> iii_r2 -> iii_r2_o;
+
+  surv [label="Surveillance\n→ NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ia_r0_o -> surv; ia_pos_o -> surv; ib_r0_o -> surv; ib_pos_o -> surv;
+  iia_r0_o -> surv; iia_pos_o -> surv; iib_r0_o -> surv; iib_r1_o -> surv; iib_r2_o -> surv;
+  iii_r0_o -> surv; iii_r1_o -> surv; iii_r2_o -> surv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="R0=complete resection, negative margins; R1=microscopic positive margins;\nR2=gross unresected tumor. Increasing size is important when evaluating need\nfor adjuvant systemic therapy. See Principles of Perioperative Systemic Therapy (NSCL-E)."];
+  { rank=sink; note; }
+}

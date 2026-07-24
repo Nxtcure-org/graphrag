@@ -1,0 +1,27 @@
+// NSCL-38 — PD-L1 Positive (≥1%), negative for actionable biomarkers: First-Line Therapy
+digraph NSCL38 {
+  rankdir=LR; labelloc="t"; label="NSCL-38 · PD-L1 ≥1% (no actionable biomarker) — First-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  pdl1 [label="PD-L1 ≥1%", fillcolor="#F9E79F"];
+  tx [label="Biomarker-directed therapy\n(NSCL-J 1 of 6)", fillcolor="#D5F5E3"];
+  eval [label="Response assessment", shape=diamond, fillcolor="#F9E79F"];
+  pdl1 -> tx -> eval;
+
+  resp [label="Response or stable disease", fillcolor="#FCF3CF"];
+  prog [label="Progression", fillcolor="#F5B7B1"];
+  eval -> resp; eval -> prog;
+
+  maint [label="Continuation maintenance", fillcolor="#EAECEE"];
+  resp -> maint;
+  maint_prog [label="Progression", fillcolor="#F5B7B1"];
+  maint -> maint_prog;
+
+  subseq [label="Systemic Therapy (NSCL-K 1 of 6)\nor Systemic Therapy, Subsequent (NSCL-K 5 of 6)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog -> subseq; maint_prog -> subseq;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="For urgent therapy start with pending biomarker testing, consider holding\nimmunotherapy for one cycle unless confirmed no driver mutations present.\nIf no prior platinum-doublet, refer to systemic therapy; if received platinum +\nanti-PD-1/PD-L1, refer to subsequent therapy. See NSCL-J."];
+  { rank=sink; note; }
+}

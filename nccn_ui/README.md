@@ -1,8 +1,15 @@
-# Luna — NCCN Testicular Cancer clinical copilot (Phoenix LiveView)
+# Luna — NCCN multi-cancer clinical copilot (Phoenix LiveView)
 
-A visual-first clinical decision UI: an **interactive Cytoscape.js flowchart**
-dominates the screen, and **Luna** (an AI physician-agent persona) + chat in the
-left sidebar drive it. Ask a question → Luna answers concisely in chat, the
+Covers **5 guidelines** — testicular, breast, prostate, colon, NSCLC —
+switchable from pills in the sidebar. A visual-first clinical decision UI: an
+**interactive Cytoscape.js flowchart** dominates the screen, and **Luna** (an AI
+physician-agent persona) + chat in the left sidebar drive it.
+
+The backend (`api/app.py`) loads all five indexed GraphRAG projects at startup
+and every endpoint (`/query`, `/graph`, `/flowchart`, `/pages`) takes a
+`guideline` key; `/guidelines` lists them with their page indexes. Switching the
+guideline in the UI re-seeds the flowchart and routes all queries to that
+project. Ask a question → Luna answers concisely in chat, the
 relevant protocol flowchart loads, and the **cited decision path animates/glows**
 in purple. Key points render as bullets under the diagram.
 

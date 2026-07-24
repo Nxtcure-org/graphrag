@@ -1,0 +1,37 @@
+// BINV-11 — Systemic Adjuvant Treatment: Favorable Histologies
+digraph BINV11 {
+  rankdir=LR; labelloc="t"; label="BINV-11 · Systemic Adjuvant Treatment — Favorable Histologies";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  tub [label="Pure tubular, mucinous,\nor cribriform", fillcolor="#D6EAF8"];
+  erpos [label="ER-positive and/or PR-positive,\nHER2-negative", shape=diamond, fillcolor="#F9E79F"];
+
+  small [label="pT1-3; and pN0 or pN1mi\n(≤2 mm axillary node metastasis)", shape=diamond, fillcolor="#FCF3CF"];
+  npos [label="pN+ (≥1 ipsilateral\nmetastases >2 mm)", shape=diamond, fillcolor="#FCF3CF"];
+
+  lt1 [label="<1 cm", shape=diamond, fillcolor="#FCF3CF"];
+  mid [label="1-2.9 cm", shape=diamond, fillcolor="#FCF3CF"];
+  ge3 [label="≥3 cm", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_lt1 [label="Consider adjuvant endocrine\ntherapy for risk reduction", fillcolor="#D5F5E3"];
+  tx_mid [label="Consider adjuvant endocrine therapy", fillcolor="#D5F5E3"];
+  tx_ge3 [label="Adjuvant endocrine therapy", fillcolor="#D5F5E3"];
+  tx_npos [label="Adjuvant endocrine therapy\n± adjuvant chemotherapy", fillcolor="#D5F5E3"];
+
+  adeno [label="Adenoid cystic, secretory, other salivary\ncarcinomas; rare low-grade metaplastic", fillcolor="#D6EAF8"];
+  erneg [label="ER-negative and PR-negative,\nHER2-negative", shape=diamond, fillcolor="#F9E79F"];
+  tx_adeno [label="Limited data support local therapy only,\nwith consideration for systemic/targeted\ntherapies only in pN+ disease", fillcolor="#D5F5E3"];
+
+  rt [label="Adjuvant whole breast RT (BINV-2)\nor PMRT (BINV-3). See BINV-I.\nFollow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  tub -> erpos;
+  erpos -> small; erpos -> npos;
+  small -> lt1 -> tx_lt1;
+  small -> mid -> tx_mid;
+  small -> ge3 -> tx_ge3;
+  npos -> tx_npos;
+  adeno -> erneg -> tx_adeno;
+  tx_lt1 -> rt; tx_mid -> rt; tx_ge3 -> rt; tx_npos -> rt; tx_adeno -> rt;
+}

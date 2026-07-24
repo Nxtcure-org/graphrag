@@ -1,0 +1,32 @@
+// NSCL-1 — Pathologic Diagnosis, Initial Evaluation, and Clinical Stage
+digraph NSCL1 {
+  rankdir=LR; labelloc="t"; label="NSCL-1 · Diagnosis / Initial Evaluation / Clinical Stage";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dx [label="NSCLC\n(pathologic diagnosis)", fillcolor="#D6EAF8"];
+
+  eval [label="INITIAL EVALUATION\l• Pathology review\l• H&P (performance status + weight loss)\l• CT chest/upper abdomen with contrast (adrenals)\l• CBC, platelets; chemistry profile\l• Smoking cessation advice, counseling, pharmacotherapy\l• Integrate palliative care\l", fillcolor="#D6EAF8"];
+
+  stage [label="CLINICAL STAGE", shape=diamond, fillcolor="#F9E79F"];
+
+  s_ia [label="Stage IA, peripheral (T1, N0)\n→ Pretreatment Eval NSCL-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_ib [label="Stage IB peripheral; Stage I central;\nStage II (T1–2ab N1; T2b N0); IIB (T1 N2a; T3 N0);\nIIIA (T3 N1) → NSCL-3", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_iib3 [label="Stage IIB (T3 invasion N0);\nIIIA (T3 invasion N1; T4 invasion N0–1)\n→ NSCL-5", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_n2 [label="Stage IIB (T1 N2a); IIIA (T1 N2b; T2–3 N2a);\nIIIB (T2–3 N2b) → NSCL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_sep [label="Separate pulmonary nodule(s) (IIB, IIIA, IV);\nIIIA ipsilateral non-primary lobe (T4 N0–1);\nStage IV contralateral lung → NSCL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_mult [label="Multiple lung cancers\n→ Treatment NSCL-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_n3 [label="Stage IIIB (T1–2 N3); IIIC (T3 N3)\n→ NSCL-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_t4n3 [label="Stage IIIB (T4 N2); IIIC (T4 N3)\n→ NSCL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_iva [label="Stage IVA (M1a): pleural/pericardial effusion\n→ NSCL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_ivb [label="Stage IVA (M1b) and Stage IVB (M1c)\n→ NSCL-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_diss [label="Pleural or disseminated metastases\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  dx -> eval -> stage;
+  stage -> s_ia; stage -> s_ib; stage -> s_iib3; stage -> s_n2; stage -> s_sep;
+  stage -> s_mult; stage -> s_n3; stage -> s_t4n3; stage -> s_iva; stage -> s_ivb; stage -> s_diss;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Peripheral = outer third of lung; Central = inner two thirds (based on chest CT).\nT3, N0 related to size or satellite nodules. Cancer treatment should not be\nmodified solely based on HIV status. See Principles of Pathologic Review (NSCL-A)."];
+  { rank=sink; note; }
+}

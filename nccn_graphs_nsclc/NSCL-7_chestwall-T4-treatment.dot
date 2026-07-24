@@ -1,0 +1,51 @@
+// NSCL-7 — Chest Wall / Proximal Airway / Mediastinum / T4 invasion: Treatment
+digraph NSCL7 {
+  rankdir=LR; labelloc="t"; label="NSCL-7 · Chest Wall / Mediastinum / T4 (N0–1) — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  res [label="Chest wall, trachea/carina, mediastinum,\nor diaphragm; T3 invasion, N0–1;\nresectable T4 invasion, N0–1;\nStage IIIA (T4 [size], N0–1) resectable", fillcolor="#D6EAF8"];
+
+  approach [label="Initial approach", shape=diamond, fillcolor="#F9E79F"];
+  res -> approach;
+
+  // Surgery first
+  surg [label="Surgery", fillcolor="#D5F5E3"];
+  approach -> surg [label="surgery first"];
+  s_r0 [label="Margins negative (R0)", fillcolor="#FCF3CF"];
+  s_r1 [label="Margins positive R1", fillcolor="#FCF3CF"];
+  s_r2 [label="Margins positive R2", fillcolor="#FCF3CF"];
+  surg -> s_r0; surg -> s_r1; surg -> s_r2;
+  s_r0_o [label="Adjuvant systemic therapy (NSCL-E)", fillcolor="#D5F5E3"];
+  s_r1_o [label="Reresection + systemic therapy\nor Chemoradiation (sequential/concurrent)", fillcolor="#D5F5E3"];
+  s_r2_o [label="Reresection + systemic therapy\nor Concurrent chemoradiation", fillcolor="#D5F5E3"];
+  s_r0 -> s_r0_o; s_r1 -> s_r1_o; s_r2 -> s_r2_o;
+
+  // Systemic/chemoRT first
+  neo [label="Systemic therapy\nor Concurrent chemoradiation", fillcolor="#D5F5E3"];
+  approach -> neo [label="induction first"];
+  reeval [label="Surgical reevaluation\n(chest CT ± PET/CT)", fillcolor="#FCF3CF"];
+  neo -> reeval;
+  surg2 [label="Surgery", fillcolor="#D5F5E3"];
+  reeval -> surg2;
+  n_r0 [label="Margins negative (R0)", fillcolor="#FCF3CF"];
+  n_pos [label="Margins positive (R1, R2)", fillcolor="#FCF3CF"];
+  surg2 -> n_r0; surg2 -> n_pos;
+  n_r0_o [label="Observe or\nAdjuvant systemic therapy (NSCL-E)", fillcolor="#EAECEE"];
+  n_pos_o [label="Reresection and/or RT boost\n+ Adjuvant systemic therapy (NSCL-E)", fillcolor="#D5F5E3"];
+  n_r0 -> n_r0_o; n_pos -> n_pos_o;
+
+  surv [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  s_r0_o -> surv; s_r1_o -> surv; s_r2_o -> surv; n_r0_o -> surv; n_pos_o -> surv;
+
+  // Unresectable T4
+  unres [label="Stage IIIA (T4, N0–1)\nunresectable", fillcolor="#D6EAF8"];
+  unres_tx [label="Definitive concurrent\nchemoradiation (category 1)", fillcolor="#D5F5E3"];
+  consol [label="Durvalumab (if no EGFR exon 19 del/L858R)\n(category 1) or Osimertinib (category 1)\n(if EGFR exon 19 del/L858R)", fillcolor="#D5F5E3"];
+  surv2 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  unres -> unres_tx -> consol -> surv2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Resectability should be determined by thoracic surgery evaluation prior to any therapy.\nFor sequential chemoradiation, durvalumab may be consolidation immunotherapy, or\nosimertinib if EGFR exon 19 del/L858R. See NSCL-B, NSCL-C, NSCL-E, NSCL-F."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,40 @@
+// COL-11 — pMMR/MSS: Unresectable Metachronous Metastases
+digraph COL11 {
+  rankdir=LR; labelloc="t"; label="COL-11 · pMMR/MSS — Unresectable Metachronous Metastases";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="pMMR/MSS unresectable\nmetachronous metastases", fillcolor="#F5B7B1"];
+
+  prior [label="Prior therapy status", shape=diamond, fillcolor="#F9E79F"];
+  present -> prior;
+
+  p_folox [label="Previous FOLFOX/CAPEOX\nwithin past 12 mo", fillcolor="#FCF3CF"];
+  p_other [label="Previous FOLFOX/CAPEOX >12 mo\nor Previous fluorouracil/leucovorin\nor capecitabine\nor No previous chemotherapy", fillcolor="#FCF3CF"];
+  prior -> p_folox; prior -> p_other;
+
+  tx [label="INITIAL TREATMENT\l• (FOLFIRI or irinotecan) ± (bevacizumab [pref]\l  or ziv-aflibercept or ramucirumab)\l• or (FOLFIRI or irinotecan) ± (cetuximab or\l  panitumumab) (KRAS/NRAS/BRAF WT, left-sided)\l• or Encorafenib + (cetuximab or panitumumab)\l  ± FOLFIRI or FOLFOX or CAPEOX (BRAF V600E)\l• or (Pertuzumab or tucatinib) + trastuzumab\l  (HER2+ and KRAS/NRAS/BRAF WT) or fam-\l  trastuzumab deruxtecan-nxki (HER2 IHC 3+)\l• or (Adagrasib or sotorasib) + (cetuximab or\l  panitumumab) (KRAS G12C mutation)\l", fillcolor="#F1948A"];
+  p_folox -> tx;
+
+  sysD [label="Systemic therapy (COL-D)", fillcolor="#F1948A"];
+  p_other -> sysD;
+
+  reeval [label="Re-evaluate for conversion to\nresectable every 2 mo (if reasonable goal)", shape=diamond, fillcolor="#F9E79F"];
+  tx -> reeval; sysD -> reeval;
+
+  converted [label="Converted to resectable", fillcolor="#FCF3CF"];
+  remains [label="Remains unresectable", fillcolor="#FCF3CF"];
+  reeval -> converted; reeval -> remains;
+
+  conv_resect [label="Resection (preferred)\nand/or local therapy", fillcolor="#D5F5E3"];
+  conv_adj [label="ADJUVANT\nSystemic therapy ± biologic therapy\n(COL-D) (cat 2B for biologic)\nor Observation", fillcolor="#EAECEE"];
+  surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  converted -> conv_resect -> conv_adj -> surv;
+
+  rem_tx [label="Systemic therapy (COL-D)\nand consider local therapy\nfor select patients", fillcolor="#F1948A"];
+  remains -> rem_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Bevacizumab is preferred anti-angiogenic agent by toxicity/cost. Encorafenib\nregimen: FOLFOX/CAPEOX addition for patients without residual neuropathy and\ngood prior chemo tolerance. Single-agent adagrasib/sotorasib if unable to\ntolerate EGFR inhibitor. See COL-D."];
+  { rank=sink; note; }
+}

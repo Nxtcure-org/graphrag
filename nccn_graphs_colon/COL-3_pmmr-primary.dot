@@ -1,0 +1,52 @@
+// COL-3 — pMMR/MSS: Findings and Primary Treatment (Non-metastatic)
+digraph COL3 {
+  rankdir=LR; labelloc="t"; label="COL-3 · pMMR/MSS — Findings & Primary Treatment (Non-metastatic)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Colon cancer appropriate for\nresection (non-metastatic)\npMMR/MSS", fillcolor="#D6EAF8"];
+
+  findings [label="FINDINGS", shape=diamond, fillcolor="#F9E79F"];
+
+  f_nonobstr [label="Resectable, nonobstructing", fillcolor="#FCF3CF"];
+  f_obstr    [label="Resectable, obstructing", fillcolor="#FCF3CF"];
+  f_t4b      [label="Clinical T4b or\nbulky nodal disease", fillcolor="#FCF3CF"];
+  f_unres    [label="Locally unresectable or\nmedically inoperable", fillcolor="#FCF3CF"];
+
+  findings -> f_nonobstr; findings -> f_obstr; findings -> f_t4b; findings -> f_unres;
+  present -> findings;
+
+  // Nonobstructing
+  tx_nonobstr [label="Colectomy with en bloc\nremoval of regional lymph nodes", fillcolor="#D5F5E3"];
+  f_nonobstr -> tx_nonobstr;
+
+  // Obstructing
+  tx_obstr [label="One-stage colectomy w/ en bloc nodes\nor Resection with diversion\nor Diversion\nor Stent (selected cases)", fillcolor="#D5F5E3"];
+  tx_obstr2 [label="Colectomy with en bloc\nremoval of regional lymph nodes\n(after diversion/stent)", fillcolor="#D5F5E3"];
+  f_obstr -> tx_obstr -> tx_obstr2;
+
+  // Clinical T4b / bulky nodal
+  tx_t4b [label="Consider neoadjuvant therapy\n• FOLFOX or CAPEOX", fillcolor="#D5F5E3"];
+  tx_t4b2 [label="Colectomy with en bloc\nremoval of regional lymph nodes", fillcolor="#D5F5E3"];
+  f_t4b -> tx_t4b -> tx_t4b2;
+
+  // Locally unresectable / inoperable
+  tx_unres [label="Systemic therapy (COL-D)\nand\nConsider RT ± infusional\nfluorouracil or capecitabine\nprior to surgery", fillcolor="#D5F5E3"];
+  reeval [label="Re-evaluate for conversion\nto resectable disease", shape=diamond, fillcolor="#F9E79F"];
+  tx_conv [label="Surgery ± intraoperative RT (IORT)", fillcolor="#D5F5E3"];
+  tx_sys  [label="Systemic therapy (COL-D)", fillcolor="#F1948A"];
+  f_unres -> tx_unres -> reeval;
+  reeval -> tx_conv [label="converted"];
+  reeval -> tx_sys [label="remains unresectable"];
+
+  adj [label="Pathologic Stage, Adjuvant\nTreatment, Surveillance → COL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adj_chemo [label="ADJUVANT (up to 6 mo)\nFOLFOX or CAPEOX (preferred)\nor Capecitabine or\nfluorouracil/leucovorin", fillcolor="#EAECEE"];
+  surv8 [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  tx_nonobstr -> adj; tx_obstr2 -> adj; tx_t4b2 -> adj;
+  tx_conv -> adj_chemo -> surv8;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Adjuvant treatment up to 6 mo perioperative. See Surgery (COL-C),\nRadiation/Chemoradiation (COL-E). All patients counseled for\nfamily history / risk assessment (LS, FAP)."];
+  { rank=sink; note; }
+}

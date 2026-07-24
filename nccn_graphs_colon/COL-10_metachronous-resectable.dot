@@ -1,0 +1,42 @@
+// COL-10 — pMMR/MSS: Resectable Metachronous Metastases
+digraph COL10 {
+  rankdir=LR; labelloc="t"; label="COL-10 · pMMR/MSS — Resectable Metachronous Metastases";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="pMMR/MSS resectable\nmetachronous metastases", fillcolor="#F5B7B1"];
+
+  prior [label="Previous chemotherapy?", shape=diamond, fillcolor="#F9E79F"];
+  present -> prior;
+
+  no_prev [label="No previous chemotherapy", fillcolor="#FCF3CF"];
+  yes_prev [label="Previous chemotherapy", fillcolor="#FCF3CF"];
+  prior -> no_prev; prior -> yes_prev;
+
+  // No previous chemo
+  n_resect [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  n_neo [label="Neoadjuvant chemotherapy (2-3 mo)\nFOLFOX (pref) or CAPEOX (pref) or\n(capecitabine or fluorouracil/leucovorin)\n(cat 2B)", fillcolor="#D5F5E3"];
+  n_neo_res [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  no_prev -> n_resect; no_prev -> n_neo -> n_neo_res;
+
+  n_adj1 [label="ADJUVANT\nFOLFOX or CAPEOX (preferred)\nor Capecitabine or\nfluorouracil/leucovorin", fillcolor="#EAECEE"];
+  n_adj2 [label="ADJUVANT\nFOLFOX or CAPEOX or Capecitabine or\nFluorouracil/leucovorin or Observation", fillcolor="#EAECEE"];
+  n_resect -> n_adj1; n_neo_res -> n_adj2;
+
+  // Previous chemo
+  p_resect [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  p_neo [label="Neoadjuvant chemotherapy (2-3 mo)\nFOLFOX (pref) or CAPEOX (pref) or\ncapecitabine or fluorouracil/leucovorin", fillcolor="#D5F5E3"];
+  p_neo_res [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  yes_prev -> p_resect; yes_prev -> p_neo -> p_neo_res;
+
+  p_adj1 [label="ADJUVANT\nObservation (preferred for previous\noxaliplatin-based therapy)\nor Systemic therapy ± biologic therapy\n(COL-D) (cat 2B for biologic)", fillcolor="#EAECEE"];
+  p_adj2 [label="ADJUVANT\nFOLFOX or CAPEOX or Capecitabine or\nFluorouracil/leucovorin or Observation", fillcolor="#EAECEE"];
+  p_resect -> p_adj1; p_neo_res -> p_adj2;
+
+  surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n_adj1 -> surv; n_adj2 -> surv; p_adj1 -> surv; p_adj2 -> surv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Adjuvant up to 6 mo perioperative treatment. HAI ± systemic chemo (VEGF\ninhibitor contraindicated) (cat 2B) also an option at experienced institutions.\nResection preferred over ablation for liver mets; ablation equivalent for <=3 cm.\nLung mets: surgery, thermal ablation, SBRT can be considered (COL-C/E)."];
+  { rank=sink; note; }
+}

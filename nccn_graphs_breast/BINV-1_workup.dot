@@ -1,0 +1,39 @@
+// BINV-1 — Invasive Breast Cancer: Clinical Stage, Workup
+digraph BINV1 {
+  rankdir=LR; labelloc="t"; label="BINV-1 · Invasive Breast Cancer — Clinical Diagnosis, Workup & Clinical Stage";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dx [label="Localized breast cancer\nInvasive, non-inflammatory,\nnon-metastatic (M0)", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• History & physical exam\l• Imaging: diagnostic bilateral mammogram; breast ultrasound\l  as necessary; breast MRI (optional)\l• Pathology review\l• ER/PR status and HER2 status\l• Genetic counseling/testing if at risk, TNBC, or olaparib candidate\l• Address fertility & sexual health\l• Pregnancy test in childbearing potential (if pregnant, see PREG-1)\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  stage [label="CLINICAL STAGE", shape=diamond, fillcolor="#F9E79F"];
+
+  cT0 [label="cT0, cN+, M0", shape=diamond, fillcolor="#FCF3CF"];
+  cT14 [label="cT1-T4, ≥cN0, M0", shape=diamond, fillcolor="#FCF3CF"];
+
+  occult [label="See NCCN Guidelines\nfor Occult Primary", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  crit [label="Criteria for preoperative\nsystemic therapy (BINV-L)", shape=diamond, fillcolor="#FCF3CF"];
+  notpreop [label="Not considering\npreoperative systemic therapy", fillcolor="#EAECEE"];
+  yespreop [label="Considering\npreoperative systemic therapy", fillcolor="#EAECEE"];
+
+  loco [label="Locoregional treatment\l• BCS ± surgical axillary staging ± RT → BINV-2\l• or Mastectomy + surgical axillary staging ± PMRT → BINV-3\l", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  addl [label="Additional Workup Prior to\nPreoperative Systemic Therapy → BINV-12", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  ibc [label="Inflammatory breast cancer (IBC)\nWorkup for IBC → IBC-1", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m1 [label="Metastatic (M1) / Stage IV or Recurrent\nWorkup → BINV-18", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  dx -> workup -> stage;
+  stage -> cT0 -> occult;
+  stage -> cT14 -> crit;
+  crit -> notpreop -> loco;
+  crit -> yespreop -> addl;
+  workup -> ibc [style=dashed];
+  workup -> m1 [style=dashed];
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Routine systemic staging not indicated for non-metastatic (M0) disease in absence of symptoms.\nAdditional imaging only for signs/symptoms of metastatic disease or clinically high risk (BINV-18)."];
+  { rank=sink; note; }
+}

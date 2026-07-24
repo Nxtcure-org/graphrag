@@ -1,0 +1,30 @@
+// BINV-8 — HR-Positive / HER2-Negative, Premenopausal, pT1-3 AND pN+
+digraph BINV8 {
+  rankdir=LR; labelloc="t"; label="BINV-8 · HR-Positive / HER2-Negative — Premenopausal (pT1-3 AND pN+)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Ductal/NST, Lobular, Mixed, Micropapillary\nHR-positive / HER2-negative, premenopausal", fillcolor="#D6EAF8"];
+
+  n1 [label="pN1mi (≤2 mm)\nor pN1 (1-3 positive nodes)", shape=diamond, fillcolor="#F9E79F"];
+  n23 [label="pN2/pN3 (≥4 ipsilateral\nmetastases >2 mm)", shape=diamond, fillcolor="#F9E79F"];
+
+  chemo_q [label="Determine if candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  notcand [label="Not a candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  cand [label="If candidate: consider gene\nexpression assay to assess prognosis", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_notcand [label="Adjuvant endocrine therapy ± ovarian\nsuppression/ablation. Consider abemaciclib\nor ribociclib for eligible patients.", fillcolor="#D5F5E3"];
+
+  tx_cand [label="Adjuvant chemotherapy followed by endocrine\ntherapy ± ovarian suppression/ablation.\nConsider abemaciclib or ribociclib.\nor Adjuvant endocrine therapy + ovarian\nsuppression/ablation. Consider abemaciclib/ribociclib.", fillcolor="#D5F5E3"];
+
+  tx_n23 [label="Adjuvant chemotherapy followed by endocrine\ntherapy ± ovarian suppression/ablation (category 1).\nConsider abemaciclib/ribociclib and/or olaparib\nif germline BRCA1/2 PV.", fillcolor="#D5F5E3"];
+
+  rt [label="Adjuvant whole breast RT (BINV-2)\nor PMRT (BINV-3). See BINV-I.\nFollow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> n1 -> chemo_q;
+  chemo_q -> notcand -> tx_notcand;
+  chemo_q -> cand -> tx_cand;
+  entry -> n23 -> tx_n23;
+  tx_notcand -> rt; tx_cand -> rt; tx_n23 -> rt;
+}

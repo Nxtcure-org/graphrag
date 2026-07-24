@@ -1,0 +1,27 @@
+// PROS-14 — Workup and Treatment of Low-Volume M1 (Metachronous or Synchronous) or Synchronous Oligometastatic CSPC
+digraph PROS14 {
+  rankdir=LR; labelloc="t"; label="PROS-14 · Low-Volume M1 / Synchronous Oligometastatic CSPC — Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  workup [label="WORKUP FOR METASTASES\l• Physical exam\l• Imaging for staging\l• Perform/collect PSA and calculate PSADT\l• Estimate life expectancy (PROS-A)\l• Germline and somatic genetic testing\l• Obtain family history\l• Assess quality-of-life measures\l", fillcolor="#D6EAF8"];
+  setting [label="Metastatic setting", shape=diamond, fillcolor="#F9E79F"];
+  workup -> setting;
+
+  synch [label="Synchronous low-volume metastases\nor Synchronous oligometastatic disease", fillcolor="#FCF3CF"];
+  metach [label="Metachronous\nlow-volume metastases", fillcolor="#FCF3CF"];
+  setting -> synch; setting -> metach;
+
+  synch_tx [label="ADT with one of the following:\l• Preferred: Abiraterone / Apalutamide /\l  Enzalutamide (category 1)\l• Other Recommended: Darolutamide (2B)\lor ADT + docetaxel + one ARPI (low-volume only)\lor ADT + EBRT to primary tumor ± one agent\lor ADT + Niraparib/abiraterone (BRCA2m only, 2B)\l", fillcolor="#D5F5E3"];
+  metach_tx [label="ADT with one of the following:\l• Preferred: Abiraterone / Apalutamide /\l  Enzalutamide (category 1)\l• Other Recommended: Darolutamide (2B)\lor ADT + Niraparib/abiraterone\l  (BRCA2m only, 2B, useful in certain circumstances)\l", fillcolor="#D5F5E3"];
+  synch -> synch_tx; metach -> metach_tx;
+
+  mon [label="MONITORING\l• PE + PSA every 3–6 mo\l• Imaging for symptoms\l• Periodic imaging to monitor response\l", fillcolor="#EAECEE"];
+  synch_tx -> mon; metach_tx -> mon;
+
+  prog [label="Progression on ADT ± ARPI", shape=diamond, fillcolor="#F9E79F"];
+  mon -> prog;
+  pros17 [label="Workup and Treatment of\nM1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog -> pros17;
+}

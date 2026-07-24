@@ -1,32 +1,32 @@
 {
-    "total_runtime": 52.27137589454651,
+    "total_runtime": 18.31862497329712,
     "num_documents": 0,
     "update_documents": 0,
     "input_load_time": 0,
     "workflows": {
         "finalize_graph": {
-            "overall": 0.2679929733276367,
-            "peak_memory_bytes": 1945474,
-            "memory_delta_bytes": 1316831,
-            "tracemalloc_overhead_bytes": 993456
+            "overall": 0.28038811683654785,
+            "peak_memory_bytes": 1960000,
+            "memory_delta_bytes": 1317521,
+            "tracemalloc_overhead_bytes": 995152
         },
         "create_communities": {
-            "overall": 0.21303701400756836,
-            "peak_memory_bytes": 824049,
-            "memory_delta_bytes": 277076,
-            "tracemalloc_overhead_bytes": 739376
+            "overall": 0.24683499336242676,
+            "peak_memory_bytes": 823327,
+            "memory_delta_bytes": 276861,
+            "tracemalloc_overhead_bytes": 739568
         },
         "create_community_reports": {
-            "overall": 36.996050119400024,
-            "peak_memory_bytes": 46844817,
-            "memory_delta_bytes": 43806264,
-            "tracemalloc_overhead_bytes": 26590288
+            "overall": 7.897211074829102,
+            "peak_memory_bytes": 7360936,
+            "memory_delta_bytes": 5314392,
+            "tracemalloc_overhead_bytes": 3539216
         },
         "generate_text_embeddings": {
-            "overall": 14.726927995681763,
-            "peak_memory_bytes": 82314212,
-            "memory_delta_bytes": 31180169,
-            "tracemalloc_overhead_bytes": 17689664
+            "overall": 9.846429109573364,
+            "peak_memory_bytes": 41482358,
+            "memory_delta_bytes": 17318889,
+            "tracemalloc_overhead_bytes": 14873472
         }
     }
 }

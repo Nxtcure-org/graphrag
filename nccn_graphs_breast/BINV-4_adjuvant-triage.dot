@@ -1,0 +1,41 @@
+// BINV-4 — Adjuvant Systemic Therapy Considerations by Histology and Receptor Status
+digraph BINV4 {
+  rankdir=LR; labelloc="t"; label="BINV-4 · Adjuvant Systemic Therapy — Triage by Histology & Receptor Status (After Upfront Surgery)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  hist [label="Ductal/NST, Lobular, Mixed,\nMicropapillary, Metaplastic", fillcolor="#D6EAF8"];
+
+  hr [label="HR STATUS", shape=diamond, fillcolor="#F9E79F"];
+  erpos [label="ER-positive and/or\nPR-positive", shape=diamond, fillcolor="#FCF3CF"];
+  erneg [label="ER-negative and\nPR-negative", shape=diamond, fillcolor="#FCF3CF"];
+
+  her2_p1 [label="HER2 STATUS", shape=diamond, fillcolor="#FCF3CF"];
+  her2_p2 [label="HER2 STATUS", shape=diamond, fillcolor="#FCF3CF"];
+
+  hp_hp [label="HR-Positive / HER2-Positive → BINV-5", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hp_hn [label="HR-Positive / HER2-Negative", shape=diamond, fillcolor="#FCF3CF"];
+  hn_hp [label="HR-Negative / HER2-Positive → BINV-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hn_hn [label="HR-Negative / HER2-Negative → BINV-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  postmeno [label="Postmenopausal\n(pT1-3 AND pN0 or pN+) → BINV-6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  premeno_n0 [label="Premenopausal\n(pT1-3 AND pN0) → BINV-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  premeno_np [label="Premenopausal\n(pT1-3 AND pN+) → BINV-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  fav_hist [label="Favorable histologic types\n(pure tubular, mucinous, cribriform,\nadenoid cystic, secretory, etc.)", fillcolor="#D6EAF8"];
+  fav [label="Favorable Histologies → BINV-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  hist -> hr;
+  hr -> erpos -> her2_p1;
+  hr -> erneg -> her2_p2;
+  her2_p1 -> hp_hp [label="HER2+"];
+  her2_p1 -> hp_hn [label="HER2-"];
+  her2_p2 -> hn_hp [label="HER2+"];
+  her2_p2 -> hn_hn [label="HER2-"];
+  hp_hn -> postmeno;
+  hp_hn -> premeno_n0;
+  hp_hn -> premeno_np;
+
+  fav_hist -> fav;
+}

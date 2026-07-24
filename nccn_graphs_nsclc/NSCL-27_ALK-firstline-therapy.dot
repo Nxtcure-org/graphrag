@@ -1,0 +1,31 @@
+// NSCL-27 — ALK Gene Fusion Positive: First-Line Therapy
+digraph NSCL27 {
+  rankdir=LR; labelloc="t"; label="NSCL-27 · ALK Gene Fusion — First-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  alk [label="ALK gene fusion", fillcolor="#F9E79F"];
+  timing [label="When discovered", shape=diamond, fillcolor="#F9E79F"];
+  alk -> timing;
+
+  prior [label="ALK gene fusion discovered\nprior to first-line systemic therapy", fillcolor="#FCF3CF"];
+  during [label="ALK gene fusion discovered\nduring first-line systemic therapy", fillcolor="#FCF3CF"];
+  timing -> prior; timing -> during;
+
+  pref [label="Preferred\nAlectinib / Brigatinib / Ensartinib /\nLorlatinib (all category 1)", fillcolor="#D5F5E3"];
+  ucc [label="Useful in Certain Circumstances\nCeritinib (cat 1)\nor Crizotinib (cat 1)", fillcolor="#D5F5E3"];
+  prior -> pref; prior -> ucc;
+
+  during_o [label="Interrupt current therapy and start\nAlectinib / Brigatinib / Ensartinib /\nLorlatinib (preferred) or Ceritinib or Crizotinib", fillcolor="#D5F5E3"];
+  during -> during_o;
+
+  prog28 [label="Progression → Subsequent Therapy NSCL-28", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog29 [label="Progression → Subsequent Therapy NSCL-29", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pref -> prog28; ucc -> prog28 [label="ceritinib"]; ucc -> prog29 [label="crizotinib"];
+  during_o -> prog28 [label="alectinib/brigatinib/\nensartinib/lorlatinib/ceritinib"];
+  during_o -> prog29 [label="crizotinib"];
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="For PS 0–4. If good response to current therapy, reasonable to continue therapy.\nSubsequent therapy for crizotinib progression routes to NSCL-29; for other\nALK TKIs, routes to NSCL-28. See NSCL-J, NSCL-H."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,30 @@
+// BINV-21 — Systemic Treatment of Recurrent Unresectable (Local/Regional) or Stage IV (M1) Disease
+digraph BINV21 {
+  rankdir=LR; labelloc="t"; label="BINV-21 · Systemic Treatment of Recurrent Unresectable or Stage IV (M1) Disease";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Recurrent unresectable\n(local or regional) or\nstage IV (M1) disease", fillcolor="#F5B7B1"];
+
+  bone [label="Bone disease\npresent?", shape=diamond, fillcolor="#F9E79F"];
+  bone_yes [label="Add denosumab, zoledronic\nacid, or pamidronate", fillcolor="#D5F5E3"];
+  bone_no [label="Bone disease\nnot present", fillcolor="#EAECEE"];
+
+  subtype [label="RECEPTOR\nSUBTYPE", shape=diamond, fillcolor="#F9E79F"];
+
+  hp_hn [label="ER/PR-positive; HER2-negative → BINV-22", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hp_hp [label="ER/PR-positive; HER2-positive → BINV-24", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hn_hp [label="ER/PR-negative; HER2-positive → BINV-26", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hn_hn [label="ER/PR-negative; HER2-negative → BINV-27", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> bone;
+  bone -> bone_yes [label="Yes"];
+  bone -> bone_no [label="No"];
+  bone_yes -> subtype;
+  bone_no -> subtype;
+  subtype -> hp_hn;
+  subtype -> hp_hp;
+  subtype -> hn_hp;
+  subtype -> hn_hn;
+}

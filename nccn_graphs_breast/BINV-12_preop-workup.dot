@@ -1,0 +1,18 @@
+// BINV-12 — Workup Prior to Preoperative Systemic Therapy
+digraph BINV12 {
+  rankdir=LR; labelloc="t"; label="BINV-12 · Workup Prior to Preoperative Systemic Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="c≥T2 or cN+ and M0\nor cT1c, cN0 HER2-positive\nor cT1c, cN0 TNBC\n(preoperative criteria, see BINV-L)", fillcolor="#D6EAF8"];
+
+  workup [label="ADDITIONAL WORKUP\l• Axillary assessment with exam; axillary ultrasound;\l  percutaneous biopsy of suspicious nodes\l• Complete blood count (CBC)\l• Comprehensive metabolic panel (LFTs, alkaline phosphatase)\lAs clinically indicated:\l• Chest diagnostic CT ± contrast\l• Abdomen ± pelvis diagnostic CT with contrast or MRI\l• Bone scan or sodium fluoride PET/CT (category 2B)\l• FDG-PET/CT\l• Breast MRI (optional)\l", fillcolor="#D6EAF8"];
+
+  op [label="For operable breast cancers:\nBreast & Axillary Evaluation Prior\nto Preoperative Systemic Therapy → BINV-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  inop [label="For inoperable breast cancers:\nPreoperative Systemic Therapy → BINV-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> workup;
+  workup -> op;
+  workup -> inop;
+}

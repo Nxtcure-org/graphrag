@@ -1,0 +1,28 @@
+// DCIS-1 — Ductal Carcinoma In Situ: Workup and Primary Treatment
+digraph DCIS1 {
+  rankdir=LR; labelloc="t"; label="DCIS-1 · Ductal Carcinoma In Situ — Workup & Primary Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  dx [label="DCIS\nTis, N0, M0\n(Encapsulated or solid\npapillary carcinoma, SPC)", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• History & physical exam\l• Diagnostic bilateral mammogram\l• Pathology review\l• Determine tumor estrogen receptor (ER) status\l• Genetic counseling if at risk for hereditary breast cancer\l• Breast MRI as indicated\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  decision [label="PRIMARY\nTREATMENT", shape=diamond, fillcolor="#F9E79F"];
+
+  bcs [label="Breast-conserving surgery (BCS)\nwithout lymph node surgery", fillcolor="#D5F5E3"];
+  mast [label="Total mastectomy with sentinel\nlymph node biopsy (SLNB)\n± reconstruction", fillcolor="#D5F5E3"];
+
+  bcs_rt [label="RT after BCS\l• Whole breast RT (category 1) ± boost to tumor bed\l• or APBI/PBI\l• or No RT (category 2B)\l", fillcolor="#D5F5E3"];
+
+  post1 [label="Postsurgical Treatment → DCIS-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  post2 [label="Postsurgical Treatment → DCIS-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  dx -> workup -> decision;
+  decision -> bcs -> bcs_rt -> post1;
+  decision -> mast -> post2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Surgical axillary staging not performed for pure DCIS unless invasion/axillary metastasis suspected.\nInvasive disease at mastectomy/re-excision managed as clinical stage I or II (BINV-1).\nOmission of RT with endocrine therapy alone may be considered if all RTOG 9804 criteria met."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,43 @@
+// COL-12 — dMMR/MSI-H or POLE/POLD1: Findings & Primary Treatment (Non-metastatic)
+digraph COL12 {
+  rankdir=LR; labelloc="t"; label="COL-12 · dMMR/MSI-H — Findings & Primary Treatment (Non-metastatic)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="dMMR/MSI-H or POLE/POLD1 mutation\nwith ultra-hypermutated phenotype\n(eg, TMB >50 mut/Mb) colon cancer\n(non-metastatic)", fillcolor="#D6EAF8"];
+
+  findings [label="FINDINGS", shape=diamond, fillcolor="#F9E79F"];
+  f_nonobstr [label="Resectable, non-obstructing", fillcolor="#FCF3CF"];
+  f_obstr [label="Resectable, obstructing", fillcolor="#FCF3CF"];
+  f_t4b [label="Clinical T4b or\nbulky nodal disease", fillcolor="#FCF3CF"];
+  f_unres [label="Locally unresectable or\nmedically inoperable", fillcolor="#FCF3CF"];
+
+  present -> findings;
+  findings -> f_nonobstr; findings -> f_obstr; findings -> f_t4b; findings -> f_unres;
+
+  tx_nonobstr [label="Colectomy with en bloc removal of\nregional lymph nodes\nor Consider neoadjuvant checkpoint\ninhibitor immunotherapy (for T4 or\nbulky primary) (COL-D 5 of 17)", fillcolor="#D5F5E3"];
+  f_nonobstr -> tx_nonobstr;
+
+  tx_obstr [label="One-stage colectomy w/ en bloc nodes\nor Resection with diversion\nor Diversion\nor Stent (selected cases)", fillcolor="#D5F5E3"];
+  tx_obstr2 [label="Colectomy with en bloc removal\nof regional lymph nodes", fillcolor="#D5F5E3"];
+  f_obstr -> tx_obstr -> tx_obstr2;
+
+  tx_t4b [label="Consider neoadjuvant therapy:\nCheckpoint inhibitor immunotherapy\n(preferred) (COL-D 5 of 17)\nor FOLFOX or CAPEOX", fillcolor="#D5F5E3"];
+  tx_t4b2 [label="Colectomy with en bloc removal\nof regional lymph nodes", fillcolor="#D5F5E3"];
+  f_t4b -> tx_t4b -> tx_t4b2;
+
+  tx_unres [label="Checkpoint inhibitor immunotherapy\n(preferred) (COL-D 5 of 17)\nand Consider RT ± infusional\nfluorouracil or capecitabine\nprior to surgery", fillcolor="#D5F5E3"];
+  reeval [label="Evaluate for complete response\nor conversion to resectability", shape=diamond, fillcolor="#F9E79F"];
+  tx_unres_out [label="Surgery ± IORT\nor Systemic therapy → COL-16\nor Observation", fillcolor="#D5F5E3"];
+  f_unres -> tx_unres -> reeval -> tx_unres_out;
+
+  adj13 [label="Pathologic Stage, Adjuvant\nTreatment, Surveillance → COL-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adj14 [label="Adjuvant therapy → COL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  tx_nonobstr -> adj13; tx_obstr2 -> adj13; tx_t4b2 -> adj13;
+  tx_unres_out -> adj14;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Patients who are not candidates for immunotherapy should be treated as\nrecommended for pMMR/MSS disease. See NCCN Management of Immune\nCheckpoint Inhibitor-Related Toxicities. See Surgery (COL-C), Radiation (COL-E)."];
+  { rank=sink; note; }
+}

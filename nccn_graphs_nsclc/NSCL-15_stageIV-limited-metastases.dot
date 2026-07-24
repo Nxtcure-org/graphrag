@@ -1,0 +1,34 @@
+// NSCL-15 — Stage IVA (M1b) and IVB (M1c): Definitive Therapy for Limited Metastases
+digraph NSCL15 {
+  rankdir=LR; labelloc="t"; label="NSCL-15 · Stage IVA (M1b) / IVB (M1c) — Limited Metastases";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IVA (M1b) and\nStage IVB (M1c)", fillcolor="#D6EAF8"];
+  workup [label="EVALUATION\l• Biomarker testing (NSCL-19), if not done\l• Brain MRI ± contrast\l• FDG-PET/CT\l• Pathologic confirmation of metastatic lesion, if possible\l", fillcolor="#D6EAF8"];
+  ps [label="Performance status", shape=diamond, fillcolor="#F9E79F"];
+  stage -> workup -> ps;
+
+  ps02 [label="PS 0–2", fillcolor="#FCF3CF"];
+  ps34 [label="PS 3–4\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ps -> ps02; ps -> ps34;
+
+  ext [label="Extent of metastases", shape=diamond, fillcolor="#FCF3CF"];
+  ps02 -> ext;
+  sol [label="Solitary or limited\nmetastases confirmed", fillcolor="#FCF3CF"];
+  mult [label="Multiple lesions\n→ Advanced/metastatic NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ext -> sol; ext -> mult;
+
+  site [label="Metastatic site", shape=diamond, fillcolor="#FCF3CF"];
+  sol -> site;
+  brain [label="Brain:\nSRS alone or Surgical resection (if symptomatic\nor for diagnosis), then SRS or WBRT", fillcolor="#D5F5E3"];
+  other [label="Other site", fillcolor="#FCF3CF"];
+  site -> brain [label="brain"]; site -> other [label="other"];
+
+  thoracic [label="Treatment of Thoracic Disease\n→ NSCL-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  brain -> thoracic; other -> thoracic;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Including selected M1c patients with limited number/volume of metastatic lesions\namenable to definitive local therapy. Clinical trials have included up to 3–5\nmetastatic sites. See NCCN Guidelines for CNS Cancers for brain metastases."];
+  { rank=sink; note; }
+}

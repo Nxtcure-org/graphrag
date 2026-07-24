@@ -1,0 +1,42 @@
+// COL-14 — dMMR/MSI-H or POLE/POLD1: Metastatic Synchronous Adenocarcinoma
+digraph COL14 {
+  rankdir=LR; labelloc="t"; label="COL-14 · dMMR/MSI-H — Metastatic Synchronous Adenocarcinoma (Treatment)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="dMMR/MSI-H or POLE/POLD1 ultra-\nhypermutated · Suspected or proven\nmetastatic synchronous adenocarcinoma\n(any T, any N, M1)", fillcolor="#F5B7B1"];
+
+  findings [label="FINDINGS", shape=diamond, fillcolor="#F9E79F"];
+  f_liverlung [label="Resectable synchronous liver only\nand/or lung only metastases", fillcolor="#FCF3CF"];
+  f_abd [label="Synchronous abdominal/\nperitoneal metastases", fillcolor="#FCF3CF"];
+  f_other [label="Synchronous unresectable\nmetastases", fillcolor="#FCF3CF"];
+
+  present -> findings;
+  findings -> f_liverlung; findings -> f_abd; findings -> f_other;
+
+  // liver/lung
+  ll_tx [label="Checkpoint inhibitor immunotherapy\n(preferred) (COL-D 5 of 17) followed by\nsynchronous/staged colectomy + resection\n(preferred) and/or local therapy\nor Synchronous/staged colectomy with\nliver/lung resection and/or local therapy", fillcolor="#D5F5E3"];
+  f_liverlung -> ll_tx;
+  ll_adj [label="ADJUVANT (resected metastatic disease)\nFOLFOX or CAPEOX\nor FOLFOX + atezolizumab\nor CAPEOX + atezolizumab", fillcolor="#EAECEE"];
+  ll_surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ll_tx -> ll_adj; ll_tx -> ll_surv;
+  ll_adj -> ll_surv;
+
+  // abdominal/peritoneal
+  a_nonobstr [label="Nonobstructing", fillcolor="#FCF3CF"];
+  a_obstr [label="Obstructed or imminent obstruction", fillcolor="#FCF3CF"];
+  f_abd -> a_nonobstr; f_abd -> a_obstr;
+  a_obstr_tx [label="Colon resection\nor Diverting ostomy\nor Bypass of impending obstruction\nor Stenting", fillcolor="#D5F5E3"];
+  a_obstr -> a_obstr_tx;
+  col16a [label="→ COL-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  col16b [label="→ COL-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  a_nonobstr -> col16a; a_obstr_tx -> col16b;
+
+  // other
+  col16c [label="→ COL-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  f_other -> col16c;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Patients not immunotherapy candidates treated as pMMR/MSS. Data limited;\nrisk of early progression may be higher than with chemotherapy (Andre 2020).\nRole of adjuvant immunotherapy after neoadjuvant immunotherapy not defined.\nSee Surgery (COL-C)."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,20 @@
+// DCIS-2 — DCIS Postsurgical Treatment and Surveillance/Follow-up
+digraph DCIS2 {
+  rankdir=LR; labelloc="t"; label="DCIS-2 · DCIS — Postsurgical Treatment & Surveillance/Follow-up";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Postsurgical treatment\n(from DCIS-1)", fillcolor="#D6EAF8"];
+
+  ipsi [label="RISK REDUCTION — IPSILATERAL BREAST\l• Consider endocrine therapy for 5 y for ER-positive DCIS if:\l   – Treated with BCS and RT (category 1)\l   – Treated with excision alone\l• Endocrine therapy:\l   – Tamoxifen for premenopausal patients\l   – Tamoxifen or aromatase inhibitor for postmenopausal patients\l", fillcolor="#EAECEE"];
+
+  contra [label="RISK REDUCTION — CONTRALATERAL BREAST\l• Counseling regarding risk reduction\l", fillcolor="#EAECEE"];
+
+  surv [label="SURVEILLANCE / FOLLOW-UP\l• Interval H&P every 6-12 mo for 5 y, then annually\l• First mammogram 6-12 mo after end of RT (if given),\l  or after BCS (category 2B) if no RT, and annually thereafter\l", fillcolor="#EAECEE"];
+
+  entry -> ipsi -> contra -> surv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="CYP2D6 genotype testing not recommended for tamoxifen.\nLow-dose tamoxifen (5 mg/day) is an option if symptomatic on 20-mg dose."];
+  { rank=sink; note; }
+}

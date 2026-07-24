@@ -1,0 +1,42 @@
+// DIAG-2 — Incidental Solid Nodule(s) on Chest CT: Follow-up
+digraph DIAG2 {
+  rankdir=LR; labelloc="t"; label="DIAG-2 · Solid Nodule(s) on Chest CT — Follow-up";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  start [label="Incidental finding:\nsolid nodule(s) on chest CT", fillcolor="#D6EAF8"];
+  risk [label="Risk", shape=diamond, fillcolor="#F9E79F"];
+  low [label="Low risk\n(minimal/absent smoking or\nother known risk factors)", fillcolor="#FCF3CF"];
+  high [label="High risk\n(smoking or other known\nrisk factors)", fillcolor="#FCF3CF"];
+
+  start -> risk; risk -> low; risk -> high;
+
+  // Low risk size branches
+  l_lt6 [label="<6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  l_68 [label="6–8 mm", shape=diamond, fillcolor="#FCF3CF"];
+  l_gt8 [label=">8 mm", shape=diamond, fillcolor="#FCF3CF"];
+  low -> l_lt6; low -> l_68; low -> l_gt8;
+
+  l_lt6_o [label="No routine follow-up", fillcolor="#EAECEE"];
+  l_68_o [label="CT at 6–12 mo", fillcolor="#D6EAF8"];
+  l_68_stable [label="If stable:\nConsider CT at 18–24 mo", fillcolor="#EAECEE"];
+  l_gt8_o [label="Consider CT at 3 mo,\nFDG-PET/CT, or biopsy", fillcolor="#D6EAF8"];
+  l_lt6 -> l_lt6_o; l_68 -> l_68_o -> l_68_stable; l_gt8 -> l_gt8_o;
+
+  // High risk size branches
+  h_lt6 [label="<6 mm", shape=diamond, fillcolor="#FCF3CF"];
+  h_68 [label="6–8 mm", shape=diamond, fillcolor="#FCF3CF"];
+  h_gt8 [label=">8 mm", shape=diamond, fillcolor="#FCF3CF"];
+  high -> h_lt6; high -> h_68; high -> h_gt8;
+
+  h_lt6_o [label="CT at 12 mo (optional)", fillcolor="#D6EAF8"];
+  h_lt6_stable [label="If stable:\nNo routine follow-up", fillcolor="#EAECEE"];
+  h_68_o [label="CT at 6–12 mo", fillcolor="#D6EAF8"];
+  h_68_stable [label="If stable:\nRepeat CT at 18–24 mo", fillcolor="#EAECEE"];
+  h_gt8_o [label="Consider CT at 3 mo,\nFDG-PET/CT, or biopsy", fillcolor="#D6EAF8"];
+  h_lt6 -> h_lt6_o -> h_lt6_stable; h_68 -> h_68_o -> h_68_stable; h_gt8 -> h_gt8_o;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Adapted from Fleischner Society Guidelines 2017. A positive FDG-PET/CT\n= SUV in nodule > baseline mediastinal blood pool. Prior to treatment,\nmultidisciplinary evaluation is required to determine safest biopsy approach."];
+  { rank=sink; note; }
+}

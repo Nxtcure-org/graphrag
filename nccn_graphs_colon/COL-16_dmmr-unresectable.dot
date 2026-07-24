@@ -1,0 +1,30 @@
+// COL-16 — dMMR/MSI-H or POLE/POLD1: Unresectable Metastases
+digraph COL16 {
+  rankdir=LR; labelloc="t"; label="COL-16 · dMMR/MSI-H — Unresectable Metastases (Treatment)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="dMMR/MSI-H or POLE/POLD1 ultra-\nhypermutated (eg, TMB >50 mut/Mb)\nUnresectable metastases", fillcolor="#F5B7B1"];
+
+  status [label="Prior immunotherapy status", shape=diamond, fillcolor="#F9E79F"];
+  present -> status;
+
+  candidate [label="Candidate for immunotherapy and\nno prior immunotherapy received", fillcolor="#FCF3CF"];
+  prior [label="Prior immunotherapy received", fillcolor="#FCF3CF"];
+  status -> candidate; status -> prior;
+
+  init [label="Checkpoint inhibitor immunotherapy\n(COL-D 5 of 17)", fillcolor="#F1948A"];
+  candidate -> init;
+  reeval [label="Re-evaluate disease status\nevery 2-3 mo", shape=diamond, fillcolor="#F9E79F"];
+  init -> reeval;
+
+  subseq [label="SUBSEQUENT TREATMENT\nSurveillance (COL-8)\nor Surgery ± RT\nor Continue immunotherapy (COL-D 5 of 17)\nor Ipilimumab + nivolumab (if checkpoint\ninhibitor monotherapy previously received)\nor Systemic therapy (COL-D)", fillcolor="#F1948A"];
+  reeval -> subseq;
+
+  prior_tx [label="SUBSEQUENT TREATMENT\nSystemic therapy (COL-D)\nor Ipilimumab + nivolumab (if checkpoint\ninhibitor monotherapy previously received)", fillcolor="#F1948A"];
+  prior -> prior_tx;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="If disease response, consider discontinuing checkpoint inhibitor after 2 y\nof treatment. See NCCN Management of Immune Checkpoint Inhibitor-Related\nToxicities. See Principles of Systemic Therapy (COL-D)."];
+  { rank=sink; note; }
+}

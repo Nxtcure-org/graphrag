@@ -1,0 +1,36 @@
+// BINV-5 — Systemic Adjuvant Treatment: HR-Positive / HER2-Positive Disease
+digraph BINV5 {
+  rankdir=LR; labelloc="t"; label="BINV-5 · Systemic Adjuvant Treatment — HR-Positive / HER2-Positive Disease";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Ductal/NST, Lobular, Mixed, Micropapillary\nHR-positive / HER2-positive", fillcolor="#D6EAF8"];
+
+  small [label="pT1, pT2, or pT3;\nand pN0 or pN1mi (≤2 mm)", shape=diamond, fillcolor="#F9E79F"];
+  npos [label="pN+ (≥1 ipsilateral\nmetastases >2 mm)", shape=diamond, fillcolor="#F9E79F"];
+
+  pt1a [label="pT1a (≤0.5 cm)", shape=diamond, fillcolor="#FCF3CF"];
+  pt1b [label="pT1b (0.6-1.0 cm)", shape=diamond, fillcolor="#FCF3CF"];
+  pt1c [label="pT1c-pT3 (>1 cm)", shape=diamond, fillcolor="#FCF3CF"];
+
+  pN0 [label="pN0", shape=diamond, fillcolor="#FCF3CF"];
+  pN1mi [label="pN1mi", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_pN0 [label="Consider adjuvant endocrine therapy\nor Consider adjuvant chemotherapy with\ntrastuzumab (category 2B) + endocrine therapy", fillcolor="#D5F5E3"];
+  tx_pN1mi [label="Adjuvant endocrine therapy\nor Adjuvant chemotherapy with\ntrastuzumab + endocrine therapy", fillcolor="#D5F5E3"];
+  tx_pt1b [label="Adjuvant endocrine therapy\nor Adjuvant chemotherapy with\ntrastuzumab + endocrine therapy", fillcolor="#D5F5E3"];
+  tx_pt1c [label="Adjuvant chemotherapy with trastuzumab\n(category 1) (± pertuzumab for pT2-T3)\n+ endocrine therapy", fillcolor="#D5F5E3"];
+  tx_npos [label="Adjuvant chemotherapy with pertuzumab +\ntrastuzumab (category 1, preferred) + endocrine therapy\nor Adjuvant chemotherapy with trastuzumab\n(category 1) + endocrine therapy", fillcolor="#D5F5E3"];
+
+  rt [label="Adjuvant whole breast RT (BINV-2)\nor PMRT (BINV-3) as indicated.\nSee BINV-I for sequencing.\nFollow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> small; entry -> npos;
+  small -> pt1a; small -> pt1b; small -> pt1c;
+  pt1a -> pN0 -> tx_pN0;
+  pt1a -> pN1mi -> tx_pN1mi;
+  pt1b -> tx_pt1b;
+  pt1c -> tx_pt1c;
+  npos -> tx_npos;
+  tx_pN0 -> rt; tx_pN1mi -> rt; tx_pt1b -> rt; tx_pt1c -> rt; tx_npos -> rt;
+}

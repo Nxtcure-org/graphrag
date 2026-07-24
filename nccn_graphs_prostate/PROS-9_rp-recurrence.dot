@@ -1,0 +1,41 @@
+// PROS-9 — Radical Prostatectomy PSA Persistence/Recurrence
+digraph PROS9 {
+  rankdir=LR; labelloc="t"; label="PROS-9 · Radical Prostatectomy PSA Persistence/Recurrence";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="PSA persistence/recurrence\n(after RP)", fillcolor="#F5B7B1"];
+  le [label="Life expectancy", shape=diamond, fillcolor="#F9E79F"];
+  entry -> le;
+
+  workup [label="Life expectancy >5 y:\l• Risk stratification\lConsider:\l• Bone and soft tissue imaging\l• Prostate bed biopsy\l", fillcolor="#EAECEE"];
+  le -> workup [label=">5 y"];
+
+  nom1 [label="No evidence of M1", shape=diamond, fillcolor="#FCF3CF"];
+  m1 [label="M1", shape=diamond, fillcolor="#FCF3CF"];
+  workup -> nom1; workup -> m1;
+
+  tx [label="TREATMENT (first PSA recurrence)\nEBRT (preferred) ± ADT\n(± abiraterone for N1 [category 2B])\nor Monitoring", fillcolor="#F1948A"];
+  nom1 -> tx;
+  mon [label="Monitoring", fillcolor="#EAECEE"];
+  bcr [label="Second biochemical\nrecurrence (BCR)", fillcolor="#F5B7B1"];
+  tx -> mon -> bcr;
+  pros11 [label="Workup for Second Biochemical\nRecurrence → PROS-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  bcr -> pros11;
+
+  oligo [label="Oligometastatic", fillcolor="#FCF3CF"];
+  poly [label="Polymetastatic", fillcolor="#FCF3CF"];
+  m1 -> oligo; m1 -> poly;
+  m13 [label="Metachronous Oligometastatic\nCSPC → PROS-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m14 [label="Low-Volume M1 or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  oligo -> m13; poly -> m14; poly -> m15;
+
+  // <=5 y
+  obs [label="Observation", fillcolor="#EAECEE"];
+  le -> obs [label="≤5 y"];
+  prog [label="Progression", shape=diamond, fillcolor="#F9E79F"];
+  pall [label="Palliative therapy /\nBest supportive care", fillcolor="#F1948A"];
+  obs -> prog -> pall;
+}

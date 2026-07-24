@@ -1,0 +1,18 @@
+// BINV-18 — Recurrent / Stage IV (M1) Disease: Workup
+digraph BINV18 {
+  rankdir=LR; labelloc="t"; label="BINV-18 · Recurrent / Stage IV (M1) Disease — Workup";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Stage IV (M1)\nor Recurrent", fillcolor="#F5B7B1"];
+
+  workup [label="WORKUP\l• History & physical exam\l• Discuss goals of therapy, shared decision-making\l• CBC; comprehensive metabolic panel (LFTs, alk phos)\l• Imaging for systemic staging: chest CT; abdomen ± pelvis\l  CT/MRI; brain MRI if CNS symptoms; bone scan or\l  sodium fluoride PET/CT (category 2B); FDG-PET/CT\l• Biomarker testing: biopsy of at least first recurrence;\l  ER/PR and HER2 status; multigene panel testing (MGPT)\l• Genetic counseling if at risk\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  local [label="Treatment of Local and Regional\nRecurrence → BINV-19\nand Supportive care", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  systemic [label="Systemic Treatment of Recurrent\nUnresectable (local/regional) or\nStage IV (M1) → BINV-21\nand Supportive care", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> workup;
+  workup -> local;
+  workup -> systemic;
+}

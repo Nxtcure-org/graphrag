@@ -1,0 +1,28 @@
+// NSCL-13 — Stage IIIB (T1–2, N3) / IIIC (T3, N3): Evaluation and Treatment
+digraph NSCL13 {
+  rankdir=LR; labelloc="t"; label="NSCL-13 · Stage IIIB (T1–2, N3) / IIIC (T3, N3) — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IIIB (T1–2, N3);\nStage IIIC (T3, N3)", fillcolor="#D6EAF8"];
+  workup [label="PRETREATMENT EVALUATION\l• Biomarker testing (EGFR)\l• PFTs; FDG-PET/CT (if not done)\l• Brain MRI ± contrast\l• Pathologic confirmation of N3 disease:\l  mediastinoscopy, supraclavicular node biopsy,\l  thoracoscopy, needle biopsy, mediastinotomy,\l  EUS/EBUS biopsy\l", fillcolor="#D6EAF8"];
+  dec [label="N3 status", shape=diamond, fillcolor="#F9E79F"];
+  stage -> workup -> dec;
+
+  n3neg [label="N3 negative\n→ Initial treatment stage I–IIIA (NSCL-8)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dec -> n3neg;
+
+  n3pos [label="N3 positive", fillcolor="#FCF3CF"];
+  dec -> n3pos;
+  crt [label="Definitive concurrent\nchemoradiation (category 1)", fillcolor="#D5F5E3"];
+  consol [label="Durvalumab (if no EGFR exon 19 del/L858R)\n(cat 1) or Osimertinib (if EGFR exon 19 del/L858R) (cat 1)", fillcolor="#D5F5E3"];
+  surv [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n3pos -> crt -> consol -> surv;
+
+  mets [label="Metastatic disease\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dec -> mets;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Positive FDG-PET/CT for mediastinal nodal or distant disease needs pathologic\nconfirmation. For sequential chemoradiation, durvalumab can be consolidation\nimmunotherapy, or osimertinib if EGFR exon 19 del/L858R. See NSCL-C, NSCL-F."];
+  { rank=sink; note; }
+}

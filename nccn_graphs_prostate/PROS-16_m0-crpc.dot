@@ -1,0 +1,40 @@
+// PROS-16 — Workup and Treatment of M0 Castration-Resistant Prostate Cancer (CRPC)
+digraph PROS16 {
+  rankdir=LR; labelloc="t"; label="PROS-16 · M0 Castration-Resistant Prostate Cancer (CRPC) — Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="CRPC, imaging studies\nnegative for distant metastases", fillcolor="#F5B7B1"];
+  adt [label="Continue ADT to maintain\ncastrate serum testosterone (<50 ng/dL)", fillcolor="#F1948A"];
+  entry -> adt;
+
+  psadt [label="PSADT", shape=diamond, fillcolor="#F9E79F"];
+  adt -> psadt;
+
+  slow [label="Monitoring (preferred)\nor Other secondary hormone therapy", fillcolor="#F1948A"];
+  fast [label="Preferred: Apalutamide / Darolutamide /\nEnzalutamide (category 1)\nOther Recommended:\nOther secondary hormone therapy", fillcolor="#F1948A"];
+  psadt -> slow [label=">10 mo"];
+  psadt -> fast [label="≤10 mo"];
+
+  assess [label="Consider periodic disease assessment\n(PSA and imaging)", fillcolor="#EAECEE"];
+  slow -> assess; fast -> assess;
+
+  outcome [label="Disease status", shape=diamond, fillcolor="#F9E79F"];
+  assess -> outcome;
+
+  increasing [label="PSA increasing or radiographic\nevidence of metastases", fillcolor="#F5B7B1"];
+  stable [label="Stable PSA and no\nevidence of metastases", fillcolor="#EAECEE"];
+  outcome -> increasing; outcome -> stable;
+
+  imaging [label="Imaging", shape=diamond, fillcolor="#FCF3CF"];
+  increasing -> imaging;
+  m0 [label="No metastases (M0)\nChange or maintain current treatment;\ncontinue periodic disease assessment", fillcolor="#EAECEE"];
+  m1 [label="Metastases (M1)", fillcolor="#F5B7B1"];
+  imaging -> m0; imaging -> m1;
+  pros17 [label="Workup and Treatment of\nM1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m1 -> pros17;
+
+  stable_tx [label="Maintain current treatment and consider\nperiodic disease assessment (PSA and imaging)", fillcolor="#EAECEE"];
+  stable -> stable_tx;
+}

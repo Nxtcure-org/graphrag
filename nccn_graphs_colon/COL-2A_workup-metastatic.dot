@@ -1,0 +1,23 @@
+// COL-2A — Workup for Colon Cancer Suspected or Proven Metastatic Adenocarcinoma
+digraph COL2A {
+  rankdir=LR; labelloc="t"; label="COL-2A · Workup — Suspected or Proven Metastatic Adenocarcinoma";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Suspected or proven metastatic\nadenocarcinoma", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• Colonoscopy\l• C/A/P CT\l• CBC, chemistry profile, CEA\l• Biomarker testing (as rapidly as possible):\l  - KRAS, NRAS, BRAF V600E; HER2 (ERBB2);\l    MMR or MSI status\l  - Multigene panel testing (MGPT):\l    POLE/POLD1, RET, NTRK 1/2/3\l• Biopsy, if clinically indicated\l• Consider FDG-PET/CT if potentially\l  surgically curable M1 (selected cases)\l  - Consider MRI of liver for resectable mets\l• If potentially resectable: multidisciplinary\l  team eval (hepatobiliary/lung surgeon)\l", fillcolor="#D6EAF8"];
+
+  mmr [label="MMR / MSI status", shape=diamond, fillcolor="#F9E79F"];
+
+  pmmr [label="pMMR/MSS\n→ COL-5", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dmmr [label="dMMR/MSI-H or POLE/POLD1 mutation\nwith ultra-hypermutated phenotype\n(eg, TMB >50 mut/Mb)\n→ COL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> mmr;
+  mmr -> pmmr;
+  mmr -> dmmr;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Tissue- or blood-based analysis using MGPT can pick up rare and actionable\nmutations and gene fusions. All patients counseled for family history / risk\nassessment (LS, FAP). See Principles of Imaging (COL-A) and Pathologic Review (COL-B)."];
+  { rank=sink; note; }
+}

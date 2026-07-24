@@ -1,0 +1,19 @@
+// BINV-17 — Surveillance / Follow-up
+digraph BINV17 {
+  rankdir=LR; labelloc="t"; label="BINV-17 · Surveillance / Follow-up";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  exam [label="EXAM & SCREENING\l• H&P 1-4 times/year for 5 y, then annually\l• Periodic genetic screening / referral as indicated\l• Educate, monitor, refer for lymphedema management\l", fillcolor="#EAECEE"];
+
+  imaging [label="BREAST IMAGING\l• Mammography every 12 mo, beginning 6+ mo after BCS\l• Routine imaging of reconstructed breast not indicated\l  after mastectomy\l", fillcolor="#EAECEE"];
+
+  mets [label="SCREENING FOR METASTASES\l• Evaluate clinical signs/symptoms of recurrence\l• No indication for lab or imaging metastases screening\l", fillcolor="#EAECEE"];
+
+  posttx [label="POST-TREATMENT / ENDOCRINE\l• Cardiotoxicity monitoring after left-sided RT,\l  anthracyclines, or HER2-targeted therapy\l• Assess & encourage adherence to endocrine therapy\l• Tamoxifen: age-appropriate gynecologic screening\l• Aromatase inhibitor: monitor bone mineral density\l", fillcolor="#EAECEE"];
+
+  recur [label="Recurrent Disease → BINV-18", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  exam -> imaging -> mets -> posttx -> recur;
+}

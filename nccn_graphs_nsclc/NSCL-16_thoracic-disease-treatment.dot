@@ -1,0 +1,30 @@
+// NSCL-16 — Treatment of Thoracic Disease (limited metastases)
+digraph NSCL16 {
+  rankdir=LR; labelloc="t"; label="NSCL-16 · Treatment of Thoracic Disease";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  feasible [label="Definitive therapy for\nthoracic disease feasible", fillcolor="#D6EAF8"];
+  approach [label="Consider systemic therapy as per advanced/metastatic\ndisease (NSCL-19) and restage to confirm non-progression\nor Proceed to definitive therapy", fillcolor="#D5F5E3"];
+  tnm [label="Thoracic TNM", shape=diamond, fillcolor="#F9E79F"];
+  feasible -> approach -> tnm;
+
+  t_n0 [label="T1–3, N0:\nPathologic nodal eval +\nSurgical resection or SABR", fillcolor="#D5F5E3"];
+  t_n1 [label="T1–3, N1:\nPathologic nodal eval + Chemoradiation (preferred)\nor Surgical resection or Definitive RT", fillcolor="#D5F5E3"];
+  t_n2 [label="T1–3, N2 or T4, N0–2:\nDefinitive chemoradiation", fillcolor="#D5F5E3"];
+  tnm -> t_n0; tnm -> t_n1; tnm -> t_n2;
+
+  local [label="Definitive local therapy\nfor metastatic site\n(if not already given)", fillcolor="#D5F5E3"];
+  t_n0 -> local; t_n1 -> local; t_n2 -> local;
+
+  consider [label="Consider systemic therapy, if not\nalready given, as per advanced/\nmetastatic disease → NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  local -> consider;
+
+  notfeasible [label="Definitive therapy for\nthoracic disease not feasible", fillcolor="#D6EAF8"];
+  nf_ref [label="Advanced/metastatic\ndisease → NSCL-19", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  notfeasible -> nf_ref;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Definitive local therapy for metastatic site is typically RT (including SABR)\nor surgical resection. IGTA may be an option for select patients.\nChest CT with contrast and/or FDG-PET/CT to evaluate progression."];
+  { rank=sink; note; }
+}

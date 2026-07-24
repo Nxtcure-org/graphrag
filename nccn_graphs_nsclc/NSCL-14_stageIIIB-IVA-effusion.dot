@@ -1,0 +1,41 @@
+// NSCL-14 — Stage IIIB (T4, N2) / IIIC (T4, N3) and Stage IVA M1a (effusion): Treatment
+digraph NSCL14 {
+  rankdir=LR; labelloc="t"; label="NSCL-14 · Stage IIIB/IIIC (T4) & IVA (M1a effusion) — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IIIB (T4, N2);\nStage IIIC (T4, N3)", fillcolor="#D6EAF8"];
+  workup [label="EVALUATION\l• Biomarker testing (EGFR)\l• FDG-PET/CT (if not done)\l• Brain MRI ± contrast\l• Pathologic confirmation of N2–3 disease\l", fillcolor="#D6EAF8"];
+  dec [label="Contralateral mediastinal\nnode status", shape=diamond, fillcolor="#F9E79F"];
+  stage -> workup -> dec;
+
+  contra_neg [label="Contralateral mediastinal\nnode negative", fillcolor="#FCF3CF"];
+  dec -> contra_neg;
+  ipsi_neg [label="Ipsilateral mediastinal node\nnegative (T4, N0–1)\n→ Treatment for Stage IIIA NSCL-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ipsi_pos [label="Ipsilateral mediastinal node\npositive (T4, N2)", fillcolor="#FCF3CF"];
+  contra_neg -> ipsi_neg; contra_neg -> ipsi_pos;
+
+  contra_pos [label="Contralateral mediastinal\nnode positive (T4, N3)", fillcolor="#FCF3CF"];
+  dec -> contra_pos;
+
+  crt [label="Definitive concurrent\nchemoradiation (category 1)", fillcolor="#D5F5E3"];
+  consol [label="Durvalumab (if no EGFR exon 19 del/L858R)\n(cat 1) or Osimertinib (if EGFR exon 19 del/L858R) (cat 1)", fillcolor="#D5F5E3"];
+  surv [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  ipsi_pos -> crt; contra_pos -> crt; crt -> consol -> surv;
+
+  mets [label="Metastatic disease\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dec -> mets;
+
+  // Stage IVA M1a effusion
+  iva [label="Stage IVA, M1a:\npleural or pericardial effusion", fillcolor="#D6EAF8"];
+  iva_workup [label="EVALUATION\l• FDG-PET/CT; Brain MRI ± contrast\l• Biomarker testing (NSCL-19)\l• Thoracentesis or pericardiocentesis\l  ± thoracoscopy if indeterminate\l", fillcolor="#D6EAF8"];
+  iva_dec [label="Cytology", shape=diamond, fillcolor="#F9E79F"];
+  iva -> iva_workup -> iva_dec;
+  iva_neg [label="Negative\n→ Treatment according to TNM stage", fillcolor="#D5F5E3"];
+  iva_pos [label="Positive\n→ Local therapy if needed (pleurodesis, catheter drainage,\npericardial window) + treatment for stage IV disease (NSCL-19)", fillcolor="#F5B7B1"];
+  iva_dec -> iva_neg [label="negative"]; iva_dec -> iva_pos [label="positive"];
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Most pleural/pericardial effusions with lung cancer are due to tumor. If multiple\ncytology exams are negative, fluid is non-bloody/non-exudate, and clinical judgment\ndictates unrelated, the effusion should be excluded as a staging descriptor."];
+  { rank=sink; note; }
+}

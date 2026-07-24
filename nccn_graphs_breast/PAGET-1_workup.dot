@@ -1,0 +1,40 @@
+// PAGET-1 / PAGET-2 — Paget Disease: Clinical Presentation, Workup and Treatment
+digraph PAGET1 {
+  rankdir=LR; labelloc="t"; label="PAGET-1 · Paget Disease — Clinical Presentation, Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Clinical suspicion of Paget disease\n(nipple/areolar eczema, ulceration,\nbleeding, or itching)", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• Clinical breast exam\l• Diagnostic bilateral mammogram, ultrasound as necessary\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  imaging [label="IMAGING\nRESULT", shape=diamond, fillcolor="#F9E79F"];
+  birads [label="Examination or BI-RADS\n4 or 5 imaging", shape=diamond, fillcolor="#FCF3CF"];
+  neg [label="Examination and imaging\nnegative for breast lesion", shape=diamond, fillcolor="#FCF3CF"];
+
+  biopsy1 [label="Core biopsy of breast lesion and\nfull-thickness skin biopsy of involved NAC", fillcolor="#D6EAF8"];
+  biopsy2 [label="Full-thickness skin biopsy\nof involved NAC", fillcolor="#D6EAF8"];
+
+  bx_result [label="BIOPSY\nRESULT", shape=diamond, fillcolor="#F9E79F"];
+  bx_neg [label="Breast and NAC\nbiopsy negative", shape=diamond, fillcolor="#FCF3CF"];
+  bx_dcis [label="Breast DCIS + NAC Paget,\nor invasive cancer + NAC Paget,\nor breast negative + positive NAC Paget", shape=diamond, fillcolor="#FCF3CF"];
+  nac_pos [label="NAC biopsy positive\nfor Paget", shape=diamond, fillcolor="#FCF3CF"];
+  nac_neg [label="NAC biopsy negative\nfor Paget", shape=diamond, fillcolor="#FCF3CF"];
+
+  rebiopsy [label="Clinical follow-up.\nRe-biopsy if not healing.", fillcolor="#EAECEE"];
+
+  tx [label="Consider breast MRI and tissue sampling, if indicated.\nCentral lumpectomy including NAC ± SLNB with whole breast RT\nor Total mastectomy including NAC ± SLNB\n± breast reconstruction", fillcolor="#D5F5E3"];
+
+  adj [label="If DCIS or invasive breast cancer:\nappropriate systemic adjuvant therapy as indicated.\nSee NCCN Guidelines for DCIS or Invasive Breast Cancer.", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> imaging;
+  imaging -> birads -> biopsy1;
+  imaging -> neg -> biopsy2;
+  biopsy1 -> bx_result;
+  bx_result -> bx_neg -> rebiopsy;
+  bx_result -> bx_dcis -> tx;
+  biopsy2 -> nac_pos -> tx;
+  biopsy2 -> nac_neg -> rebiopsy;
+  tx -> adj;
+}

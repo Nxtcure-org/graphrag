@@ -1,0 +1,23 @@
+// PROS-15 — Workup and Treatment of High-Volume M1 CSPC
+digraph PROS15 {
+  rankdir=LR; labelloc="t"; label="PROS-15 · High-Volume M1 CSPC — Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  workup [label="WORKUP FOR METASTASES\l• Physical exam\l• Imaging for staging\l• Perform/collect PSA and calculate PSADT\l• Estimate life expectancy (PROS-A)\l• Germline and somatic genetic testing\l• Obtain family history\l• Assess quality-of-life measures\l", fillcolor="#D6EAF8"];
+
+  hv [label="Synchronous or metachronous\nhigh-volume metastases", fillcolor="#FCF3CF"];
+  workup -> hv;
+
+  tx [label="ADT + docetaxel + one of:\l• Preferred: Abiraterone / Darolutamide (cat 1)\l• Other Recommended: Apalutamide / Enzalutamide (2B)\lor ADT + one of:\l• Preferred: Abiraterone / Apalutamide /\l  Enzalutamide (category 1)\l• Other Recommended: Darolutamide\lor ADT + Niraparib/abiraterone (BRCA2m only)\l", fillcolor="#D5F5E3"];
+  hv -> tx;
+
+  mon [label="MONITORING\l• PE + PSA every 3–6 mo\l• Imaging for symptoms\l• Periodic imaging to monitor response\l", fillcolor="#EAECEE"];
+  tx -> mon;
+
+  prog [label="Progression", shape=diamond, fillcolor="#F9E79F"];
+  mon -> prog;
+  pros17 [label="Workup and Treatment of\nM1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog -> pros17;
+}

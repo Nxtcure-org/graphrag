@@ -1,0 +1,30 @@
+// NSCL-21 — EGFR exon 19 deletion or L858R mutation: First-Line Therapy
+digraph NSCL21 {
+  rankdir=LR; labelloc="t"; label="NSCL-21 · EGFR exon 19 del / L858R — First-Line Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  egfr [label="EGFR exon 19 deletion\nor L858R mutation", fillcolor="#F9E79F"];
+  timing [label="When discovered", shape=diamond, fillcolor="#F9E79F"];
+  egfr -> timing;
+
+  prior [label="EGFR mutation discovered\nprior to first-line systemic therapy", fillcolor="#FCF3CF"];
+  during [label="EGFR mutation discovered\nduring first-line systemic therapy", fillcolor="#FCF3CF"];
+  timing -> prior; timing -> during;
+
+  pref [label="Preferred\nOsimertinib (cat 1)\nor (Carboplatin or Cisplatin)/Osimertinib/\nPemetrexed (nonsquamous) (cat 1)\nor Lazertinib + Amivantamab-vmjw (cat 1)", fillcolor="#D5F5E3"];
+  ucc [label="Useful in Certain Circumstances\nAfatinib / Dacomitinib / Erlotinib / Gefitinib (cat 1)\nor Erlotinib + Bevacizumab / + Ramucirumab\nor Lazertinib", fillcolor="#D5F5E3"];
+  prior -> pref; prior -> ucc;
+
+  during_o [label="Interrupt current therapy and start therapy\nas noted above, or add Osimertinib to\n(Carboplatin or Cisplatin)/Pemetrexed (nonsquamous)", fillcolor="#D5F5E3"];
+  during -> during_o;
+
+  prog1 [label="Progression → Subsequent Therapy NSCL-22", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog2 [label="Progression → Subsequent Therapy NSCL-23", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog3 [label="Progression → Systemic Therapy,\nSubsequent NSCL-K 5 of 6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pref -> prog1; pref -> prog3; ucc -> prog2; during_o -> prog3;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="For PS 0–4. Prophylactic anticoagulation and dermatologic/IRR prophylaxis\nrecommended with lazertinib + amivantamab-vmjw. If ICI in prior regimen, beware\nlong half-life and adverse events with osimertinib. See NSCL-J, NSCL-H."];
+  { rank=sink; note; }
+}

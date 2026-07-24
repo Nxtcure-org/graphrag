@@ -1,0 +1,39 @@
+// PHYLL-1 — Phyllodes Tumor: Clinical Presentation, Workup, Treatment, Surveillance
+digraph PHYLL1 {
+  rankdir=LR; labelloc="t"; label="PHYLL-1 · Phyllodes Tumor — Workup, Treatment & Surveillance";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Clinical suspicion of phyllodes:\n• Palpable mass\n• Rapid growth\n• Large size (>3 cm)\n• Imaging suggestive of fibroadenoma\n  except for size and/or growth history", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• History & physical exam\l• Ultrasound\l• Mammogram for patients ≥30 y\l• Assess for distress\l", fillcolor="#D6EAF8"];
+
+  biopsy [label="Core needle biopsy", fillcolor="#D6EAF8"];
+
+  results [label="CORE BIOPSY\nRESULTS", shape=diamond, fillcolor="#F9E79F"];
+
+  indet [label="Indeterminate or suspicious\nfor a benign phyllodes", shape=diamond, fillcolor="#FCF3CF"];
+  suspmal [label="Suspicious for borderline/\nmalignant phyllodes", shape=diamond, fillcolor="#FCF3CF"];
+  invasive [label="Invasive or\nin situ cancer", shape=diamond, fillcolor="#FCF3CF"];
+
+  excis [label="Excisional biopsy\n(complete mass removal)", fillcolor="#D5F5E3"];
+
+  fibro [label="Fibroadenoma or\nfibroepithelial lesion", shape=diamond, fillcolor="#FCF3CF"];
+  benign [label="Benign phyllodes", shape=diamond, fillcolor="#FCF3CF"];
+  bordmal [label="Phyllodes, borderline\nor malignant", shape=diamond, fillcolor="#FCF3CF"];
+
+  observe [label="Observe", fillcolor="#EAECEE"];
+  followup [label="Clinical follow-up for\n3 y (no RT)", fillcolor="#EAECEE"];
+
+  sarcoma [label="See NCCN Guidelines for Soft\nTissue Sarcoma (PHYLLSARC-1)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  breastca [label="See NCCN Guidelines for DCIS (DCIS-1)\nor Invasive Breast Cancer (BINV-1)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> biopsy -> results;
+  results -> indet -> excis;
+  results -> suspmal -> sarcoma;
+  results -> invasive -> breastca;
+  excis -> fibro -> observe;
+  excis -> benign -> followup;
+  excis -> bordmal -> sarcoma;
+}

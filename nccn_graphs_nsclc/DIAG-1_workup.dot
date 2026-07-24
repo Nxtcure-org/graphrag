@@ -1,0 +1,29 @@
+// DIAG-1 — Clinical Presentation and Risk Assessment
+digraph DIAG1 {
+  rankdir=LR; labelloc="t"; label="DIAG-1 · Clinical Presentation / Risk Assessment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  incidental [label="Incidental finding of nodule\nsuspicious for lung cancer", fillcolor="#D6EAF8"];
+
+  eval [label="CLINICAL PRESENTATION\l• Multidisciplinary evaluation\l• Smoking cessation counseling\l", fillcolor="#D6EAF8"];
+
+  risk [label="RISK ASSESSMENT\lPatient factors:\l• Age, smoking history\l• Previous cancer / family history\l• Occupational exposures\l• Other lung disease (COPD, fibrosis)\l• Infectious exposures / immune suppression\lRadiologic factors:\l• Size, shape, density of nodule\l• Associated parenchymal abnormalities\l• FDG avidity on FDG-PET/CT\l", fillcolor="#D6EAF8"];
+
+  branch [label="Nodule type", shape=diamond, fillcolor="#F9E79F"];
+
+  solid [label="Solid nodules\nFollow-up → DIAG-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  subsolid [label="Subsolid nodules\nFollow-up → DIAG-3", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  incidental -> eval -> risk -> branch;
+  branch -> solid;
+  branch -> subsolid;
+
+  screen [label="Lung nodules in asymptomatic patients\nat high risk detected during\nLDCT screening", fillcolor="#D6EAF8"];
+  screen_ref [label="→ NCCN Guidelines for\nLung Cancer Screening", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  screen -> screen_ref;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Multidisciplinary evaluation includes thoracic surgeons, thoracic radiologists,\nand pulmonologists. Risk calculators can quantify patient/radiologic factors.\nMost important radiologic factor = change or stability vs. prior imaging."];
+  { rank=sink; note; }
+}

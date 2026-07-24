@@ -1,0 +1,25 @@
+// COL-2 — Workup for Colon Cancer Appropriate for Resection (Non-metastatic)
+digraph COL2 {
+  rankdir=LR; labelloc="t"; label="COL-2 · Workup — Colon Cancer Appropriate for Resection (Non-metastatic)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Colon cancer appropriate for\nresection (non-metastatic)", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• Biopsy\l• MMR/MSI testing\l• Testing for somatic PI3K pathway\l  alterations (stage II-III)\l• Pathology review\l• Colonoscopy\l• C/A/P CT\l• Consider abdomen/pelvis MRI\l• CBC, chemistry profile, CEA\l• FDG-PET/CT is not indicated\l• Fertility risk discussion/counseling\l", fillcolor="#D6EAF8"];
+
+  mmr [label="MMR / MSI status", shape=diamond, fillcolor="#F9E79F"];
+
+  pmmr [label="pMMR/MSS\n→ COL-3", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dmmr [label="dMMR/MSI-H or POLE/POLD1 mutation\nwith ultra-hypermutated phenotype\n(eg, TMB >50 mut/Mb)\n→ COL-12", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  metastatic [label="Suspected or proven metastatic\nadenocarcinoma → COL-2A", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> mmr;
+  mmr -> pmmr;
+  mmr -> dmmr;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Somatic PI3K pathway alterations include PIK3CA exon 9/20; other PIK3CA,\nPIK3R1, PTEN mutations; deep PTEN deletions. Aspirin not started until\nrecovery from surgery; may be given concurrently with adjuvant chemo.\nFDA boxed warning: test DPYD variants before capecitabine/fluorouracil (COL-I)."];
+  { rank=sink; note; metastatic; }
+}

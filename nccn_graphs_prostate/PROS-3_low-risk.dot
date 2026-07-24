@@ -1,0 +1,53 @@
+// PROS-3 — Low-Risk Group: Initial Therapy
+digraph PROS3 {
+  rankdir=LR; labelloc="t"; label="PROS-3 · Low-Risk Group — Initial Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Low-Risk Group", fillcolor="#D6EAF8"];
+  surv [label="Expected patient survival", shape=diamond, fillcolor="#F9E79F"];
+  entry -> surv;
+
+  // >=10 y
+  as [label="Active surveillance\n(preferred for most patients)\n(PROS-F 2 of 5)", fillcolor="#EAECEE"];
+  rt [label="Radiation therapy (RT)", fillcolor="#D5F5E3"];
+  rp [label="Radical prostatectomy (RP)", fillcolor="#D5F5E3"];
+  surv -> as [label="≥10 y"];
+  surv -> rt [label="≥10 y"];
+  surv -> rp [label="≥10 y"];
+
+  as_prog [label="Progressive disease →\nInitial Risk Stratification (PROS-2)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  as -> as_prog;
+
+  rt_bcr [label="Biochemical recurrence", fillcolor="#F5B7B1"];
+  rt_nobcr [label="No biochemical recurrence", fillcolor="#EAECEE"];
+  rt -> rt_bcr; rt -> rt_nobcr;
+  rt_bcr -> pros10;
+  rt_nobcr -> mon8;
+
+  // RP branch
+  undet [label="Undetectable PSA", shape=diamond, fillcolor="#FCF3CF"];
+  psaper [label="PSA persistence", fillcolor="#F5B7B1"];
+  rp -> undet; rp -> psaper;
+
+  noadv [label="No adverse features and\nno lymph node metastases", fillcolor="#FCF3CF"];
+  adv [label="Adverse feature(s) or\nlymph node metastases", fillcolor="#FCF3CF"];
+  undet -> noadv; undet -> adv;
+
+  noadv -> mon8;
+  adv_mon [label="Monitoring (category 1,\npreferred for adverse features)\n→ PROS-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adv_tx [label="OR Consider treatment\n→ PROS-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adv -> adv_mon; adv -> adv_tx;
+  psaper -> pros9;
+
+  mon8 [label="Monitoring for Initial\nDefinitive Therapy → PROS-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros9 [label="Radical Prostatectomy PSA\nPersistence/Recurrence → PROS-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros10 [label="Radiation Therapy\nRecurrence → PROS-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  // <10 y
+  obs [label="Observation", fillcolor="#EAECEE"];
+  surv -> obs [label="<10 y"];
+  obs_mon [label="Monitoring → PROS-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  obs -> obs_mon;
+}

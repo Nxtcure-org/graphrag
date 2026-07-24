@@ -1,0 +1,34 @@
+// NSCL-22 — EGFR exon 19 del / L858R: Subsequent Therapy (progression on osimertinib/lazertinib)
+digraph NSCL22 {
+  rankdir=LR; labelloc="t"; label="NSCL-22 · EGFR — Subsequent Therapy (progression on osimertinib/lazertinib)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  prog [label="Progression on Osimertinib or\nLazertinib ± Amivantamab-vmjw", fillcolor="#F1948A"];
+  sympt [label="Symptomatic?", shape=diamond, fillcolor="#F9E79F"];
+  prog -> sympt;
+
+  asx [label="Asymptomatic", fillcolor="#FCF3CF"];
+  sx [label="Symptomatic", fillcolor="#FCF3CF"];
+  sympt -> asx; sympt -> sx;
+
+  asx_o [label="Consider definitive local therapy (SABR/surgery)\nfor limited lesions; Continue Osimertinib or\nLazertinib ± Amivantamab-vmjw", fillcolor="#F1948A"];
+  asx -> asx_o;
+
+  site [label="Site of progression", shape=diamond, fillcolor="#FCF3CF"];
+  sx -> site;
+  brain [label="Brain:\nConsider definitive local therapy (SRS);\nContinue Osimertinib or Lazertinib ±\nAmivantamab-vmjw; see CNS Guidelines", fillcolor="#F1948A"];
+  syst [label="Systemic", shape=diamond, fillcolor="#FCF3CF"];
+  site -> brain [label="brain"]; site -> syst [label="systemic"];
+
+  limited [label="Limited progression:\nConsider definitive local therapy (SABR/surgery);\nContinue therapy, or Therapy for multiple lesions", fillcolor="#F1948A"];
+  multiple [label="Multiple lesions:\nCarboplatin/Pemetrexed + Amivantamab-vmjw\n(nonsquamous) (cat 1) (preferred), or\nLazertinib + Amivantamab-vmjw, or Systemic therapy (NSCL-K 1 of 6)", fillcolor="#F1948A"];
+  syst -> limited [label="limited"]; syst -> multiple [label="multiple"];
+
+  subseq [label="Progression, Systemic Therapy,\nSubsequent → NSCL-K 5 of 6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  asx_o -> subseq; brain -> subseq; limited -> subseq; multiple -> subseq;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Beware flare phenomenon in subset who discontinue TKI; if flare, restart TKI.\nConsider biopsy at progression to rule out SCLC transformation (~6%) and evaluate\nresistance mechanisms. Clinical trials have included up to 3–5 progressing sites."];
+  { rank=sink; note; }
+}

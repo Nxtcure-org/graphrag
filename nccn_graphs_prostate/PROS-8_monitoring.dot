@@ -1,0 +1,41 @@
+// PROS-8 — Monitoring and Recurrence
+digraph PROS8 {
+  rankdir=LR; labelloc="t"; label="PROS-8 · Monitoring and Recurrence";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  // Top: initial definitive therapy monitoring
+  idt [label="Initial definitive therapy", fillcolor="#EAECEE"];
+  mon [label="MONITORING\l• PSA every 6–12 mo for 5 y,\l  then every year\l• Consider DRE if suspicion\l  of recurrence\l", fillcolor="#EAECEE"];
+  idt -> mon;
+
+  route [label="Recurrence route", shape=diamond, fillcolor="#F9E79F"];
+  mon -> route;
+
+  postrp [label="Post-RP:\nPSA persistence/recurrence", fillcolor="#F5B7B1"];
+  postrt [label="Post-RT:\nPSA recurrence or Positive DRE", fillcolor="#F5B7B1"];
+  radmet [label="Radiographic evidence of\nmetastatic disease without\nPSA persistence/recurrence", fillcolor="#F5B7B1"];
+  route -> postrp; route -> postrt; route -> radmet;
+
+  pros9 [label="Radical Prostatectomy PSA\nPersistence/Recurrence → PROS-9", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros10 [label="Radiation Therapy\nRecurrence → PROS-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  postrp -> pros9; postrt -> pros10;
+
+  biopsy [label="Biopsy of metastatic site", fillcolor="#EAECEE"];
+  radmet -> biopsy;
+  m13 [label="Metachronous Oligometastatic\nCSPC → PROS-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m14 [label="Low-Volume M1 or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  biopsy -> m13; biopsy -> m14; biopsy -> m15;
+
+  // Bottom: N1 on ADT / localized on observation
+  n1 [label="N1 on ADT\nor Localized on observation", fillcolor="#EAECEE"];
+  mon2 [label="MONITORING\l• Physical exam + PSA every 3–6 mo\l• Imaging for symptoms or increasing PSA\l", fillcolor="#EAECEE"];
+  prog [label="Progression", shape=diamond, fillcolor="#F9E79F"];
+  n1 -> mon2 -> prog;
+  m0crpc [label="Systemic Therapy for\nM0 CRPC → PROS-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  m1crpc [label="Workup and Treatment of\nM1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  prog -> m0crpc [label="N1, M0"];
+  prog -> m1crpc [label="M1"];
+}

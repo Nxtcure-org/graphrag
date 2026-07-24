@@ -1,0 +1,45 @@
+// BINV-16 — Adjuvant Systemic Therapy After Preoperative Systemic Therapy
+digraph BINV16 {
+  rankdir=LR; labelloc="t"; label="BINV-16 · Adjuvant Systemic Therapy After Preoperative Systemic Therapy";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  hphn [label="HR-positive /\nHER2-negative", shape=diamond, fillcolor="#F9E79F"];
+  hnhp [label="HR-negative /\nHER2-positive", shape=diamond, fillcolor="#F9E79F"];
+  hphp [label="HR-positive /\nHER2-positive", shape=diamond, fillcolor="#F9E79F"];
+  hnhn [label="HR-negative /\nHER2-negative", shape=diamond, fillcolor="#F9E79F"];
+
+  hphn_pcr [label="ypT0N0 or pCR", shape=diamond, fillcolor="#FCF3CF"];
+  hphn_res [label="ypT1-4,N0 or ypN≥1", shape=diamond, fillcolor="#FCF3CF"];
+  tx_hphn_pcr [label="Adjuvant endocrine therapy (category 1),\nconsider ribociclib for eligible patients", fillcolor="#D5F5E3"];
+  tx_hphn_res [label="Adjuvant endocrine therapy (category 1)\n+ olaparib if germline BRCA1/2 PV (category 1).\nConsider abemaciclib or ribociclib.", fillcolor="#D5F5E3"];
+
+  hnhp_pcr [label="ypT0N0 or pCR", shape=diamond, fillcolor="#FCF3CF"];
+  hnhp_res [label="ypT1-4,N0 or ypN≥1", shape=diamond, fillcolor="#FCF3CF"];
+  tx_hnhp_pcr [label="Complete up to 1 year of HER2-targeted therapy\nwith trastuzumab (category 1) ± pertuzumab", fillcolor="#D5F5E3"];
+  tx_hnhp_res [label="Fam-trastuzumab deruxtecan-nxki (category 1) for\nhigh risk, OR ado-trastuzumab emtansine (category 1);\ncomplete 1 y HER2-directed therapy", fillcolor="#D5F5E3"];
+
+  hphp_pcr [label="ypT0N0 or pCR", shape=diamond, fillcolor="#FCF3CF"];
+  hphp_res [label="ypT1-4,N0 or ypN≥1", shape=diamond, fillcolor="#FCF3CF"];
+  tx_hphp_pcr [label="Endocrine therapy (category 1) + complete up to 1 y\nHER2-directed therapy with trastuzumab ± pertuzumab", fillcolor="#D5F5E3"];
+  tx_hphp_res [label="T-DXd or T-DM1 (category 1) + endocrine therapy\n(category 1); complete 1 y HER2-directed therapy", fillcolor="#D5F5E3"];
+
+  hnhn_pcr [label="ypT0N0 or pCR", shape=diamond, fillcolor="#FCF3CF"];
+  hnhn_res [label="ypT1-4,N0 or ypN≥1", shape=diamond, fillcolor="#FCF3CF"];
+  tx_hnhn_pcr [label="For high risk: adjuvant pembrolizumab\n(if pembrolizumab-containing regimen given preoperatively)", fillcolor="#D5F5E3"];
+  tx_hnhn_res [label="Adjuvant pembrolizumab (category 1) and/or\nadjuvant capecitabine (6-8 cycles) and/or\nadjuvant olaparib 1 y if germline BRCA1/2 PV", fillcolor="#D5F5E3"];
+
+  fu [label="Follow-Up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  hphn -> hphn_pcr -> tx_hphn_pcr;
+  hphn -> hphn_res -> tx_hphn_res;
+  hnhp -> hnhp_pcr -> tx_hnhp_pcr;
+  hnhp -> hnhp_res -> tx_hnhp_res;
+  hphp -> hphp_pcr -> tx_hphp_pcr;
+  hphp -> hphp_res -> tx_hphp_res;
+  hnhn -> hnhn_pcr -> tx_hnhn_pcr;
+  hnhn -> hnhn_res -> tx_hnhn_res;
+  tx_hphn_pcr -> fu; tx_hphn_res -> fu; tx_hnhp_pcr -> fu; tx_hnhp_res -> fu;
+  tx_hphp_pcr -> fu; tx_hphp_res -> fu; tx_hnhn_pcr -> fu; tx_hnhn_res -> fu;
+}

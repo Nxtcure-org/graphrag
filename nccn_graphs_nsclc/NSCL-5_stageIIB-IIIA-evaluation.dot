@@ -1,0 +1,26 @@
+// NSCL-5 — Stage IIB (T3 invasion) / IIIA (T3–T4 invasion): Evaluation and Clinical Routing
+digraph NSCL5 {
+  rankdir=LR; labelloc="t"; label="NSCL-5 · Stage IIB/IIIA (T3–T4 invasion) — Evaluation";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IIB (T3 invasion, N0);\nStage IIIA (T3 invasion, N1;\nT4 invasion, size N0–1)", fillcolor="#D6EAF8"];
+
+  workup [label="PRETREATMENT EVALUATION\l• Evaluate for perioperative therapy\l• Biomarker testing (EGFR, ALK, RET, PD-L1)\l• PFTs; bronchoscopy\l• Pathologic lymph node evaluation\l• Brain MRI ± contrast\l• MRI spine/thoracic inlet for superior sulcus lesions\l• FDG-PET/CT (if not done)\l", fillcolor="#D6EAF8"];
+
+  clin [label="CLINICAL EVALUATION", shape=diamond, fillcolor="#F9E79F"];
+  stage -> workup -> clin;
+
+  ss [label="Superior sulcus tumor\n→ Treatment NSCL-6", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  cw [label="Chest wall, trachea/carina,\nmediastinum, or diaphragm\n→ Treatment NSCL-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t4 [label="Stage IIIA (T4, N0–1)\n→ Treatment NSCL-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n2 [label="Positive mediastinal nodes (N2)\n→ NSCL-8 or NSCL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n3 [label="Positive mediastinal nodes (N3)\n→ NSCL-13 or NSCL-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  mets [label="Metastatic disease\n→ NSCL-15 (limited) or NSCL-18 (distant)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  clin -> ss; clin -> cw; clin -> t4; clin -> n2; clin -> n3; clin -> mets;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Positive FDG-PET/CT findings for mediastinal nodal or distant disease need\npathologic or other radiologic confirmation. If MRI not possible, CT head with contrast.\nSee Principles of Perioperative Systemic Therapy (NSCL-E)."];
+  { rank=sink; note; }
+}

@@ -1,0 +1,35 @@
+// BINV-2 — Locoregional Treatment cT1-3, cN0/cN+, M0: BCS ± RT
+digraph BINV2 {
+  rankdir=LR; labelloc="t"; label="BINV-2 · Locoregional Treatment (cT1-3, cN0/cN+, M0) — BCS ± RT";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  surg [label="BCS ± surgical axillary staging\n(category 1) ± oncoplastic reconstruction", fillcolor="#D5F5E3"];
+
+  adj [label="ADJUVANT SYSTEMIC THERAPY\nSee BINV-4 to determine whether adjuvant\nsystemic therapy is indicated.\nRT typically given after systemic therapy.\nSee BINV-I for sequencing.", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  nodal [label="PATHOLOGIC\nNODAL STATUS", shape=diamond, fillcolor="#F9E79F"];
+
+  pN0 [label="pN0 or cN0", shape=diamond, fillcolor="#FCF3CF"];
+  pN1a [label="pN1a (1-3 positive\naxillary nodes)", shape=diamond, fillcolor="#FCF3CF"];
+  pN23 [label="pN2-3 (≥4 positive\naxillary nodes)", shape=diamond, fillcolor="#FCF3CF"];
+
+  rt_n0 [label="Whole breast RT ± boost, consider comprehensive RNI\nfor high-risk features\nor APBI/PBI if low risk (category 1)\nor Omit breast irradiation if endocrine therapy planned\nand criteria met (category 1)", fillcolor="#D5F5E3"];
+
+  crit [label="Meets ALL:\n• cT1-T3, cN0\n• No preoperative chemo\n• 1-2 positive SLNs\n• Whole breast RT planned", shape=diamond, fillcolor="#FCF3CF"];
+  rt_yes [label="Whole breast RT ± boost\n(comprehensive RNI ± axilla at\ndiscretion of radiation oncologist) (category 1)", fillcolor="#D5F5E3"];
+  rt_no [label="Whole breast RT with inclusion of undissected\naxilla at risk ± boost (category 1).\nStrongly consider comprehensive RNI.", fillcolor="#D5F5E3"];
+
+  rt_n23 [label="Whole breast RT ± boost (category 1) +\ncomprehensive RNI including undissected\naxilla at risk (category 1)", fillcolor="#D5F5E3"];
+
+  fu [label="Follow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  surg -> adj -> nodal;
+  nodal -> pN0 -> rt_n0;
+  nodal -> pN1a -> crit;
+  crit -> rt_yes [label="Yes to all"];
+  crit -> rt_no [label="No"];
+  nodal -> pN23 -> rt_n23;
+  rt_n0 -> fu; rt_yes -> fu; rt_no -> fu; rt_n23 -> fu;
+}

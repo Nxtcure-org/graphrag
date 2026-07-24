@@ -1,0 +1,40 @@
+// COL-15 — dMMR/MSI-H or POLE/POLD1: Resectable Metachronous Metastases
+digraph COL15 {
+  rankdir=LR; labelloc="t"; label="COL-15 · dMMR/MSI-H — Resectable Metachronous Metastases";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="dMMR/MSI-H or POLE/POLD1 ultra-\nhypermutated · Resectable\nmetachronous metastases", fillcolor="#F5B7B1"];
+
+  prior [label="Prior immunotherapy status", shape=diamond, fillcolor="#F9E79F"];
+  present -> prior;
+
+  no_prev [label="No previous immunotherapy", fillcolor="#FCF3CF"];
+  yes_prev [label="Previous immunotherapy\nor contraindication", fillcolor="#FCF3CF"];
+  prior -> no_prev; prior -> yes_prev;
+
+  // no previous immunotherapy
+  n_immuno [label="Checkpoint inhibitor immunotherapy\n(preferred) (COL-D 5 of 17)", fillcolor="#D5F5E3"];
+  n_immuno_out [label="Observation\nor Resection and/or local therapy", fillcolor="#EAECEE"];
+  n_resect [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  no_prev -> n_immuno -> n_immuno_out;
+  no_prev -> n_resect;
+  n_adj [label="ADJUVANT\nFOLFOX or CAPEOX\nor FOLFOX + atezolizumab\nor CAPEOX + atezolizumab", fillcolor="#EAECEE"];
+  n_resect -> n_adj;
+
+  // previous immunotherapy
+  p_resect [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  p_neo [label="Neoadjuvant chemotherapy (2-3 mo)\nFOLFOX or CAPEOX", fillcolor="#D5F5E3"];
+  p_neo_res [label="Resection and/or local therapy", fillcolor="#D5F5E3"];
+  yes_prev -> p_resect; yes_prev -> p_neo -> p_neo_res;
+  p_adj1 [label="ADJUVANT\nObservation (preferred for previous\noxaliplatin-based therapy)\nor Systemic therapy ± biologic therapy\n(COL-D) (cat 2B for biologic)", fillcolor="#EAECEE"];
+  p_adj2 [label="ADJUVANT\nFOLFOX or CAPEOX\nor Observation", fillcolor="#EAECEE"];
+  p_resect -> p_adj1; p_neo_res -> p_adj2;
+
+  surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  n_immuno_out -> surv; n_adj -> surv; p_adj1 -> surv; p_adj2 -> surv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Adjuvant up to 6 mo perioperative treatment. Role of adjuvant immunotherapy\nfor those who received neoadjuvant immunotherapy is not defined. Resection\npreferred over ablation for liver mets; ablation equivalent for <=3 cm.\nLung mets: surgery, ablation, SBRT can be considered (COL-C/E)."];
+  { rank=sink; note; }
+}

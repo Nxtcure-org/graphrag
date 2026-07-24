@@ -1,0 +1,43 @@
+// BINV-6 — Systemic Adjuvant Treatment: HR-Positive / HER2-Negative, Postmenopausal
+digraph BINV6 {
+  rankdir=LR; labelloc="t"; label="BINV-6 · HR-Positive / HER2-Negative — Postmenopausal (pT1-3 AND pN0 or pN+)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Ductal/NST, Lobular, Mixed, Micropapillary\nHR-positive / HER2-negative, postmenopausal", fillcolor="#D6EAF8"];
+
+  pt1a [label="pT1a (≤0.5 cm) and pN0", shape=diamond, fillcolor="#F9E79F"];
+  mid [label="pT1b-T3 (>0.5 cm)\nor pN1mi (≤2 mm)\nor pN1 (1-3 positive nodes)", shape=diamond, fillcolor="#F9E79F"];
+  pN23 [label="pN2/pN3 (≥4 ipsilateral\nmetastases >2 mm)", shape=diamond, fillcolor="#F9E79F"];
+
+  tx_pt1a [label="Consider adjuvant endocrine\ntherapy (category 2B)", fillcolor="#D5F5E3"];
+
+  chemo_q [label="Determine if candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  notcand [label="Not a candidate\nfor chemotherapy", shape=diamond, fillcolor="#FCF3CF"];
+  cand [label="If candidate: strongly consider\n21-gene RT-PCR assay (category 1)", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_notcand [label="Adjuvant endocrine therapy.\nConsider adjuvant abemaciclib or\nribociclib for eligible patients.", fillcolor="#D5F5E3"];
+
+  rs_high [label="Recurrence\nscore ≥26", shape=diamond, fillcolor="#FCF3CF"];
+  rs_low [label="Recurrence\nscore <26", shape=diamond, fillcolor="#FCF3CF"];
+  notdone [label="Not done", shape=diamond, fillcolor="#FCF3CF"];
+
+  tx_high [label="Adjuvant chemotherapy followed by\nendocrine therapy (category 1).\nConsider abemaciclib or ribociclib.", fillcolor="#D5F5E3"];
+  tx_low [label="Adjuvant endocrine therapy (category 1).\nConsider abemaciclib or ribociclib.", fillcolor="#D5F5E3"];
+  tx_notdone [label="Adjuvant endocrine therapy.\nConsider abemaciclib or ribociclib.", fillcolor="#D5F5E3"];
+
+  tx_pN23 [label="Adjuvant chemotherapy followed by endocrine\ntherapy (category 1). Consider abemaciclib or\nribociclib and/or olaparib if germline BRCA1/2 PV.", fillcolor="#D5F5E3"];
+
+  rt [label="Adjuvant whole breast RT (BINV-2)\nor PMRT (BINV-3). See BINV-I.\nFollow-up → BINV-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  entry -> pt1a -> tx_pt1a;
+  entry -> mid -> chemo_q;
+  chemo_q -> notcand -> tx_notcand;
+  chemo_q -> cand;
+  cand -> notdone -> tx_notdone;
+  cand -> rs_high -> tx_high;
+  cand -> rs_low -> tx_low;
+  entry -> pN23 -> tx_pN23;
+  tx_pt1a -> rt; tx_notcand -> rt; tx_notdone -> rt; tx_high -> rt; tx_low -> rt; tx_pN23 -> rt;
+}

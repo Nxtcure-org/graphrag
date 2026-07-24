@@ -1,0 +1,29 @@
+// COL-13 — dMMR/MSI-H or POLE/POLD1: Pathologic Stage, Adjuvant Treatment
+digraph COL13 {
+  rankdir=LR; labelloc="t"; label="COL-13 · dMMR/MSI-H — Pathologic Stage & Adjuvant Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="PATHOLOGIC STAGE\ndMMR/MSI-H or POLE/POLD1\nultra-hypermutated", shape=diamond, fillcolor="#F9E79F"];
+
+  s0 [label="Tis; T1-4a, N0, M0\n(stage 0-IIB)", fillcolor="#FCF3CF"];
+  s2c [label="T4b, N0, M0\n(stage IIC)", fillcolor="#FCF3CF"];
+  s3a [label="T1-3, N1\n(low-risk stage III)", fillcolor="#FCF3CF"];
+  s3b [label="T4, N1-2; T Any, N2\n(high-risk stage III)", fillcolor="#FCF3CF"];
+
+  stage -> s0; stage -> s2c; stage -> s3a; stage -> s3b;
+
+  a0 [label="Observation", fillcolor="#EAECEE"];
+  a2c [label="Observation\nor Consider adjuvant systemic therapy\nas for low-risk stage III disease", fillcolor="#EAECEE"];
+  a3a [label="Preferred:\nFOLFOX + atezolizumab or\nCAPEOX + atezolizumab or\nCAPEOX (3 mo) or FOLFOX (3-6 mo)", fillcolor="#EAECEE"];
+  a3b [label="Preferred:\nFOLFOX + atezolizumab or\nCAPEOX + atezolizumab or\nCAPEOX (3-6 mo) or FOLFOX (6 mo)", fillcolor="#EAECEE"];
+
+  s0 -> a0; s2c -> a2c; s3a -> a3a; s3b -> a3b;
+
+  survivorship [label="Discuss/facilitate ≥150 min/wk moderate-\nvigorous physical activity (COL-H)\nand Concurrent surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  a0 -> survivorship; a2c -> survivorship; a3a -> survivorship; a3b -> survivorship;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Stage II/III: if somatic PI3K pathway alterations, start aspirin (unless\ncontraindicated) 100-162 mg PO daily x3 y after recovery from surgery\n(concurrent with chemo if given). Role of adjuvant immunotherapy after\nneoadjuvant immunotherapy is not defined. Consider RT for T4 (COL-E)."];
+  { rank=sink; note; }
+}

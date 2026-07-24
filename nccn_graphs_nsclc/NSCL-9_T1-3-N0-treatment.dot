@@ -1,0 +1,37 @@
+// NSCL-9 — Mediastinal Nodes Negative (T1, N0 and T2a–3, N0): Treatment
+digraph NSCL9 {
+  rankdir=LR; labelloc="t"; label="NSCL-9 · Node-Negative (T1–T3, N0) — Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  t1 [label="T1, N0\n(mediastinal biopsy negative)", fillcolor="#D6EAF8"];
+  t1_dec [label="Operability", shape=diamond, fillcolor="#F9E79F"];
+  t1 -> t1_dec;
+  t1_op [label="Operable", fillcolor="#FCF3CF"];
+  t1_inop [label="Medically inoperable / high risk;\nor decline surgery", fillcolor="#FCF3CF"];
+  t1_dec -> t1_op; t1_dec -> t1_inop;
+  t1_surg [label="Surgical resection +\nlymph node dissection or sampling", fillcolor="#D5F5E3"];
+  t1_surg_ref [label="Findings at Surgery → NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t1_op -> t1_surg -> t1_surg_ref;
+  t1_rt [label="Definitive RT, preferably SABR", fillcolor="#D5F5E3"];
+  surv1 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t1_inop -> t1_rt -> surv1;
+
+  t2 [label="T2a–3, N0\n(mediastinal biopsy negative)", fillcolor="#D6EAF8"];
+  t2_dec [label="Operability", shape=diamond, fillcolor="#F9E79F"];
+  t2 -> t2_dec;
+  t2_op [label="Operable", fillcolor="#FCF3CF"];
+  t2_inop [label="Medically inoperable / high risk;\nor decline surgery", fillcolor="#FCF3CF"];
+  t2_dec -> t2_op; t2_dec -> t2_inop;
+  t2_surg [label="Surgical resection + lymph node\ndissection/sampling after preoperative\nsystemic therapy, if planned", fillcolor="#D5F5E3"];
+  t2_surg_ref [label="Findings at Surgery → NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t2_op -> t2_surg -> t2_surg_ref;
+  t2_rt [label="Definitive RT, preferably SABR for T2a\n(consider for selected larger tumors)", fillcolor="#D5F5E3"];
+  t2_adj [label="Consider adjuvant systemic therapy\nfor high-risk stage II (especially T2b–3)", fillcolor="#EAECEE"];
+  surv2 [label="Surveillance → NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  t2_inop -> t2_rt -> t2_adj -> surv2;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Surgical resection is first option for operable negative-node patients;\nSABR alternative via shared decision-making. IGTA may be an option for select patients.\nIf SABR not feasible, definitive RT or concurrent chemoradiation could be considered."];
+  { rank=sink; note; }
+}

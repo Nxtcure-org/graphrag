@@ -1,0 +1,48 @@
+// COL-9 — Recurrence and Workup
+digraph COL9 {
+  rankdir=LR; labelloc="t"; label="COL-9 · Recurrence and Workup";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  cea [label="Serial CEA elevation", fillcolor="#F5B7B1"];
+
+  workup [label="WORKUP\l• Physical exam\l• Colonoscopy\l• C/A/P CT with contrast\l", fillcolor="#D6EAF8"];
+  cea -> workup;
+
+  neg [label="Negative findings", shape=diamond, fillcolor="#FCF3CF"];
+  pos [label="Positive findings", shape=diamond, fillcolor="#FCF3CF"];
+  workup -> neg; workup -> pos;
+
+  reimage [label="• Consider FDG-PET/CT\n• Re-evaluate C/A/P CT with\n  contrast in 3 mo", fillcolor="#D6EAF8"];
+  neg -> reimage;
+  neg2 [label="Negative findings", shape=diamond, fillcolor="#FCF3CF"];
+  pos2 [label="Positive findings", shape=diamond, fillcolor="#FCF3CF"];
+  reimage -> neg2; reimage -> pos2;
+
+  documented [label="Documented metachronous\nmetastases by CT, MRI,\nand/or biopsy", fillcolor="#F5B7B1"];
+  pos -> documented; pos2 -> documented;
+
+  // resectable / unresectable branch
+  d_res [label="Resectable", shape=diamond, fillcolor="#FCF3CF"];
+  d_unres [label="Unresectable\n(potentially convertible or\nunconvertible)", shape=diamond, fillcolor="#FCF3CF"];
+  documented -> d_res; documented -> d_unres;
+
+  d_res_fdg [label="Consider FDG-PET/CT", fillcolor="#D6EAF8"];
+  d_res -> d_res_fdg;
+  res_confirm [label="Resectable", shape=diamond, fillcolor="#FCF3CF"];
+  unres_confirm [label="Unresectable", shape=diamond, fillcolor="#FCF3CF"];
+  d_res_fdg -> res_confirm; d_res_fdg -> unres_confirm;
+
+  col10 [label="pMMR/MSS → COL-10", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  col15 [label="dMMR/MSI-H or POLE/POLD1\nultra-hypermutated → COL-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  col11 [label="pMMR/MSS → COL-11", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  col16 [label="dMMR/MSI-H or POLE/POLD1\nultra-hypermutated → COL-16", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  res_confirm -> col10; res_confirm -> col15;
+  unres_confirm -> col11; unres_confirm -> col16;
+  d_unres -> col11; d_unres -> col16;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Determine tumor gene status: RAS, BRAF, HER2 (ERBB2) via tissue/blood MGPT;\nMMR/MSI (if not done). Multidisciplinary team eval incl. surgical consult for\npotentially resectable disease. Patients not immunotherapy candidates treated\nas pMMR/MSS. See COL-A, COL-B, COL-C."];
+  { rank=sink; note; }
+}

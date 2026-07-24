@@ -1,0 +1,20 @@
+// COL-6 — pMMR/MSS: Resectable Synchronous Liver and/or Lung Metastases Only
+digraph COL6 {
+  rankdir=LR; labelloc="t"; label="COL-6 · pMMR/MSS — Resectable Synchronous Liver/Lung Metastases (Treatment & Adjuvant)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Resectable synchronous liver\nand/or lung metastases only\npMMR/MSS", fillcolor="#F5B7B1"];
+
+  tx [label="TREATMENT (choose one)\l• Synchronous or staged colectomy with liver/lung\l  resection (preferred) and/or local therapy\l• or Neoadjuvant therapy (2-3 mo) FOLFOX (pref) or\l  CAPEOX (pref) or FOLFIRI (2B) or FOLFIRINOX (2B),\l  then synchronous/staged colectomy + resection\l  (preferred) and/or local therapy of mets\l• or Colectomy, then chemotherapy (2-3 mo) FOLFOX\l  (pref)/CAPEOX (pref)/FOLFIRI (2B)/FOLFIRINOX (2B)\l  and staged resection (preferred) and/or local therapy\l", fillcolor="#D5F5E3"];
+
+  adj [label="ADJUVANT (up to 6 mo perioperative,\nresected metastatic disease)\nFOLFOX (preferred)\nor CAPEOX (preferred)\nor Capecitabine or fluorouracil/leucovorin", fillcolor="#EAECEE"];
+
+  surv [label="Surveillance → COL-8", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> tx -> adj -> surv;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Hepatic artery infusion ± systemic chemo (VEGF inhibitor contraindicated)\n(cat 2B) also an option at experienced institutions. Resection preferred over\nablation for liver mets; for lesions <=3 cm ablation equivalent to resection.\nLung mets: surgery, thermal ablation, and SBRT can be considered (COL-C/E)."];
+  { rank=sink; note; }
+}

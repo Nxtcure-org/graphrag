@@ -1,0 +1,37 @@
+// PROS-12 — Treatment and Monitoring for Second Biochemical Recurrence (N0M0)
+digraph PROS12 {
+  rankdir=LR; labelloc="t"; label="PROS-12 · Treatment & Monitoring for Second Biochemical Recurrence (N0M0)";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="Second Biochemical\nRecurrence (M0)", fillcolor="#F5B7B1"];
+  rs [label="Risk Stratification", shape=diamond, fillcolor="#F9E79F"];
+  entry -> rs;
+
+  lowbcr [label="Low-risk BCR", fillcolor="#FCF3CF"];
+  highbcr [label="High-risk BCR", fillcolor="#FCF3CF"];
+  rs -> lowbcr; rs -> highbcr;
+
+  low_tx [label="• Monitoring (preferred); or\n• ADT", fillcolor="#F1948A"];
+  high_tx [label="• Monitoring; or\n• Enzalutamide ± leuprolide; or\n• Apalutamide + ADT (category 2B); or\n• ADT", fillcolor="#F1948A"];
+  lowbcr -> low_tx; highbcr -> high_tx;
+
+  mon [label="Monitoring\n(PE, PSA every 3–6 mo, imaging)", fillcolor="#EAECEE"];
+  prog [label="Progression", shape=diamond, fillcolor="#F9E79F"];
+  low_tx -> mon; high_tx -> mon;
+  mon -> prog;
+
+  n0m0 [label="N0M0", fillcolor="#FCF3CF"];
+  oligo [label="Oligometastatic CSPC", fillcolor="#FCF3CF"];
+  poly [label="Polymetastatic CSPC", fillcolor="#FCF3CF"];
+  m1crpc [label="M1 CRPC", fillcolor="#FCF3CF"];
+  prog -> n0m0; prog -> oligo; prog -> poly; prog -> m1crpc;
+  n0m0 -> rs [label="restratify", style=dashed];
+
+  pros13 [label="Metachronous Oligometastatic\nCSPC → PROS-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros14 [label="Low-Volume M1 or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros15 [label="High-Volume M1 CSPC → PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pros17 [label="M1 CRPC → PROS-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  oligo -> pros13; poly -> pros14; poly -> pros15; m1crpc -> pros17;
+}

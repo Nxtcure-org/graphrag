@@ -1,0 +1,27 @@
+// PROS-17 — Workup and Treatment of M1 CRPC
+digraph PROS17 {
+  rankdir=LR; labelloc="t"; label="PROS-17 · M1 CRPC — Workup & Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  entry [label="CRPC, imaging studies\npositive for metastases", fillcolor="#F5B7B1"];
+  workup [label="WORKUP\l• Metastatic lesion biopsy\l• Somatic testing for HRR, MSI/dMMR, TMB\l  (recommended if not previously done;\l  re-evaluation may be considered)\l", fillcolor="#D6EAF8"];
+  entry -> workup;
+
+  tx [label="• Continue ADT (castrate testosterone <50 ng/dL)\l• Additional treatment options:\l  ▸ Bone antiresorptive (denosumab [cat 1, preferred]\l    or zoledronic acid) if bone metastases\l  ▸ Palliative RT for painful bone metastases\l  ▸ Best supportive care\l", fillcolor="#F1948A"];
+  workup -> tx;
+
+  histo [label="Histology", shape=diamond, fillcolor="#F9E79F"];
+  tx -> histo;
+
+  adeno [label="Adenocarcinoma", fillcolor="#FCF3CF"];
+  nepc [label="Small cell / neuroendocrine\nprostate cancer (NEPC)", fillcolor="#FCF3CF"];
+  histo -> adeno; histo -> nepc;
+
+  pros18 [label="Systemic Therapy for M1 CRPC:\nAdenocarcinoma → PROS-18", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  adeno -> pros18;
+
+  nepc_tx [label="First-line & subsequent options:\l• Chemotherapy: Cisplatin/etoposide;\l  Carboplatin/etoposide; Docetaxel/carboplatin;\l  Cabazitaxel/carboplatin\l• See NCCN Guidelines for Small Cell Lung Cancer\l• Best supportive care\l", fillcolor="#F1948A"];
+  nepc -> nepc_tx;
+}

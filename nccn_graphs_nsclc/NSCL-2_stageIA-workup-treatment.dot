@@ -1,0 +1,35 @@
+// NSCL-2 — Stage IA (peripheral T1, N0): Pretreatment Evaluation and Initial Treatment
+digraph NSCL2 {
+  rankdir=LR; labelloc="t"; label="NSCL-2 · Stage IA (peripheral T1, N0) — Evaluation / Initial Treatment";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  stage [label="Stage IA\n(peripheral T1, N0)", fillcolor="#D6EAF8"];
+
+  workup [label="PRETREATMENT EVALUATION\l• Pulmonary function tests (PFTs)\l• Bronchoscopy (intraoperative preferred)\l• Consider pathologic lymph node evaluation\l• FDG-PET/CT scan (if not previously done)\l", fillcolor="#D6EAF8"];
+
+  nodes [label="Mediastinal nodes", shape=diamond, fillcolor="#F9E79F"];
+  neg [label="Negative\nmediastinal nodes", fillcolor="#FCF3CF"];
+  pos [label="Positive\nmediastinal nodes", fillcolor="#FCF3CF"];
+
+  stage -> workup -> nodes; nodes -> neg; nodes -> pos;
+
+  op [label="Operable", shape=diamond, fillcolor="#FCF3CF"];
+  inop [label="Medically inoperable / high surgical risk;\nor decline surgery after surgical consult", fillcolor="#FCF3CF"];
+  neg -> op; neg -> inop;
+
+  surg [label="Surgical resection +\nlymph node dissection or\nsystematic lymph node sampling", fillcolor="#D5F5E3"];
+  surg_ref [label="Findings at Surgery\n→ NSCL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  op -> surg -> surg_ref;
+
+  rt [label="Definitive radiation therapy (RT),\npreferably SABR", fillcolor="#D5F5E3"];
+  rt_ref [label="Surveillance\n→ NSCL-17", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  inop -> rt -> rt_ref;
+
+  pos_ref [label="Stage IIB/IIIA/IIIB (NSCL-8)\nor Stage IIIB/IIIC (NSCL-13)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  pos -> pos_ref;
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="Surgical resection is first option for operable patients with negative nodes;\npatients may also be informed about SABR as alternative via shared decision-making.\nInvasive mediastinal staging is recommended for central tumors; optional for\nperipheral tumors ≤3 cm that are CT/PET-negative. IGTA is an option for select patients."];
+  { rank=sink; note; }
+}

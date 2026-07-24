@@ -1,4 +1,5 @@
-# Luna — AI Physician Agent · NCCN Testicular Cancer workflow copilot
+# Luna — AI Physician Agent · NCCN multi-cancer workflow copilot
+# (testicular, breast, prostate, colon, NSCLC — switchable in the sidebar)
 # Phoenix LiveView (single-file, Mix.install). Backend: api/app.py on :8899.
 #   uv run --with klein python api/app.py
 #   NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs   → http://127.0.0.1:4000
@@ -117,16 +118,16 @@ defmodule NccnUi.HomeLive do
 
   @api System.get_env("NCCN_API", "http://127.0.0.1:8899")
   @legend [{"Workup", "#dbeafe"}, {"Decision", "#fef9c3"}, {"Treatment", "#dcfce7"}, {"Recurrence", "#fee2e2"}, {"Salvage", "#fecaca"}]
-  @suggestions ["Initial staging workup", "Advanced disease chemotherapy", "What to do after a brain scan", "Recurrence & second-line options"]
-  @pages_flat ~w(TEST-1 SEM-1 SEM-2 SEM-3 SEM-4 SEM-5 SEM-6 SEM-7 SEM-8 NSEM-1 NSEM-2 NSEM-3 NSEM-4 NSEM-5 NSEM-6 NSEM-7 NSEM-8 NSEM-9 NSEM-10)
-  # Grounded workup checklist template (from NCCN TEST-1 / SEM-1 / NSEM-1 + staging + MDT)
+  @suggestions ["Initial staging workup", "Primary treatment options", "Systemic therapy for advanced disease", "Recurrence & later-line options"]
+  # Generic solid-tumor workup checklist template (applies across guidelines)
   @todo_template [
-    {"Patient & clinical", [{"History and physical (H&P)", "Clinician"}, {"Chemistry profile (baseline gonadal fn)", "Lab"}]},
-    {"Serum tumor markers", [{"Alpha-fetoprotein (AFP)", "Lab"}, {"Beta-hCG (quantitative)", "Lab"}, {"Lactate dehydrogenase (LDH)", "Lab"}]},
-    {"Imaging", [{"Scrotal ultrasound", "Radiology"}, {"Abdomen/pelvis CT or MRI", "Radiology"}, {"Chest x-ray / chest CT if indicated", "Radiology"}, {"Brain MRI if clinically indicated", "Radiology"}]},
-    {"Pathology", [{"Radical inguinal orchiectomy specimen", "Pathology"}, {"Histology: seminoma vs NSGCT", "Pathology"}]},
-    {"Staging & review", [{"Post-orchiectomy marker nadir", "Clinician"}, {"AJCC TNM + risk (TEST-D)", "Clinician"}, {"Multidisciplinary review", "Tumor board"}]},
-    {"Fertility", [{"Discuss sperm banking", "Clinician"}]}
+    {"Patient & clinical", [{"History and physical (H&P)", "Clinician"}, {"Performance status & comorbidities", "Clinician"}]},
+    {"Laboratory", [{"CBC + comprehensive chemistry", "Lab"}, {"Disease-specific tumor markers", "Lab"}]},
+    {"Imaging", [{"Cross-sectional imaging (CT/MRI)", "Radiology"}, {"PET/CT or bone scan if indicated", "Radiology"}]},
+    {"Pathology", [{"Biopsy / surgical specimen", "Pathology"}, {"Histology & grade confirmed", "Pathology"}]},
+    {"Molecular", [{"Biomarker / molecular testing", "Molecular"}]},
+    {"Staging & review", [{"AJCC TNM stage assigned", "Clinician"}, {"Risk stratification", "Clinician"}, {"Multidisciplinary review", "Tumor board"}]},
+    {"Planning", [{"Goals of care / shared decision", "Clinician"}, {"Fertility / supportive care referral", "Clinician"}]}
   ]
 
   def mount(_params, _session, socket) do
@@ -139,8 +140,9 @@ defmodule NccnUi.HomeLive do
 
     {:ok,
      assign(socket,
-       legend: @legend, suggestions: @suggestions, pages: @pages_flat,
-       method: "local", loading: false, error: nil, messages: [hello],
+       legend: @legend, suggestions: @suggestions,
+       guidelines: [], guideline: nil, guideline_label: "",
+       pages: [], method: "local", loading: false, error: nil, messages: [hello],
        page: nil, page_label: nil, track: "—", status: "Reference",
        evidence: nil, sections: [], graph: nil, selected: nil,
        tab: "todo", todos: todos, history: []
@@ -149,16 +151,44 @@ defmodule NccnUi.HomeLive do
 
   # ---------------- events ----------------
   def handle_event("cy_ready", _p, socket) do
-    code = socket.assigns.page || "TEST-1"
-    g = graph_for(code, [], [], false)
-    {:noreply, socket |> assign(graph: g) |> put_stage(code, g) |> push_event("graph", g)}
+    %{"guidelines" => gs, "default" => default} =
+      Req.get!("#{@api}/guidelines").body
+    key = socket.assigns.guideline || default
+    gd = Enum.find(gs, &(&1["key"] == key)) || List.first(gs)
+    key = gd["key"]
+    pages = gd["pages"]
+    code = socket.assigns.page || (List.first(pages) || %{})["code"]
+    g = graph_for(key, code, [], [], false)
+    {:noreply,
+     socket
+     |> assign(guidelines: gs, guideline: key, guideline_label: gd["label"], pages: pages, graph: g)
+     |> put_stage(code, g)
+     |> push_event("graph", g)}
+  end
+
+  def handle_event("guideline", %{"key" => key}, socket) do
+    gd = Enum.find(socket.assigns.guidelines, &(&1["key"] == key))
+    if gd do
+      pages = gd["pages"]
+      code = (List.first(pages) || %{})["code"]
+      g = graph_for(key, code, [], [], false)
+      {:noreply,
+       socket
+       |> assign(guideline: key, guideline_label: gd["label"], pages: pages, graph: g,
+                 selected: nil, sections: [], evidence: nil, status: "Reference")
+       |> put_stage(code, g)
+       |> luna("Switched to #{gd["label"]} — showing #{code}.", g["label"])
+       |> push_event("graph", g)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("method", %{"m" => m}, socket), do: {:noreply, assign(socket, method: m)}
   def handle_event("tab", %{"t" => t}, socket), do: {:noreply, assign(socket, tab: t)}
 
   def handle_event("page", %{"code" => code}, socket) do
-    g = graph_for(code, [], [], false)
+    g = graph_for(socket.assigns.guideline, code, [], [], false)
     {:noreply,
      socket
      |> assign(graph: g)
@@ -186,7 +216,7 @@ defmodule NccnUi.HomeLive do
   def handle_event("restore", %{"i" => i}, socket) do
     entry = Enum.at(Enum.reverse(socket.assigns.history), String.to_integer(i))
     if entry do
-      g = graph_for(entry.page, entry.hln, entry.hle, entry.hln != [])
+      g = graph_for(socket.assigns.guideline, entry.page, entry.hln, entry.hle, entry.hln != [])
       {:noreply, socket |> assign(graph: g) |> put_stage(entry.page, g) |> luna("↩ Restored: #{entry.label}", nil) |> push_event("graph", g)}
     else
       {:noreply, socket}
@@ -194,7 +224,7 @@ defmodule NccnUi.HomeLive do
   end
 
   def handle_event("focus_edge", %{"src" => s, "tgt" => t, "page" => p}, socket) do
-    g = graph_for(p, [s, t], [[s, t]], true)
+    g = graph_for(socket.assigns.guideline, p, [s, t], [[s, t]], true)
     {:noreply, socket |> assign(graph: g) |> put_stage(p, g) |> push_event("graph", g)}
   end
 
@@ -202,11 +232,12 @@ defmodule NccnUi.HomeLive do
 
   defp do_ask(q, socket) do
     method = socket.assigns.method
+    key = socket.assigns.guideline
     msgs = socket.assigns.messages ++ [%{role: "user", text: q, sub: nil}]
     {:noreply,
      socket
      |> assign(loading: true, error: nil, messages: msgs, status: "Analyzing")
-     |> start_async(:run, fn -> run_query(q, method) end)}
+     |> start_async(:run, fn -> run_query(key, q, method) end)}
   end
 
   # ---------------- async ----------------
@@ -232,38 +263,31 @@ defmodule NccnUi.HomeLive do
   end
 
   # ---------------- backend ----------------
-  defp run_query(q, method) do
-    body = Req.post!("#{@api}/query", json: %{query: q, method: method}, receive_timeout: 240_000, connect_options: [timeout: 10_000]).body
+  defp run_query(key, q, method) do
+    body = Req.post!("#{@api}/query", json: %{guideline: key, query: q, method: method}, receive_timeout: 240_000, connect_options: [timeout: 10_000]).body
     ev = body["evidence"] || %{}
     page = ev["primary_page"]
     clinical = Enum.filter(ev["edges"] || [], &(&1["kind"] == "clinical"))
     hln = Enum.uniq(Enum.flat_map(clinical, &[&1["source"], &1["target"]]) ++ Enum.map(ev["nodes"] || [], & &1["title"]))
     hle = Enum.map(clinical, &[&1["source"], &1["target"]])
-    graph = if page, do: graph_for(page, hln, hle, true), else: nil
+    graph = if page, do: graph_for(key, page, hln, hle, true), else: nil
     title = body["title"] || (List.first(body["sections"] || []) || %{})["heading"] || "Here's the pathway"
     sub = if page, do: "Highlighted the cited path on #{page}.", else: "Broad question — key points shown."
     %{msg: %{role: "luna", text: title, sub: sub}, sections: body["sections"] || [], evidence: ev,
       graph: graph, page: page, label: graph && graph["label"], hln: hln, hle: hle}
   end
 
-  defp graph_for(page, hln, hle, auto) do
-    g = Req.post!("#{@api}/graph", json: %{page: page, nodes: hln, edges: hle}).body
+  defp graph_for(key, page, hln, hle, auto) do
+    g = Req.post!("#{@api}/graph", json: %{guideline: key, page: page, nodes: hln, edges: hle}).body
     g |> add_order() |> Map.put("autoReveal", auto)
   end
 
   # ---------------- helpers ----------------
   defp put_stage(socket, code, g) do
-    {track, dstat} = track_of(code)
     cur = socket.assigns[:status]
-    assign(socket, page: code, page_label: g["label"], track: track,
-      status: if(cur in [nil, "Reference", "Analyzing"], do: dstat, else: cur))
+    assign(socket, page: code, page_label: g["label"], track: socket.assigns.guideline_label,
+      status: if(cur in [nil, "Reference", "Analyzing"], do: "Reference", else: cur))
   end
-
-  defp track_of("TEST-1"), do: {"Initial workup", "Reference"}
-  defp track_of("TEST-D"), do: {"Risk classification", "Reference"}
-  defp track_of("SEM" <> _), do: {"Pure seminoma", "Reference"}
-  defp track_of("NSEM" <> _), do: {"Nonseminoma", "Reference"}
-  defp track_of(_), do: {"—", "Reference"}
 
   defp luna(socket, text, sub), do: assign(socket, messages: socket.assigns.messages ++ [%{role: "luna", text: text, sub: sub}])
   defp log(socket, entry), do: assign(socket, history: [entry | socket.assigns.history] |> Enum.take(30))
@@ -359,6 +383,17 @@ defmodule NccnUi.HomeLive do
               </div>
             </div>
           </div>
+          <div class="mt-4">
+            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Guideline</div>
+            <div class="flex flex-wrap gap-1.5">
+              <%= for gd <- @guidelines do %>
+                <button phx-click="guideline" phx-value-key={gd["key"]}
+                  class={["text-[11px] px-2.5 py-1 rounded-lg border transition", if(@guideline == gd["key"], do: "bg-gradient-to-br from-violet-600 to-indigo-600 text-white border-transparent shadow-sm", else: "bg-white text-slate-600 border-slate-200 hover:border-violet-300")]}>
+                  {gd["label"]}
+                </button>
+              <% end %>
+            </div>
+          </div>
         </div>
 
         <div class="flex-1 min-h-0 overflow-auto p-4 space-y-3" id="chat">
@@ -408,29 +443,32 @@ defmodule NccnUi.HomeLive do
 
       <!-- ═══ MAIN workspace ═══ -->
       <main class="flex-1 min-w-0 flex flex-col">
-        <header class="shrink-0 flex items-center gap-4 px-6 py-3 bg-white/60 backdrop-blur-md border-b border-white/60">
-          <div>
-            <div class="text-[10px] font-bold uppercase tracking-widest text-violet-500">Current focus</div>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white text-[11px] grid place-items-center font-bold">{@page || "—"}</span>
-              <span class="text-lg font-semibold text-slate-900 max-w-[420px] truncate">{@page_label || "Select a pathway"}</span>
-              <span class="text-xs text-slate-500 bg-slate-100 rounded-full px-2.5 py-0.5">{@track}</span>
+        <header class="shrink-0 flex flex-col gap-2.5 px-6 py-3 bg-white/60 backdrop-blur-md border-b border-white/60">
+          <div class="self-center flex items-center gap-4 px-5 py-3 rounded-2xl bg-violet-100/70 border border-violet-300 shadow-sm">
+            <div class="pr-1">
+              <div class="text-[10px] font-bold uppercase tracking-widest text-violet-600">Current focus</div>
+              <div class="text-base font-semibold text-slate-900 max-w-[360px] truncate leading-tight mt-0.5">{@page_label || "Select a pathway"}</div>
+              <div class="text-[11px] font-medium text-violet-700/80">{@track}</div>
             </div>
+            <span class={["inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-3 py-1", status_color(@status)]}>
+              <span class="w-1.5 h-1.5 rounded-full bg-current opacity-70"></span>{@status}
+            </span>
           </div>
-          <span class={["ml-1 inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-3 py-1", status_color(@status)]}>
-            <span class="w-1.5 h-1.5 rounded-full bg-current opacity-70"></span>{@status}
-          </span>
-          <div class="ml-auto flex items-center gap-3">
-            <form phx-change="page">
-              <select name="code" class="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 shadow-sm">
-                <%= for c <- @pages do %><option value={c} selected={c == @page}>{c}</option><% end %>
-              </select>
-            </form>
-            <div class="hidden xl:flex items-center gap-2.5">
-              <%= for {name, color} <- @legend do %>
-                <span class="flex items-center gap-1 text-[11px] text-slate-500"><span class="w-2.5 h-2.5 rounded-sm" style={"background:#{color}"}></span>{name}</span>
-              <% end %>
-            </div>
+          <div class="self-center flex items-center gap-3 flex-wrap justify-center">
+            <label class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">Cancer
+              <form phx-change="guideline">
+                <select name="key" class="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 font-semibold shadow-sm focus:border-violet-400 focus:outline-none">
+                  <%= for gd <- @guidelines do %><option value={gd["key"]} selected={gd["key"] == @guideline}>{gd["label"]}</option><% end %>
+                </select>
+              </form>
+            </label>
+            <label class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">Diagram
+              <form phx-change="page">
+                <select name="code" class="text-xs bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 shadow-sm max-w-[230px] focus:border-violet-400 focus:outline-none">
+                  <%= for p <- @pages do %><option value={p["code"]} selected={p["code"] == @page}>{p["code"]} · {p["label"]}</option><% end %>
+                </select>
+              </form>
+            </label>
             <div class="flex items-center gap-1 bg-white rounded-xl border border-slate-200 p-0.5 shadow-sm">
               <button onclick="cyStep(-1)" title="Previous step" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-violet-50 text-slate-600">◂</button>
               <button onclick="cyStep(1)" title="Next step" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-violet-50 text-slate-600">▸</button>
@@ -443,15 +481,21 @@ defmodule NccnUi.HomeLive do
               </button>
             </div>
           </div>
+          <div class="self-center flex items-center gap-4 flex-wrap justify-center">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Legend</span>
+            <%= for {name, color} <- @legend do %>
+              <span class="flex items-center gap-1 text-[11px] text-slate-500"><span class="w-2.5 h-2.5 rounded-sm" style={"background:#{color}"}></span>{name}</span>
+            <% end %>
+          </div>
         </header>
 
-        <div class="flex flex-1 min-h-0">
-          <div class="relative flex-1 min-h-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px]">
+        <div class="relative flex-1 min-h-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px]">
             <div id="cy" phx-hook="Cyto" phx-update="ignore" class="absolute inset-0"></div>
             <div class="pointer-events-none absolute bottom-3 right-3 text-[10px] text-slate-400 bg-white/70 rounded-full px-2.5 py-1 border border-slate-200">drag · scroll-zoom · click a node</div>
-          </div>
+        </div>
+      </main>
 
-          <section class="w-[320px] shrink-0 flex flex-col bg-white/70 backdrop-blur-md border-l border-white/60">
+      <section class="w-[320px] shrink-0 flex flex-col bg-white/70 backdrop-blur-md border-l border-white/60">
             <div class="flex text-xs font-medium border-b border-slate-100">
               <%= for {t, label} <- [{"todo", "✓ To-Do"}, {"timeline", "🕑 Timeline"}, {"detail", "◇ Detail"}] do %>
                 <button phx-click="tab" phx-value-t={t} class={["flex-1 py-2.5 transition", if(@tab == t, do: "text-violet-700 border-b-2 border-violet-600 bg-violet-50/40", else: "text-slate-500 hover:text-slate-700")]}>{label}</button>
@@ -524,10 +568,9 @@ defmodule NccnUi.HomeLive do
                     <div class="text-sm text-slate-400 italic">Click any node in the flowchart to inspect its type, where it comes from, and its options.</div>
                   <% end %>
               <% end %>
-            </div>
 
-            <%= if @sections != [] do %>
-              <div class="shrink-0 max-h-[40%] overflow-auto border-t border-slate-100 p-4">
+              <%= if @sections != [] do %>
+              <div class="mt-5 border-t border-slate-100 pt-4">
                 <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">✦ Key points</div>
                 <ul class="space-y-1.5">
                   <%= for b <- bullets(@sections) do %>
@@ -546,9 +589,8 @@ defmodule NccnUi.HomeLive do
                 <% end %>
               </div>
             <% end %>
+            </div>
           </section>
-        </div>
-      </main>
     </div>
     <script>(()=>{const c=document.getElementById('chat');if(c)c.scrollTop=c.scrollHeight})();</script>
     """

@@ -1,0 +1,38 @@
+// COL-1 — Pedunculated or Sessile Polyp (Adenoma) with Invasive Cancer
+digraph COL1 {
+  rankdir=LR; labelloc="t"; label="COL-1 · Pedunculated or Sessile Polyp (Adenoma) with Invasive Cancer — Workup / Findings / Surgery";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  present [label="Pedunculated or sessile polyp\n(adenoma) with invasive cancer", fillcolor="#D6EAF8"];
+
+  workup [label="WORKUP\l• Pathology review\l• Colonoscopy\l• Marking of cancerous polyp site\l  (at time of colonoscopy or within 2 wks)\l• Mismatch repair (MMR)/microsatellite\l  instability (MSI) testing\l", fillcolor="#D6EAF8"];
+
+  findings [label="FINDINGS", shape=diamond, fillcolor="#F9E79F"];
+
+  favorable [label="Single specimen, completely removed\nwith favorable histologic features\nand clear margins", fillcolor="#FCF3CF"];
+  unfavorable [label="Fragmented specimen or margin cannot\nbe assessed, or unfavorable\nhistologic features", fillcolor="#FCF3CF"];
+
+  unfav_wu [label="Additional workup\l• Consider pelvis MRI\l• CBC, chemistry profile, CEA\l• Chest/abdomen/pelvis CT\l• FDG-PET/CT is not indicated\l", fillcolor="#D6EAF8"];
+
+  observe [label="Observe\nor\nColectomy with en bloc removal\nof regional lymph nodes", fillcolor="#D5F5E3"];
+  colectomy [label="Colectomy with en bloc removal\nof regional lymph nodes", fillcolor="#D5F5E3"];
+
+  pmmr [label="pMMR/MSS Pathologic Stage,\nAdjuvant Treatment,\nSurveillance → COL-4", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  dmmr [label="dMMR/MSI-H Pathologic Stage,\nAdjuvant Treatment,\nSurveillance → COL-13", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  present -> workup -> findings;
+  findings -> favorable -> observe;
+  findings -> unfavorable -> unfav_wu -> colectomy;
+  observe -> pmmr; observe -> dmmr;
+  colectomy -> pmmr; colectomy -> dmmr;
+
+  // Other histologies referred out
+  sbowel [label="Small bowel adenocarcinoma\n→ NCCN Small Bowel Adenocarcinoma", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  appendix [label="Appendiceal adenocarcinoma\n→ NCCN Appendiceal Neoplasms", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  meso [label="Peritoneal / extrapleural mesothelioma\n→ NCCN Mesothelioma (PM-B / PEM-C)", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  note [shape=note, fillcolor="#FEF9E7", fontsize=9, label="All patients counseled for family history / risk assessment (LS, FAP).\nConfirm invasive cancer (pT1); pTis has no metastatic potential.\nMargin status and unfavorable histology may be key predictors of\nresidual disease / nodal metastases regardless of morphology (COL-B)."];
+  { rank=sink; note; sbowel; appendix; meso; }
+}

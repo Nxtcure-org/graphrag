@@ -1,0 +1,27 @@
+// PROS-1 — Initial Prostate Cancer Diagnosis / Workup
+digraph PROS1 {
+  rankdir=LR; labelloc="t"; label="PROS-1 · Initial Prostate Cancer Diagnosis — Workup";
+  fontname="Helvetica-Bold"; fontsize=14;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, margin="0.14,0.09"];
+  edge [fontname="Helvetica", fontsize=9];
+
+  localized [label="Clinically localized\nprostate cancer\n(Any T, N0, M0 or Any T, NX, MX)", fillcolor="#D6EAF8"];
+  regional  [label="Regional prostate cancer\n(Any T, N1, M0)", fillcolor="#D6EAF8"];
+  metast    [label="Metastatic prostate cancer\n(Any T, Any N, M1)", fillcolor="#D6EAF8"];
+
+  workup_loc [label="WORKUP (localized)\l• Physical exam\l• DRE to confirm clinical stage\l• Perform/collect PSA\l• Review diagnostic prostate biopsies\l• Estimate life expectancy (PROS-A)\l• Inquire about high-risk germline mutations\l  & family history; somatic/germline testing\l• Assess quality-of-life measures\l", fillcolor="#D6EAF8"];
+
+  workup_adv [label="WORKUP (regional / metastatic)\l• Physical examination\l• Bone and soft tissue imaging for staging\l• Consider DRE to confirm clinical stage\l• Perform/collect PSA and calculate PSADT\l• Estimate life expectancy (PROS-A)\l• Inquire about germline mutations &\l  family history; somatic/germline testing\l• Assess quality-of-life measures\l", fillcolor="#D6EAF8"];
+
+  risk    [label="Initial Risk Stratification &\nStaging Workup for Clinically\nLocalized Disease → PROS-2", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  reg7    [label="Regional Prostate Cancer\n→ PROS-7", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  lv14    [label="Low-Volume M1 (Metachronous or\nSynchronous) or Synchronous\nOligometastatic CSPC → PROS-14", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+  hv15    [label="High-Volume M1 CSPC\n→ PROS-15", fillcolor="#FDEBD0", style="rounded,filled,dashed"];
+
+  localized -> workup_loc -> risk;
+  regional -> workup_adv;
+  metast   -> workup_adv;
+  workup_adv -> reg7;
+  workup_adv -> lv14;
+  workup_adv -> hv15;
+}

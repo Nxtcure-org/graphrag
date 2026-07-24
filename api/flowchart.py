@@ -18,7 +18,15 @@ from pathlib import Path
 
 GRAPHS = Path(__file__).resolve().parent.parent / "nccn_graphs"
 _CODE = re.compile(r"(TEST-1|SEM-\d+|NSEM-\d+[A-Z]?)")
-HL = "#c0392b"  # highlight color
+HL = "#c0392b"  # highlight color (server-rendered SVG variant)
+
+# fillcolor -> semantic node type (mirrors the converter)
+COLOR_TYPE = {
+    "#D6EAF8": "Workup", "#D5F5E3": "Treatment", "#ABEBC6": "Treatment",
+    "#EAFAF1": "Treatment", "#F9E79F": "Decision", "#FCF3CF": "Decision",
+    "#EAECEE": "Management", "#F5B7B1": "Recurrence", "#FDEDEC": "Recurrence",
+    "#F1948A": "Salvage", "#FDEBD0": "Reference",
+}
 
 
 def _first_line(label: str) -> str:
@@ -100,3 +108,40 @@ def build_svg(page: str, hl_nodes: set[str] | None = None,
 
     return subprocess.run(["dot", "-Tsvg"], input="\n".join(out),
                           capture_output=True, text=True, check=True).stdout
+
+
+def build_graph(page: str, hl_nodes: set[str] | None = None,
+                hl_edges: set[str] | None = None) -> dict | None:
+    """Return the page as Cytoscape.js elements, with `hl` flags on the cited
+    path. Consumed by the LiveView client-side interactive renderer."""
+    files = page_files()
+    if page not in files:
+        return None
+    hl_nodes = hl_nodes or set()
+    hl_edges = hl_edges or set()
+    nodes, edges, label = _parse(files[page])
+
+    cy_nodes = []
+    for gv, o in nodes.items():
+        raw = o.get("label", o.get("name", ""))
+        text = raw.replace("\\l", "\n").replace("\\n", "\n").strip()
+        title = _first_line(raw)
+        shape = "diamond" if o.get("shape") == "diamond" else "round-rectangle"
+        cy_nodes.append({"data": {
+            "id": f"n{gv}", "label": text, "title": title,
+            "type": COLOR_TYPE.get(o.get("fillcolor", ""), "Step"),
+            "shape": shape, "hl": title in hl_nodes,
+        }})
+
+    cy_edges = []
+    for i, e in enumerate(edges):
+        t, h = e.get("tail"), e.get("head")
+        if t not in nodes or h not in nodes:
+            continue
+        st, tt = _first_line(nodes[t].get("label", "")), _first_line(nodes[h].get("label", ""))
+        cy_edges.append({"data": {
+            "id": f"e{i}", "source": f"n{t}", "target": f"n{h}",
+            "label": e.get("label") or "", "hl": f"{st}|{tt}" in hl_edges,
+        }})
+
+    return {"page": page, "label": label, "nodes": cy_nodes, "edges": cy_edges}

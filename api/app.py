@@ -318,6 +318,21 @@ def flowchart_post(request):
     return svg.encode("utf-8")
 
 
+@app.route("/graph", methods=["POST"])
+def graph_post(request):
+    try:
+        body = json.loads(request.content.read() or b"{}")
+    except json.JSONDecodeError as e:
+        return _json(request, {"error": f"invalid JSON: {e}"}, code=400)
+    page = body.get("page")
+    hl_nodes = set(body.get("nodes") or [])
+    hl_edges = {f"{s}|{t}" for s, t in (body.get("edges") or [])}
+    g = flowchart.build_graph(page, hl_nodes, hl_edges) if page else None
+    if g is None:
+        return _json(request, {"error": f"unknown page '{page}'"}, code=404)
+    return _json(request, g)
+
+
 @app.route("/pages", methods=["GET"])
 def pages(request):
     return _json(request, {"pages": sorted(flowchart.page_files())})

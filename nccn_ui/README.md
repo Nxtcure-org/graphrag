@@ -1,71 +1,67 @@
-# NCCN Testicular Cancer — Phoenix LiveView UI
+# Luna — NCCN Testicular Cancer clinical copilot (Phoenix LiveView)
 
-Clinician decision-support frontend for the GraphRAG data. A single-file Phoenix
-LiveView app (`Mix.install`, no project scaffold) that calls the Python Klein
-backend over HTTP and renders a 3-pane view:
+A visual-first clinical decision UI: an **interactive Cytoscape.js flowchart**
+dominates the screen, and **Luna** (an AI physician-agent persona) + chat in the
+left sidebar drive it. Ask a question → Luna answers concisely in chat, the
+relevant protocol flowchart loads, and the **cited decision path animates/glows**
+in purple. Key points render as bullets under the diagram.
 
-```
-┌ Protocols ┬ Question + grounded answer ┬ Source flowchart ┐
-│ TEST-1    │  ◉ Specific  ○ Thematic     │  NSEM-6          │
-│ SEM-1…8   │  answer sections            │  cited path      │
-│ NSEM-1…10 │  citation chips (clinical / │  highlighted in  │
-│           │   navigation) → click to    │  red             │
-│           │   highlight on flowchart →  │                  │
-└───────────┴─────────────────────────────┴──────────────────┘
-```
-
-The centerpiece: after a query, the cited **clinical** relationships are
-highlighted as a red path on the source protocol flowchart (rendered server-side
-by the backend from the original Graphviz `.dot` files). Structural
-(anchor/reference) citations are shown separately and not highlighted.
+Single-file Phoenix LiveView app (`Mix.install`, no project scaffold) that calls
+the Python GraphRAG backend over HTTP.
 
 ## Architecture
 
 ```
-Browser ⇄ (LiveView websocket) ⇄ Phoenix :4000  ⇄ (HTTP/Req) ⇄  Klein :8899  ⇄ GraphRAG
-                                                                 ├ POST /query     → structured JSON + evidence
-                                                                 └ POST /flowchart → highlighted SVG
+Browser ⇄ LiveView ws ⇄ Phoenix :4000 ⇄ HTTP/Req ⇄ Klein :8899 ⇄ GraphRAG
+  │  Cytoscape.js + dagre (JS hook)      ├ POST /query  → structured answer + evidence
+  │  push_event("graph", elements) ──────┤ POST /graph  → Cytoscape elements (hl flags)
+  └  chat drives the diagram             └ POST /flowchart → static SVG (legacy)
 ```
+
+- **Stage header** — current focus page + label + track + status badge
+  (Reference / Analyzing / Active guidance), page jump `<select>`, legend,
+  and toolbar: step ◂ ▸ / Reveal-all, zoom ± , fit.
+- **Main pane** — Cytoscape/dagre flowchart: pan, scroll-zoom, **progressive
+  step reveal** (rank-by-rank via BFS `ord`), decision nodes as amber diamonds,
+  animated dashed "flow" on the cited (purple) path, node colors by type,
+  click a node to focus + open its Detail.
+- **Left sidebar** — large **Luna** identity (crescent-moon + medical cross +
+  orbiting neural ring, glow) + live status, chat bubbles + typing indicator,
+  suggested-action chips, Specific/Thematic toggle, input.
+- **Right panel (tabs)** — **To-Do** (grounded NCCN workup checklist, toggleable,
+  progress bar) · **Timeline** (case history / look-back, click to restore a
+  prior state) · **Detail** (selected node: type, "comes from", options/next
+  with criteria, "Ask Luna about this node"). Key-point bullets + cited-pathway
+  chips pinned below.
+
+The LiveView orchestrates: it fetches `/graph` (with highlight from the query's
+`evidence`) and `push_event`s the elements to the `Cyto` hook, which renders and
+runs the dagre layout with a smooth transition.
 
 ## Run
 
-1. Backend (from repo root, with `GRAPHRAG_API_KEY` exported):
-   ```sh
-   uv run --with klein python api/app.py            # http://127.0.0.1:8899
-   ```
-2. This UI:
-   ```sh
-   NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs   # http://127.0.0.1:4000
-   ```
-   First run downloads/compiles deps (phoenix, phoenix_live_view, bandit, req) via
-   `Mix.install` — ~1–2 min. Open http://127.0.0.1:4000.
+```sh
+# 1. backend (repo root, GRAPHRAG_API_KEY exported)
+uv run --with klein python api/app.py                         # :8899
+# 2. this UI
+NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs     # :4000
+```
 
+Open http://127.0.0.1:4000. First run compiles deps via `Mix.install` (~1–2 min).
 Env: `PORT` (default 4000), `NCCN_API` (default `http://127.0.0.1:8899`).
-
-## How it works
-
-- `phx-submit="ask"` → `handle_event` sets a loading state and `start_async`
-  runs the query off the LiveView process (UI stays responsive).
-- The async task POSTs `/query`, reads `evidence.primary_page` + clinical edges,
-  then POSTs `/flowchart` for the highlighted SVG; `handle_async` assigns both.
-- Citation chips (`phx-click="focus_edge"`) re-render the flowchart focused on a
-  single cited edge. Left-nav entries (`phx-click="page"`) show a plain flowchart.
-
-LiveView client JS is served straight from the `phoenix` / `phoenix_live_view`
-hex deps via `Plug.Static` (no node/esbuild build step).
 
 ## Styling
 
-TailwindCSS via the browser CDN (`cdn.tailwindcss.com`) — no asset pipeline. It
-JIT-compiles utility classes in the page and its MutationObserver picks up the
-classes LiveView pushes on updates, so dynamically rendered answers/flowcharts
-are styled too. Fine for a prototype; for production, swap the CDN for the
-`tailwind` hex package (standalone binary) with a real build step.
+TailwindCSS + Cytoscape.js / dagre, all via browser CDNs (no asset build). Light
+"AI-native" aesthetic: gradient background, glassmorphic panels, purple accent
+with soft glow for AI/active elements. For production, vendor the CDNs.
 
 ## Verified
 
-Headless end-to-end over the LiveView websocket: join → submit → loading state →
-answer rendered → highlighted flowchart (red cited path) pushed to the client.
+Headless over the LiveView websocket: join → `cy_ready` → **initial graph pushed**
+→ `ask` → **Luna answer in chat** + **highlighted graph (cited path) pushed**.
+The Cytoscape *rendering* itself needs a browser to view (no headless browser was
+available to screenshot it here).
 
 > Reference aid from a lossy graph of NCCN v2.2026 — not a substitute for the
 > guideline. Keep local (NCCN content is copyrighted).

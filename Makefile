@@ -9,3 +9,6 @@ testapi:
 
 runui:
 	 NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs
+
+dcompose:
+	sudo docker compose up --build

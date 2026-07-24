@@ -4,8 +4,10 @@
 #   uv run --with klein python api/app.py
 #   NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs   → http://127.0.0.1:4000
 
+_bind_ip = if System.get_env("HTTP_IP", "127.0.0.1") == "0.0.0.0", do: {0, 0, 0, 0}, else: {127, 0, 0, 1}
+
 Application.put_env(:nccn, NccnUi.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT", "4000"))],
+  http: [ip: _bind_ip, port: String.to_integer(System.get_env("PORT", "4000"))],
   server: true,
   adapter: Bandit.PhoenixAdapter,
   secret_key_base: String.duplicate("x", 64),

@@ -1,0 +1,43 @@
+# NCCN GraphRAG demo — backend API + Luna LiveView UI.
+#
+#   GRAPHRAG_API_KEY=sk-... docker compose up --build
+#   open http://localhost:4000
+#
+# The API needs an OpenAI-compatible key (GRAPHRAG_API_KEY) for query + embeddings.
+# Put it in your shell env or a .env file next to this compose.yml.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    environment:
+      # real OpenAI-compatible key needed for /query; a non-empty value is
+      # required just to boot (GraphRAG config rejects an empty api_key)
+      GRAPHRAG_API_KEY: ${GRAPHRAG_API_KEY:-set-a-real-key-for-queries}
+      API_HOST: 0.0.0.0
+      API_PORT: "8899"
+    ports:
+      - "8899:8899"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8899/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ui
+    environment:
+      NCCN_API: http://api:8899
+      HTTP_IP: 0.0.0.0
+      PORT: "4000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      api:
+        condition: service_healthy

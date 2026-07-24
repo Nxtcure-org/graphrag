@@ -1,0 +1,35 @@
+# keep the build context small — exclude what the images don't need
+.git
+.github
+.vscode
+.semversioner
+.venv
+**/.venv
+**/__pycache__
+**/*.pyc
+**/node_modules
+node_modules
+
+# large source material / exports not needed at runtime
+*.pdf
+*.txt
+*.md
+graphrag_*.md
+nccn_*_fullstack.md
+
+# GraphRAG per-project caches / logs (regenerated; huge)
+nccn_graphrag*/cache
+nccn_graphrag*/logs
+*.log
+
+# unrelated apps / test assets
+unified-search-app
+tests
+docs
+examples_notebooks
+**/example_notebooks
+**/notebooks
+
+# generated at runtime
+Dockerfile
+compose.yml

@@ -1,0 +1,53 @@
+// Treatment-plan inference — selecting a patient turns their FHIR record into
+// a grounded NCCN question whose cited path lights up the flowchart.
+digraph patient_inference {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.45, ranksep=0.75];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  select [label="Roster row clicked\n(patient_select)", fillcolor="#fff7ed", color="#c2410c"];
+
+  ctx [label="Active patient context (@patient)\nheader chip · Patient tab · row highlight\nswitch_guideline(p.guideline)\nre-seeds the flowchart + To-Do", fillcolor="#ede9fe"];
+
+  detail [label="GET /patients/<id>\nPatient + Condition?patient= +\nEncounter?patient= → conditions\n(code, system, stage, status, onset),\nencounters, resource_url, context", fillcolor="#e0e7ff", color="#4338ca"];
+
+  tab [label="Patient tab\nFHIR conditions & encounters,\n'Open FHIR Patient' link,\nquick asks: next steps · surveillance", fillcolor="#fff7ed", color="#c2410c"];
+
+  question [label="patient_question(p)\n\"What are the NCCN-recommended\nnext steps in workup and treatment\nfor <diagnosis> at stage <stage>?\"", fillcolor="#fdf2f8", color="#be185d"];
+
+  prepend [label="do_ask: patient_context(p) is\nprepended to every question while\nactive — age, sex, diagnosis (code),\nstage, last encounter;\nchat bubble tagged 'for <name>'", fillcolor="#fdf2f8", color="#be185d"];
+
+  query [label="POST /query  method: local\n(entity-centric over that\nguideline's injected graph)", fillcolor="#e0e7ff", color="#4338ca"];
+
+  evidence [label="resolve_evidence\nclinical edges vote →\nprimary_page for this stage", fillcolor="#e0e7ff", color="#4338ca"];
+
+  render [label="Flowchart re-seeded on the cited\nprotocol page; the patient's\ndecision path glows purple;\nkey points + Luna answer in chat", fillcolor="#dcfce7", color="#15803d"];
+
+  clear [label="Clear (chip × / Patient tab)\nback to general answers", fillcolor="#f3f4f6", color="#6b7280", style="rounded,filled,dashed"];
+
+  // Two rows (a 7-column chain would be ~8:1 and unreadable on a 16:9 slide):
+  //   row 1: select → context → detail/question → tab/prepend
+  //   row 2: query → evidence → render   (prepend wraps back to query)
+  { rank=same; select; query; clear; }
+  { rank=same; ctx; evidence; }
+  { rank=same; detail; question; render; }
+  { rank=same; tab; prepend; }
+
+  select -> ctx;
+  ctx -> detail [label=":patient_detail async"];
+  detail -> tab;
+  ctx -> question [label="auto-asked once"];
+  question -> prepend;
+  tab -> prepend [label="quick asks", style=dashed];
+  prepend -> query [label="typed text + context", constraint=false];
+  query -> evidence;
+  evidence -> render;
+  ctx -> clear [style=dashed, constraint=false, dir=back, label="patient_clear"];
+  // invisible spacers keep row 2 below row 1
+  select -> query [style=invis];
+  ctx -> evidence [style=invis];
+  question -> render [style=invis];
+}

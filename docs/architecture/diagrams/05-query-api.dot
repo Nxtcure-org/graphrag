@@ -1,0 +1,51 @@
+// The query API — one Klein process, five guidelines, structured answers
+// instead of a markdown blob (api/app.py).
+digraph query_api {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.5, ranksep=0.8];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  client [label="Luna UI\n(or curl)", fillcolor="#fff7ed", color="#c2410c"];
+
+  subgraph cluster_routes {
+    label=<<B>Klein routes — every one takes a `guideline` key</B>>; color="#6d28d9"; style="rounded"; fontsize=13;
+    node [fillcolor="#ede9fe"];
+    rq [label="POST/GET /query\nmethod: global | local"];
+    rg [label="POST /graph — Cytoscape JSON\nPOST /flowchart — SVG"];
+    rl [label="GET /guidelines · /pages\n/health · / (ui.html)"];
+    rp [label="GET /patients · /patients/<id>\nFHIR roster + one record\n(see the roster diagram)", fillcolor="#e0f2fe", color="#0369a1"];
+  }
+
+  reg [label="Guideline registry (startup)\n5 projects, each: config +\nentities/communities/reports/\nrelationships/text_units parquet,\nhid indexes, anchor set, page index", fillcolor="#e0e7ff", color="#4338ca"];
+
+  dispatch [label="deferToThread → asyncio.run\nglobal: map-reduce over community\nreports (level None = all)\nlocal: entity-centric context\n(level = deepest)", fillcolor="#e0e7ff", color="#4338ca"];
+
+  engine [label="graphrag.api\nglobal_search / local_search", fillcolor="#e0e7ff", color="#4338ca"];
+  openai [label="OpenAI\n(via litellm)", fillcolor="#f3f4f6", color="#6b7280", style="rounded,filled,dashed"];
+
+  build [label="build_response\nmarkdown → titled sections;\n[Data: Relationships (12, 34)]\nblocks → typed citations,\nmerged + deduped", fillcolor="#e0e7ff", color="#4338ca"];
+
+  evidence [label="resolve_evidence\ncitation ids → real edges/nodes\n(see the evidence diagram)", fillcolor="#fdf2f8", color="#be185d"];
+
+  resp [label="QueryResponse (Pydantic)\nsections + citations + evidence\n+ context table sizes\n(+ raw markdown on request)", fillcolor="#dcfce7", color="#15803d"];
+
+  { rank=same; reg; dispatch; }
+  { rank=same; build; evidence; }
+
+  client -> rq;
+  client -> rg;
+  client -> rl;
+  client -> rp [style=dashed];
+  rq -> reg [label="_g(key)"];
+  reg -> dispatch;
+  dispatch -> engine;
+  engine -> openai [style=dashed];
+  dispatch -> build;
+  build -> evidence;
+  evidence -> resp;
+  rg -> reg [style=dashed];
+  resp -> client [label="JSON", constraint=false, style=dashed];
+}

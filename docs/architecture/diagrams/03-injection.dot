@@ -1,0 +1,39 @@
+// Injection — how hand-drawn flowcharts become a GraphRAG knowledge graph
+// without a single LLM call (nccn_to_graphrag.py).
+digraph injection {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.5, ranksep=0.8];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  dots [label="nccn_graphs*/  *.dot\none per algorithm page (BINV-4, …)\nhouse style: rankdir=LR, decision\ndiamonds, fillcolor = clinical type,\nedge labels = branch conditions", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  parse [label="dot -Tjson (robust parse)\nclean labels (\\l \\n), skip notes/\nplaintext, first line = title", fillcolor="#e0e7ff", color="#4338ca"];
+
+  ents [label="Nodes → ENTITIES\nfillcolor → type (Workup/Treatment/\nDecision/Management/Recurrence/\nSalvage/Reference, else Step)\ndeduped across pages by norm(title):\nlongest description wins, Step upgrades", fillcolor="#e0e7ff", color="#4338ca"];
+
+  rels [label="Edges → RELATIONSHIPS\ndeduped by (source, target):\nweights accumulate, page sets union,\nbranch labels concatenated", fillcolor="#e0e7ff", color="#4338ca"];
+
+  anchor [label="Connectivity, made explicit\na 'Protocol Page' anchor entity per page;\nspine edges anchor→every step (w 0.5);\nanchor→anchor edges for cross-page\nreferences found in node text", fillcolor="#fdf2f8", color="#be185d"];
+
+  tus [label="TEXT UNITS + DOCUMENT\none text unit per page: the edge list\nas readable lines (provenance);\none document row joining them all", fillcolor="#e0e7ff", color="#4338ca"];
+
+  out [label="Pre-finalize parquet\nentities · relationships ·\ntext_units · documents\n(schema: data_model/schemas.py)", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  proof [label="Verified: every .dot renders (0 failures);\nevery parquet set round-trips through the real\nfinalize_graph + create_communities with\n100% entity coverage", fillcolor="#dcfce7", color="#15803d"];
+
+  { rank=same; ents; rels; anchor; }
+  { rank=same; out; proof; }
+
+  dots -> parse;
+  parse -> ents;
+  parse -> rels;
+  parse -> anchor [style=dashed];
+  ents -> tus;
+  rels -> tus;
+  anchor -> tus [style=dashed];
+  tus -> out;
+  out -> proof [style=dashed, color="#15803d"];
+}

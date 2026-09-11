@@ -1,0 +1,49 @@
+// Evidence resolution + flowchart rendering — how a citation in prose becomes
+// a glowing path on the actual protocol page (api/app.py + api/flowchart.py).
+// Two rows: resolution (top) wraps into rendering (bottom).
+digraph evidence {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.6, ranksep=0.9];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  // ------- row 1: resolving citations into evidence -------
+  cite [label="Citations from the answer\nRelationships (12, 34) · Entities (7)\n— human-readable ids", fillcolor="#ede9fe"];
+
+  lookup [label="hid lookup in the loaded parquet\nrel_by_hid / ent_by_hid\n(non-numeric ids ignored)", fillcolor="#e0e7ff", color="#4338ca"];
+
+  kind [label="Edge classification\ntouches a 'Protocol Page' anchor\n→ structural (spine/reference)\notherwise → clinical\n(a real decision step)", fillcolor="#fdf2f8", color="#be185d"];
+  votes [label="primary_page election\neach clinical edge votes with its\nfirst text-unit page; most votes\nwins; fallback: first cited entity\npage that has a real .dot", fillcolor="#fdf2f8", color="#be185d"];
+
+  ev [label="Evidence\nprimary_page +\nedges (kind) +\nnodes (pages)", fillcolor="#dcfce7", color="#15803d"];
+
+  // ------- row 2: rendering the highlighted flowchart -------
+  graphreq [label="UI: POST /graph\npage = primary_page,\nnodes/edges to highlight", fillcolor="#fff7ed", color="#c2410c"];
+
+  chart [label="flowchart.py\npage_files/page_index (lru_cache);\nre-parse the source .dot via\ndot -Tjson; footnotes dropped —\nthe clinical algorithm only", fillcolor="#e0e7ff", color="#4338ca"];
+
+  cyto [label="build_graph → Cytoscape\nelements; hl flags on the cited\nnodes + edges; type from fillcolor", fillcolor="#e0e7ff", color="#4338ca"];
+  svg [label="build_svg (legacy)\nre-authored DOT with highlight\ncolor → dot -Tsvg", fillcolor="#e0e7ff", color="#4338ca"];
+
+  glow [label="The cited decision path\nanimates in purple on the\ninteractive flowchart", fillcolor="#dcfce7", color="#15803d"];
+
+  { rank=same; cite; graphreq; }
+  { rank=same; lookup; chart; }
+  { rank=same; kind; votes; cyto; svg; }
+  { rank=same; ev; glow; }
+
+  cite -> lookup;
+  lookup -> kind;
+  lookup -> votes [style=dashed];
+  kind -> ev;
+  votes -> ev;
+
+  ev -> graphreq [label="the UI takes it\nfrom here", constraint=false, style=dashed, color="#c2410c"];
+
+  graphreq -> chart;
+  chart -> cyto;
+  chart -> svg [style=dashed];
+  cyto -> glow;
+}

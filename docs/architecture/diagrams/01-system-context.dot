@@ -1,0 +1,42 @@
+// System context — the running stack, and the offline authoring path that feeds it.
+digraph system_context {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.5, ranksep=0.85];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  browser [label="Clinician's browser\nCytoscape.js + dagre\n(JS hook)", fillcolor="#fff7ed", color="#c2410c"];
+
+  ui [label="Luna UI — nccn_ui/nccn_ui.exs\nPhoenix LiveView :5901\n(single file, Mix.install)", fillcolor="#ede9fe"];
+
+  api [label="Query API — api/app.py\nKlein / Twisted :8899\nloads all 5 guideline projects\nat startup", fillcolor="#ede9fe"];
+
+  engine [label="GraphRAG engine\npackages/ (uv workspace)\nglobal + local search", fillcolor="#e0e7ff", color="#4338ca"];
+  dot [label="Graphviz `dot`\nsubprocess: -Tjson parse,\n-Tsvg render", fillcolor="#e0e7ff", color="#4338ca"];
+
+  openai [label="OpenAI (via litellm)\ngpt-4.1 · text-embedding-3-large\nGRAPHRAG_API_KEY", fillcolor="#f3f4f6", color="#6b7280", style="rounded,filled,dashed"];
+
+  store [label="5 project roots\nnccn_graphrag[_breast|_prostate|\n_colon|_nsclc]/output/\nparquet tables + lancedb", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  graphs [label="5 flowchart dirs\nnccn_graphs[_…]/*.dot\n17–26 pages per guideline", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  pdfs [label="NCCN guideline PDFs\ntesticular · breast · prostate\n· colon · NSCLC", fillcolor="#f3f4f6", color="#6b7280", style="rounded,filled,dashed"];
+
+  fhir [label="FHIR R4 server — patient roster\nInterSystems TrakCare (IRIS for Health,\n/csp/healthshare/<ns>/fhir/r4, OAuth/Basic)\nor compose `iris` dev stand-in :52773", fillcolor="#e0f2fe", color="#0369a1"];
+
+  { rank=same; engine; dot; fhir; }
+  { rank=same; openai; store; graphs; pdfs; }
+
+  browser -> ui [label="WebSocket\n(LiveView)", dir=both];
+  ui -> api [label="HTTP (Req):\n/query /graph\n/guidelines /patients"];
+  api -> engine [label="in-process:\ngraphrag.api.global_search\n/ local_search"];
+  api -> dot [label="flowchart\nrendering"];
+  api -> fhir [label="httpx: Patient,\nCondition, Encounter\n(api/patients.py)"];
+  engine -> openai [label="map-reduce answers,\nquery embeddings"];
+  api -> store [label="parquet read\nat startup"];
+  api -> graphs [label="page index +\nhighlighted renders"];
+  pdfs -> graphs [label="hand-authored offline\n(house style, one .dot\nper algorithm page)", style=dashed];
+  graphs -> store [label="offline pipeline:\nnccn_to_graphrag.py →\nindex_external_graph.py", style=dashed];
+}

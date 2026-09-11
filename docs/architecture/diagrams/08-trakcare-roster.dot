@@ -1,0 +1,50 @@
+// The patient roster — api/patients.py: any FHIR R4 server (TrakCare first) →
+// one auth-aware client → three bulk searches → guideline-mapped roster.
+digraph trakcare_roster {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.45, ranksep=0.8];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  subgraph cluster_servers {
+    label=<<B>FHIR R4 servers (pick one via FHIR_BASE_URL)</B>>; color="#0369a1"; style="rounded"; fontsize=13;
+    node [fillcolor="#e0f2fe", color="#0369a1"];
+    trak [label="InterSystems TrakCare\n(United Family Healthcare's EHR)\nIRIS for Health FHIR repository\n/csp/healthshare/<ns>/fhir/r4\nOAuth 2.0 bearer · HTTP Basic"];
+    iris [label="Dev stand-in: IRIS for Health\nCommunity (compose `iris`)\nsame repository / portal / OAuth\nprovisioned at image build,\nseeded with 11 synthetic patients"];
+    cloud [label="InterSystems cloud FHIR Server\n(FHIRaaS)  x-api-key", style="rounded,filled,dashed", color="#6b7280", fillcolor="#f3f4f6"];
+  }
+
+  cfg [label="Config (load_config)\nFHIR_AUTH auto → oauth | basic |\napikey | none · FHIR_PROFILE auto →\ntrakcare | fhiraas | generic\nFHIR_VERIFY_TLS · FHIR_PUBLIC_URL", fillcolor="#ede9fe"];
+
+  client [label="make_client → httpx\noauth: client_credentials,\nclient_secret_basic, token endpoint\nfrom .well-known/smart-configuration\n(else /oauth2/token), refresh on 401", fillcolor="#ede9fe"];
+
+  fetch [label="_fetch_fhir — 3 bulk searches\nPatient?_count=50\nCondition?_count=200\nEncounter?_count=200&_sort=-date\nfollow `next` (≤5 pages)", fillcolor="#e0e7ff", color="#4338ca"];
+
+  norm [label="normalize\ngroup by subject.reference ·\nname / MRN(type MR) / sex / DOB ·\nprimary diagnosis = newest active\ncondition that maps to a guideline", fillcolor="#e0e7ff", color="#4338ca"];
+
+  map [label="GUIDELINE_MAP\nICD-10 prefix → SNOMED → keyword\nC50 breast · C61 prostate ·\nC18–20 colon · C34 nsclc · C62 testicular\n'small cell' excluded (not 'non-small')", fillcolor="#fdf2f8", color="#be185d"];
+
+  mock [label="No URL? MOCK_PATIENTS\n11 deterministic synthetic\noncology patients", fillcolor="#fef9c3", color="#a16207", style="rounded,filled,dashed"];
+
+  payload [label="/patients payload (always 200)\nsource: trakcare | fhir | mock | error\nserver · auth · fetched_at · cached ·\nby_guideline counts · patients[]\n60 s in-process cache", fillcolor="#dcfce7", color="#15803d"];
+
+  modal [label="Luna: person icon → roster modal\nsource badge · stat tiles · guideline\nfilter pills · table · row → select", fillcolor="#fff7ed", color="#c2410c"];
+
+  // Stack related nodes into columns so the chain stays ~3:1 on a 16:9 slide.
+  { rank=same; client; cfg; }
+  { rank=same; norm; map; mock; }
+  { rank=same; payload; modal; }
+
+  trak -> client [dir=back, label="GET"];
+  iris -> client [dir=back, style=dashed];
+  cloud -> client [dir=back, style=dashed];
+  cfg -> client;
+  client -> fetch;
+  fetch -> norm;
+  norm -> map [dir=both, style=dashed];
+  norm -> payload;
+  mock -> payload [style=dashed];
+  payload -> modal [label="JSON", constraint=false];
+}

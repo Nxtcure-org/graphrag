@@ -1,0 +1,41 @@
+// Indexing — the standard pipeline's front half is skipped on purpose:
+// the graph is injected, not extracted (index_external_graph.py).
+digraph indexing {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.5, ranksep=0.7];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  parquet [label="Injected parquet\n(from nccn_to_graphrag.py)", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  driver [label="index_external_graph.py <root>\nload_config + cli_overrides ONLY —\nsettings.yaml stays stock:\nworkflows = [the 4 below]\ncluster_graph: use_lcc=False,\nmax_cluster_size=12", fillcolor="#ede9fe"];
+
+  skipped [label="Skipped standard front half\nload_input_documents →\ncreate_base_text_units →\nextract_graph (LLM extraction)\n— unnecessary and would hallucinate\nstructure the .dot already states", fillcolor="#f3f4f6", color="#6b7280", style="rounded,filled,dashed"];
+
+  subgraph cluster_wf {
+    label=<<B>build_index — the 4 workflows that run</B>>; color="#4338ca"; style="rounded"; fontsize=13;
+    node [fillcolor="#e0e7ff", color="#4338ca"];
+    fin [label="finalize_graph\nids, degrees,\ngraph assembly"];
+    comm [label="create_communities\nLeiden (graspologic);\nuse_lcc=False so every\ncomponent is clustered"];
+    reports [label="create_community_reports\nLLM (gpt-4.1) writes one\nreport per community"];
+    embed [label="generate_text_embeddings\ntext-embedding-3-large"];
+  }
+
+  out [label="output/\ncommunities · community_reports\n· final entities/relationships\n· lancedb vector store", shape=cylinder, fillcolor="#fef9c3", color="#a16207"];
+
+  stats [label="Per guideline: 128–274 entities,\n356–687 relationships,\n31–52 community reports\n(re-index is idempotent)", fillcolor="#dcfce7", color="#15803d"];
+
+  { rank=same; driver; skipped; }
+  { rank=same; out; stats; }
+
+  parquet -> driver;
+  driver -> fin;
+  fin -> comm;
+  comm -> reports;
+  reports -> embed;
+  embed -> out;
+  out -> stats [style=dashed, color="#15803d"];
+  skipped -> fin [style=dashed, label="replaced by\nthe injection", color="#6b7280"];
+}

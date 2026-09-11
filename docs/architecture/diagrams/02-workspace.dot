@@ -1,0 +1,43 @@
+// The engine underneath: a uv-workspace monorepo, and the thin custom layer
+// this repo adds on top of its stable seams.
+digraph workspace {
+  rankdir=TB;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent",
+         pad=0.25, nodesep=0.6, ranksep=0.6];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  custom [shape=plain, label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" STYLE="rounded" COLOR="#c2410c" BGCOLOR="#fff7ed">
+      <TR><TD COLSPAN="4"><B>The NCCN layer (this repo's additions)</B></TD></TR>
+      <TR><TD>nccn_to_graphrag.py<BR/>.dot → parquet injector</TD>
+          <TD>index_external_graph.py<BR/>4-workflow index driver</TD>
+          <TD>api/app.py + flowchart.py<BR/>Klein query API</TD>
+          <TD>nccn_ui/nccn_ui.exs<BR/>LiveView copilot</TD></TR>
+    </TABLE>>];
+
+  seams [label=<<B>The stable seams it builds on</B> — graphrag.api (build_index, global_search, local_search)<BR/>· config.load_config (cli_overrides) · data_model/schemas.py (parquet column contracts)>,
+         fillcolor="#fee2e2", color="#b91c1c"];
+
+  main [shape=plain, label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" STYLE="rounded" COLOR="#6d28d9" BGCOLOR="#ede9fe">
+      <TR><TD COLSPAN="4"><B>packages/graphrag — the main package</B></TD></TR>
+      <TR><TD>cli/ (Typer, thin)</TD><TD>api/ (the seam)</TD><TD>index/workflows/ + PipelineFactory</TD><TD>query/structured_search/</TD></TR>
+      <TR><TD>config/ (Pydantic v2)</TD><TD>data_model/ + schemas.py</TD><TD>prompts/</TD><TD>global · local · drift · basic</TD></TR>
+    </TABLE>>];
+
+  sats [shape=plain, label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" STYLE="rounded" COLOR="#4338ca" BGCOLOR="#e0e7ff">
+      <TR><TD COLSPAN="7"><B>Satellite packages — factory-registered, individually installable</B></TD></TR>
+      <TR><TD>graphrag-common</TD><TD>-cache</TD><TD>-storage</TD><TD>-vectors</TD><TD>-input</TD><TD>-chunking</TD><TD>-llm (litellm ==1.92.0)</TD></TR>
+    </TABLE>>];
+
+  rules [label="Workspace rules: inter-package versions pinned exactly and bumped in lockstep\n(semversioner change file required per PR) · graspologic-native pinned <1.3\n(Leiden output changes break golden data) · factories over enums for every backend",
+         fillcolor="#f3f4f6", color="#6b7280"];
+
+  custom -> seams;
+  seams -> main;
+  main -> sats [label="  every package depends on graphrag-common"];
+  sats -> rules [style=dashed, color="#6b7280"];
+}

@@ -1,0 +1,40 @@
+// The Luna UI — a single-file Phoenix LiveView app where the chat drives
+// the diagram (nccn_ui/nccn_ui.exs).
+digraph ui {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=14, bgcolor="transparent", newrank=true,
+         pad=0.25, nodesep=0.5, ranksep=0.85];
+  node  [fontname="Helvetica", fontsize=13, shape=box, style="rounded,filled",
+         fillcolor="#ffffff", color="#6d28d9", penwidth=1.4, margin="0.2,0.12"];
+  edge  [fontname="Helvetica", fontsize=11, color="#52525b", arrowsize=0.8];
+
+  subgraph cluster_browser {
+    label=<<B>Browser</B>>; color="#c2410c"; style="rounded"; fontsize=13;
+    node [fillcolor="#fff7ed", color="#c2410c"];
+    chat [label="Left sidebar — Luna\nchat + typing indicator,\nsuggested chips,\nSpecific/Thematic toggle,\nperson icon → patient roster modal"];
+    cyto [label="Main pane — Cyto JS hook\nCytoscape.js + dagre layout;\npan/zoom, progressive reveal\n(BFS rank order), purple\nanimated cited path"];
+    panels [label="Right tabs\nPatient (FHIR record, active context,\nquick asks) · To-Do (workup checklist) ·\nTimeline (restore prior state) ·\nDetail (node focus, 'Ask Luna')"];
+  }
+
+  lv [label="Phoenix LiveView :5901\nsingle .exs file (Mix.install:\nphoenix, live_view, bandit, req)\nowns all state; guideline pills\nre-seed chart + route queries", fillcolor="#ede9fe"];
+
+  api [label="Klein API :8899\n(NCCN_API env)", fillcolor="#e0e7ff", color="#4338ca"];
+
+  q [label="POST /query\n→ sections, key points,\ncitations, evidence", fillcolor="#e0e7ff", color="#4338ca"];
+  g [label="POST /graph\n→ Cytoscape elements\nwith hl flags", fillcolor="#e0e7ff", color="#4338ca"];
+  p [label="GET /patients · /patients/<id>\n→ roster · one FHIR record\n(TrakCare / IRIS)", fillcolor="#e0f2fe", color="#0369a1"];
+
+  { rank=same; q; g; p; }
+
+  chat -> lv [label="ws: user asks", dir=both];
+  panels -> lv [dir=both, style=dashed];
+  lv -> api [label="HTTP (Req)"];
+  api -> q;
+  api -> g;
+  api -> p;
+  p -> lv [label="roster modal · Patient tab;\nselect → active context\n+ auto-asked NCCN question", constraint=false, style=dashed];
+  q -> lv [label="answer → chat bubbles\n+ key-point bullets", constraint=false, style=dashed];
+  g -> lv [label="elements", constraint=false, style=dashed];
+  lv -> cyto [label="push_event(\"graph\")\n→ hook renders + dagre\ntransition"];
+  cyto -> lv [label="node click →\nfocus + Detail tab", style=dashed];
+}

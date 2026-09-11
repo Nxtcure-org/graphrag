@@ -97,6 +97,7 @@ class QueryResponse(BaseModel):
     evidence: Evidence = Field(default_factory=Evidence)
     context: ContextSummary = Field(default_factory=ContextSummary)
     raw_markdown: str | None = None
+    routed_from: str | None = Field(default=None, description="set when the question named another cancer and was answered from that guideline instead of the requested one")
 
 
 # ======================= guideline (loaded project) ========================
@@ -147,6 +148,36 @@ DEFAULT_KEY = "testicular" if "testicular" in GUIDELINES else next(iter(GUIDELIN
 
 def _g(key: str | None) -> Guideline:
     return GUIDELINES.get(key or DEFAULT_KEY) or GUIDELINES[DEFAULT_KEY]
+
+
+# Question routing: if a question names a cancer we have a guideline for, answer from that
+# guideline rather than the one currently selected in the UI. Terms are matched on word
+# boundaries, lowercase; the guideline with the most hits wins, ties go to the requested one.
+ROUTE_TERMS = {
+    "breast": ["breast", "mammary", "her2", "ductal", "dcis", "lobular", "mastectomy", "lumpectomy", "brca", "tamoxifen", "aromatase"],
+    "prostate": ["prostate", "prostatic", "psa", "gleason", "prostatectomy", "androgen deprivation", "adt", "castration"],
+    "colon": ["colon", "colonic", "colorectal", "rectal", "rectum", "sigmoid", "bowel", "folfox", "capox", "msi-h", "dmmr", "colectomy"],
+    "nsclc": ["lung", "nsclc", "non-small cell", "non small cell", "egfr", "alk", "pd-l1", "lobectomy", "bronchial", "pulmonary"],
+    "testicular": ["testicular", "testis", "testicle", "seminoma", "nonseminoma", "germ cell", "nsgct", "orchiectomy", "bep", "beta-hcg", "retroperitoneal lymph node"],
+}
+_ROUTE_RE = {k: re.compile(r"(?<![a-z0-9])(" + "|".join(re.escape(t) for t in terms) + r")(?![a-z0-9])", re.I)
+             for k, terms in ROUTE_TERMS.items()}
+
+
+def detect_guideline(text: str | None, prefer: str | None = None) -> str | None:
+    """Guideline key named in the question, or None if no cancer is named (or none we have loaded).
+
+    Ties (e.g. "lung nodule in a testicular cancer patient") resolve to `prefer`, the guideline the
+    caller already has selected, so an incidental mention never yanks the user elsewhere.
+    """
+    if not text:
+        return None
+    hits = {k: len(rx.findall(text)) for k, rx in _ROUTE_RE.items() if k in GUIDELINES}
+    top = max(hits.values(), default=0)
+    if top == 0:
+        return None
+    winners = [k for k, n in hits.items() if n == top]
+    return prefer if prefer in winners else winners[0]
 
 
 # ============================ parsing helpers ==============================
@@ -252,7 +283,7 @@ def resolve_evidence(g: Guideline, citations: list[Citation]) -> Evidence:
 
 
 def build_response(g: Guideline, method: str, query: str, level: int | None,
-                   resp: Any, ctx: Any, include_raw: bool) -> QueryResponse:
+                   resp: Any, ctx: Any, include_raw: bool, routed_from: str | None = None) -> QueryResponse:
     md = resp if isinstance(resp, str) else json.dumps(resp)
     title, sections = parse_sections(md)
     merged: dict[str, list[str]] = {}
@@ -267,6 +298,7 @@ def build_response(g: Guideline, method: str, query: str, level: int | None,
         guideline=g.key, method=method, query=query, community_level=level, title=title,
         sections=sections, citations=citations, evidence=resolve_evidence(g, citations),
         context=summarize_context(ctx), raw_markdown=md if include_raw else None,
+        routed_from=routed_from,
     )
 
 
@@ -394,11 +426,17 @@ def patient_detail_route(request, pid):
     return d
 
 
-def _dispatch(request, g, query, method, level, response_type, include_raw):
+def _dispatch(request, g, query, method, level, response_type, include_raw, route=False):
     if not query:
         return _json(request, {"error": "missing 'query'"}, code=400)
     if method not in ("global", "local"):
         return _json(request, {"error": f"unknown method '{method}'"}, code=400)
+
+    routed_from = None
+    if route:
+        detected = detect_guideline(query, prefer=g.key)
+        if detected and detected != g.key:
+            routed_from, g = g.key, GUIDELINES[detected]
 
     if method == "global":
         level = None if level is None else int(level)
@@ -408,7 +446,7 @@ def _dispatch(request, g, query, method, level, response_type, include_raw):
         d = deferToThread(_local, g, query, level, response_type)
 
     d.addCallback(lambda result: _json(
-        request, build_response(g, method, query, level, result[0], result[1], include_raw).model_dump()))
+        request, build_response(g, method, query, level, result[0], result[1], include_raw, routed_from).model_dump()))
     d.addErrback(lambda f: _json(request, {"error": str(f.value)}, code=500))
     return d
 
@@ -428,7 +466,8 @@ def query_post(request):
         query=body.get("query"), method=body.get("method", "global"),
         level=body.get("community_level"),
         response_type=body.get("response_type", DEFAULT_RESPONSE_TYPE),
-        include_raw=bool(body.get("include_raw", False)))
+        include_raw=bool(body.get("include_raw", False)),
+        route=bool(body.get("route", False)))
 
 
 @app.route("/query", methods=["GET"])
@@ -442,7 +481,8 @@ def query_get(request):
         query=arg("query"), method=arg("method", "global"),
         level=arg("community_level"),
         response_type=arg("response_type", DEFAULT_RESPONSE_TYPE),
-        include_raw=_truthy(arg("include_raw", "false")))
+        include_raw=_truthy(arg("include_raw", "false")),
+        route=_truthy(arg("route", "false")))
 
 
 if __name__ == "__main__":

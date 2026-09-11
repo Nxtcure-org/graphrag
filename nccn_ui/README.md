@@ -59,6 +59,19 @@ Browser ⇄ LiveView ws ⇄ Phoenix :5901 ⇄ HTTP/Req ⇄ Klein :8899 ⇄ Graph
   credentials live only on the API side (`FHIR_BASE_URL` plus OAuth client,
   Basic user, or API key — see `api/README.md`) — the UI needs nothing.
 
+- **Voice (Deepgram)** — the mic button in the ask box follows the nxt-teach
+  Elixir pattern: tap to record, tap again to stop; the clip POSTs to this
+  app's `/voice/transcribe` (same session + CSRF as the LiveView), Deepgram
+  `nova-3` transcribes it server-side, and the transcript enters the normal
+  ask flow tagged "🎤 spoken" — so a spoken question drives the flowchart
+  like a typed one. With the "🔊 Speaks" toggle on, Luna's answer (title +
+  first key points, citations stripped) is synthesized with `aura-2-athena-en`
+  and pushed to the browser as base64 for playback; starting a new recording
+  or muting stops playback. Env on the UI: `DEEPGRAM_API_KEY` (unset → the mic
+  renders disabled), optional `DEEPGRAM_LISTEN_MODEL`, `DEEPGRAM_SPEAK_MODEL`.
+  The key never reaches the browser and is never logged. The mic needs a
+  secure context (https, localhost or 127.0.0.1).
+
 The LiveView orchestrates: it fetches `/graph` (with highlight from the query's
 `evidence`) and `push_event`s the elements to the `Cyto` hook, which renders and
 runs the dagre layout with a smooth transition.
@@ -73,7 +86,8 @@ NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs     # :5901
 ```
 
 Open http://127.0.0.1:5901. First run compiles deps via `Mix.install` (~1–2 min).
-Env: `PORT` (default 5901), `NCCN_API` (default `http://127.0.0.1:8899`).
+Env: `PORT` (default 5901), `NCCN_API` (default `http://127.0.0.1:8899`),
+`DEEPGRAM_API_KEY` (optional; enables the mic + spoken replies).
 
 ## Styling
 

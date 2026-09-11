@@ -80,7 +80,7 @@ uv run --with playwright --with httpx python scripts/trakcare_fhir_setup.py --ho
 | GET    | `/health` | status, `patients_source` (`fhir`/`mock`), per-guideline table sizes |
 | GET    | `/guidelines` | the loaded guidelines with their page indexes |
 | GET    | `/pages?guideline=` | page index for one guideline |
-| POST   | `/query`  | JSON body (see below); add `"guideline": "<key>"` |
+| POST   | `/query`  | JSON body (see below); add `"guideline": "<key>"`. `"route": true` lets a question that names another cancer (breast, prostate, colon/rectal, lung/NSCLC, testicular terms — see `ROUTE_TERMS`) be answered from that guideline instead; the response then carries `routed_from`. Ties resolve to the requested guideline. The Luna UI always sends `route: true`. |
 | GET    | `/query`  | same via query params: `?guideline=colon&query=...&method=global` |
 | POST   | `/graph`  | `{guideline, page, nodes, edges}` → Cytoscape elements with `hl` flags |
 | POST   | `/flowchart` | same input → server-rendered SVG (legacy) |

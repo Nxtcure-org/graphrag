@@ -54,6 +54,9 @@ WORKDIR /app
 ENV HTTP_IP=0.0.0.0 \
     PORT=5901 \
     NCCN_API=http://api:8899 \
+    DEEPGRAM_API_KEY="" \
+    DEEPGRAM_LISTEN_MODEL=nova-3 \
+    DEEPGRAM_SPEAK_MODEL=aura-2-athena-en \
     MIX_INSTALL_DIR=/opt/mix-install
 
 RUN mix local.hex --force && mix local.rebar --force

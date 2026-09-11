@@ -99,6 +99,10 @@ services:
       NCCN_API: http://api:8899
       HTTP_IP: 0.0.0.0
       PORT: "5901"
+      # Voice (Deepgram REST, nxt-teach pattern): unset -> the mic button is shown disabled
+      DEEPGRAM_API_KEY: ${DEEPGRAM_API_KEY:-}
+      DEEPGRAM_LISTEN_MODEL: ${DEEPGRAM_LISTEN_MODEL:-nova-3}
+      DEEPGRAM_SPEAK_MODEL: ${DEEPGRAM_SPEAK_MODEL:-aura-2-athena-en}
     ports:
       - "5901:5901"
     depends_on:

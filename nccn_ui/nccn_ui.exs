@@ -54,6 +54,8 @@ defmodule NccnUi.Layouts do
           @keyframes orbit{to{transform:rotate(360deg)}}
           .orbit{transform-origin:center;animation:orbit 14s linear infinite}
           .cy-step{position:absolute;bottom:10px;left:10px;font-size:11px;color:#64748b;background:rgba(255,255,255,.8);border:1px solid #e2e8f0;border-radius:999px;padding:3px 10px;backdrop-filter:blur(4px)}
+          @keyframes caret{50%{opacity:0}}
+          .speech-text.typing::after{content:"▍";margin-left:1px;color:#8b5cf6;animation:caret .9s steps(1) infinite}
         </style>
         <script src="/js/phoenix/phoenix.min.js"></script>
         <script src="/js/lv/phoenix_live_view.min.js"></script>
@@ -71,6 +73,87 @@ defmodule NccnUi.Layouts do
             {selector:'.stephide',style:{'opacity':0,'events':'no'}},
           ];
           const Hooks={};
+          // Half-duplex voice (ported from nxt-teach's VoiceRecorder): tap to record, tap again to
+          // stop. The clip POSTs to /voice/transcribe (session cookie + CSRF header); the transcript
+          // lands in the LiveView as a normal question. Luna's spoken reply arrives via "play_audio".
+          Hooks.VoiceRecorder={
+            mounted(){
+              this.recorder=null;this.chunks=[];this.audio=null;this.typer=null;this.typeTarget=null;this.typeText="";
+              this.el.addEventListener("click",()=>(this.recorder?this.stop():this.start()));
+              // play_audio carries the spoken text and the id of the "Luna speaking" bubble's span
+              // (rendered in the same LiveView patch, which is applied before events dispatch).
+              this.handleEvent("play_audio",({audio,mime,text,el,timings})=>{
+                this.stopAudio();
+                const a=new Audio(`data:${mime};base64,${audio}`);this.audio=a;
+                window.lunaSpeech={audio:a,timings:timings||[],text:text||""};   // debug/inspection handle (like window.cy)
+                const target=el?document.getElementById(el):null;
+                this.typeTarget=target;this.typeText=text||(target&&target.dataset.text)||"";
+                if(target){target.textContent="";target.classList.add("typing")}
+                const begin=()=>this.typewrite(a,target,this.typeText,timings||[]);
+                a.addEventListener("playing",begin,{once:true});   // follow the real playback clock, not a timer
+                a.addEventListener("ended",()=>this.finishText());
+                a.play().catch(()=>{this.finishText()});   // autoplay refused: show the words anyway
+              });
+              this.handleEvent("stop_audio",()=>this.stopAudio());
+            },
+            // Reveal the narration word by word against audio.currentTime. `timings` are nova-3 word
+            // [start,end] pairs for the clip; the i-th text word is mapped onto the proportional
+            // transcript word so small tokenisation differences don't matter. Without timings, fall
+            // back to spreading the words evenly over the clip's duration.
+            typewrite(a,target,text,timings){
+              if(!target){return}
+              const words=text.split(/(\s+)/);            // keep separators so slicing preserves layout
+              const tokens=[];let off=0;for(const w of words){if(w.trim()){tokens.push({end:off+w.length})}off+=w.length}
+              const n=tokens.length,m=timings.length;
+              const at=(i)=>{ if(m>0){const j=Math.min(m-1,Math.floor(i*m/n));return timings[j][0]}
+                              const d=isFinite(a.duration)&&a.duration>0?a.duration:n/2.6;return (i/n)*d*0.96 };
+              const revealAt=tokens.map((t,i)=>({end:t.end,t:at(i)}));
+              const chat=document.getElementById("chat");let shown=0;
+              const frame=()=>{
+                if(this.audio!==a){return}
+                const now=a.currentTime+0.12;              // small lookahead: the eye reads slightly ahead of the ear
+                let k=shown;while(k<n&&revealAt[k].t<=now){k++}
+                if(k!==shown){shown=k;target.textContent=text.slice(0,k?revealAt[k-1].end:0);if(chat){chat.scrollTop=chat.scrollHeight}}
+                if(shown<n&&!a.ended){this.typer=requestAnimationFrame(frame)}else{target.textContent=text;target.classList.remove("typing");this.typer=null}
+              };
+              frame();
+            },
+            finishText(){
+              if(this.typer){cancelAnimationFrame(this.typer);this.typer=null}
+              if(this.typeTarget){this.typeTarget.textContent=this.typeText;this.typeTarget.classList.remove("typing");this.typeTarget=null}
+            },
+            stopAudio(){this.finishText();if(this.audio){try{this.audio.pause()}catch(_){}this.audio=null}},
+            async start(){
+              this.stopAudio();
+              if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){this.pushEvent("voice_failed",{reason:"the microphone needs a secure context — open Luna over https or on localhost/127.0.0.1"});return}
+              if(!window.MediaRecorder){this.pushEvent("voice_failed",{reason:"this browser has no MediaRecorder"});return}
+              try{
+                const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+                this.chunks=[];this.recorder=new MediaRecorder(stream);
+                this.recorder.ondataavailable=(e)=>e.data.size&&this.chunks.push(e.data);
+                this.recorder.onstop=()=>this.upload(stream);
+                this.recorder.start();
+                this.pushEvent("voice_recording",{});
+              }catch(error){
+                this.pushEvent("voice_failed",{reason:(error&&error.name==="NotAllowedError")?"microphone permission denied":("microphone unavailable: "+error)});
+              }
+            },
+            stop(){this.recorder.stop()},
+            async upload(stream){
+              stream.getTracks().forEach((t)=>t.stop());
+              this.pushEvent("voice_uploading",{});
+              const blob=new Blob(this.chunks,{type:this.recorder.mimeType||"audio/webm"});
+              this.recorder=null;
+              try{
+                const csrf=document.querySelector("meta[name=csrf-token]").getAttribute("content");
+                const response=await fetch("/voice/transcribe",{method:"POST",headers:{"content-type":blob.type,"x-csrf-token":csrf},body:blob});
+                const result=await response.json();
+                if(!response.ok){this.pushEvent("voice_failed",{reason:result.error||String(response.status)});return}
+                this.pushEvent("voice_transcribed",{transcript:result.transcript||""});
+              }catch(error){this.pushEvent("voice_failed",{reason:String(error)})}
+            },
+            destroyed(){this.stopAudio()}
+          };
           Hooks.Cyto={
             mounted(){
               if(window.cytoscapeDagre){try{cytoscape.use(window.cytoscapeDagre)}catch(_){}}
@@ -225,7 +308,8 @@ defmodule NccnUi.HomeLive do
        evidence: nil, sections: [], graph: nil, selected: nil,
        tab: "todo", todos: todos, history: [],
        patients_open: false, patients: nil, patients_loading: false, patients_error: nil, patients_filter: nil,
-       patient: nil, patient_detail: nil, patient_loading: false
+       patient: nil, patient_detail: nil, patient_loading: false,
+       voice_enabled: NccnUi.Voice.enabled?(), voice_state: "idle", voice_speak: true, voice_last: false
      )}
   end
 
@@ -248,6 +332,28 @@ defmodule NccnUi.HomeLive do
   end
 
   def handle_event("guideline", %{"key" => key}, socket), do: {:noreply, switch_guideline(socket, key)}
+
+  # ---- voice (Deepgram via NccnUi.Voice; browser side is the VoiceRecorder hook) ----
+  def handle_event("voice_recording", _p, socket),
+    do: {:noreply, socket |> assign(voice_state: "recording") |> push_event("stop_audio", %{})}
+
+  def handle_event("voice_uploading", _p, socket), do: {:noreply, assign(socket, voice_state: "uploading")}
+
+  def handle_event("voice_transcribed", %{"transcript" => t}, socket) do
+    socket = assign(socket, voice_state: "idle")
+    case String.trim(t) do
+      "" -> {:noreply, luna(socket, "I couldn't hear anything in that clip — try again a little closer?", nil)}
+      q -> do_ask(q, assign(socket, voice_last: true))
+    end
+  end
+
+  def handle_event("voice_failed", %{"reason" => reason}, socket),
+    do: {:noreply, socket |> assign(voice_state: "idle") |> luna("Voice unavailable.", to_string(reason))}
+
+  def handle_event("voice_speak", _p, socket) do
+    on = !socket.assigns.voice_speak
+    {:noreply, socket |> assign(voice_speak: on) |> then(&if(on, do: &1, else: push_event(&1, "stop_audio", %{})))}
+  end
 
   def handle_event("method", %{"m" => m}, socket), do: {:noreply, assign(socket, method: m)}
   def handle_event("tab", %{"t" => t}, socket), do: {:noreply, assign(socket, tab: t)}
@@ -346,11 +452,50 @@ defmodule NccnUi.HomeLive do
     p = socket.assigns.patient
     # The chat shows what was typed; the API gets the patient context prepended when one is active.
     full_q = if p, do: patient_context(p) <> "\n\nQuestion: " <> q, else: q
-    msgs = socket.assigns.messages ++ [%{role: "user", text: q, sub: p && "for #{p["name"]}"}]
+    tags = Enum.reject([socket.assigns[:voice_last] && "🎤 spoken", p && "for #{p["name"]}"], &(!&1))
+    msgs = socket.assigns.messages ++ [%{role: "user", text: q, sub: if(tags == [], do: nil, else: Enum.join(tags, " · "))}]
     {:noreply,
      socket
-     |> assign(loading: true, error: nil, messages: msgs, status: "Analyzing")
+     |> assign(loading: true, error: nil, messages: msgs, status: "Analyzing", voice_last: false)
      |> start_async(:run, fn -> run_query(key, full_q, method) end)}
+  end
+
+  # Luna speaks her answer (Aura TTS) when the speaker toggle is on; never blocks the answer itself.
+  # The async returns the spoken text too, so the "Luna speaking" bubble can typewriter it in sync.
+  defp maybe_speak(socket, res) do
+    text = speak_text(res)
+    if socket.assigns.voice_enabled and socket.assigns.voice_speak and text != "" do
+      start_async(socket, :speak, fn ->
+        case NccnUi.Voice.speak(text) do
+          {:ok, audio, mime} = ok -> {text, ok, NccnUi.Voice.word_timings(audio, mime)}
+          err -> {text, err, []}
+        end
+      end)
+    else
+      socket
+    end
+  end
+
+  # Title + the first two sections, stripped of citations/markdown, cut at a sentence boundary
+  # around 900 chars (~1 min of Aura speech; the hard API limit is 2000). The full answer stays on screen.
+  defp speak_text(res) do
+    text =
+      [res.msg.text | Enum.map(Enum.take(res.sections || [], 2), &(&1["content"] || ""))]
+      |> Enum.join(". ")
+      |> String.replace(~r/\[Data:[^\]]*\]/, "")
+      |> String.replace(~r/[*#_`>|]+/, "")
+      |> String.replace(~r/\s+/, " ")
+      |> String.trim()
+
+    if String.length(text) <= 900 do
+      text
+    else
+      head = String.slice(text, 0, 900)
+      case :binary.matches(head, [". ", "; "]) do
+        [] -> head
+        ms -> {pos, len} = List.last(ms); String.slice(head, 0, pos + len - 1)
+      end
+    end
   end
 
   defp patient_context(p) do
@@ -371,6 +516,13 @@ defmodule NccnUi.HomeLive do
 
   # ---------------- async ----------------
   def handle_async(:run, {:ok, res}, socket) do
+    # The question named another cancer: follow it — pills, page list, checklist and chart move
+    # to that guideline (switch_guideline posts "Switched to …"), then the answer lands on top.
+    socket =
+      if res[:routed_from] && res.guideline != socket.assigns.guideline,
+        do: switch_guideline(socket, res.guideline),
+        else: socket
+
     socket = assign(socket, loading: false, messages: socket.assigns.messages ++ [res.msg], sections: res.sections, evidence: res.evidence)
 
     socket =
@@ -384,8 +536,19 @@ defmodule NccnUi.HomeLive do
         assign(socket, status: "Reference")
       end
 
-    {:noreply, socket}
+    {:noreply, maybe_speak(socket, res)}
   end
+
+  def handle_async(:speak, {:ok, {text, {:ok, audio, mime}, timings}}, socket) do
+    id = System.unique_integer([:positive])
+    {:noreply,
+     socket
+     |> assign(messages: socket.assigns.messages ++ [%{role: "speech", text: text, sub: nil, id: id}])
+     |> push_event("play_audio", %{audio: Base.encode64(audio), mime: mime, text: text, el: "speech-#{id}", timings: timings})}
+  end
+
+  def handle_async(:speak, {:ok, {_text, {:error, _reason}, _}}, socket), do: {:noreply, socket}
+  def handle_async(:speak, {:exit, _reason}, socket), do: {:noreply, socket}
 
   def handle_async(:run, {:exit, reason}, socket) do
     {:noreply, socket |> assign(loading: false, status: "Error") |> luna("Something went wrong.", inspect(reason))}
@@ -404,18 +567,23 @@ defmodule NccnUi.HomeLive do
     do: {:noreply, assign(socket, patient_detail: %{"error" => "API unreachable: #{inspect(reason)}", "conditions" => [], "encounters" => []}, patient_loading: false)}
 
   # ---------------- backend ----------------
+  # route: true lets the API answer from whichever guideline the question names (e.g. asking about
+  # breast cancer while Testicular is selected). The response's `guideline` is then authoritative:
+  # the graph is fetched from it and handle_async switches the UI to it before showing the answer.
   defp run_query(key, q, method) do
-    body = Req.post!("#{@api}/query", json: %{guideline: key, query: q, method: method}, receive_timeout: 240_000, connect_options: [timeout: 10_000]).body
+    body = Req.post!("#{@api}/query", json: %{guideline: key, query: q, method: method, route: true}, receive_timeout: 240_000, connect_options: [timeout: 10_000]).body
+    gkey = body["guideline"] || key
     ev = body["evidence"] || %{}
     page = ev["primary_page"]
     clinical = Enum.filter(ev["edges"] || [], &(&1["kind"] == "clinical"))
     hln = Enum.uniq(Enum.flat_map(clinical, &[&1["source"], &1["target"]]) ++ Enum.map(ev["nodes"] || [], & &1["title"]))
     hle = Enum.map(clinical, &[&1["source"], &1["target"]])
-    graph = if page, do: graph_for(key, page, hln, hle, true), else: nil
+    graph = if page, do: graph_for(gkey, page, hln, hle, true), else: nil
     title = body["title"] || (List.first(body["sections"] || []) || %{})["heading"] || "Here's the pathway"
     sub = if page, do: "Highlighted the cited path on #{page}.", else: "Broad question — key points shown."
     %{msg: %{role: "luna", text: title, sub: sub}, sections: body["sections"] || [], evidence: ev,
-      graph: graph, page: page, label: graph && graph["label"], hln: hln, hle: hle}
+      graph: graph, page: page, label: graph && graph["label"], hln: hln, hle: hle,
+      guideline: gkey, routed_from: body["routed_from"]}
   end
 
   defp graph_for(key, page, hln, hle, auto) do
@@ -602,15 +770,28 @@ defmodule NccnUi.HomeLive do
 
         <div class="flex-1 min-h-0 overflow-auto p-4 space-y-3" id="chat">
           <%= for m <- @messages do %>
-            <%= if m.role == "luna" do %>
-              <div class="fade-up flex gap-2.5">
-                <div class="shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 mt-0.5"></div>
-                <div class="bg-white rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm px-3.5 py-2.5 max-w-[85%]">
-                  <div class="text-sm text-slate-800">{m.text}</div>
-                  <%= if m.sub do %><div class="text-xs text-slate-500 mt-1 leading-snug">{m.sub}</div><% end %>
+            <%= cond do %>
+              <% m.role == "speech" -> %>
+                <%!-- Luna's spoken narration. The span is phx-update="ignore": the VoiceRecorder hook types
+                      the text into it in step with the audio; server-rendered full text is the no-JS fallback. --%>
+                <div class="fade-up flex gap-2.5">
+                  <div class="shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 mt-0.5 grid place-items-center text-white">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                  </div>
+                  <div class="bg-violet-50/80 rounded-2xl rounded-tl-sm border border-violet-200 shadow-sm shadow-violet-100 px-3.5 py-2.5 max-w-[85%]">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-violet-600 mb-1">Luna speaking</div>
+                    <div class="text-sm text-slate-800 leading-relaxed"><span id={"speech-#{m.id}"} phx-update="ignore" data-text={m.text} class="speech-text">{m.text}</span></div>
+                  </div>
                 </div>
-              </div>
-            <% else %>
+              <% m.role == "luna" -> %>
+                <div class="fade-up flex gap-2.5">
+                  <div class="shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 mt-0.5"></div>
+                  <div class="bg-white rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm px-3.5 py-2.5 max-w-[85%]">
+                    <div class="text-sm text-slate-800">{m.text}</div>
+                    <%= if m.sub do %><div class="text-xs text-slate-500 mt-1 leading-snug">{m.sub}</div><% end %>
+                  </div>
+                </div>
+              <% true -> %>
               <div class="fade-up flex justify-end">
                 <div class="bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-sm px-3.5 py-2.5 max-w-[85%] text-sm">
                   {m.text}
@@ -640,9 +821,36 @@ defmodule NccnUi.HomeLive do
           <div class="flex gap-1.5">
             <button phx-click="method" phx-value-m="local" class={["text-[11px] px-2.5 py-1 rounded-full border transition", if(@method == "local", do: "bg-violet-600 text-white border-violet-600", else: "bg-white text-slate-500 border-slate-200")]}>🎯 Specific</button>
             <button phx-click="method" phx-value-m="global" class={["text-[11px] px-2.5 py-1 rounded-full border transition", if(@method == "global", do: "bg-violet-600 text-white border-violet-600", else: "bg-white text-slate-500 border-slate-200")]}>🌐 Thematic</button>
+            <%= if @voice_enabled do %>
+              <button phx-click="voice_speak" title="Luna reads her answers aloud (Deepgram Aura)"
+                class={["ml-auto text-[11px] px-2.5 py-1 rounded-full border transition", if(@voice_speak, do: "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white border-transparent shadow-sm", else: "bg-white text-slate-500 border-slate-200")]}>
+                <%= if @voice_speak, do: "🔊 Speaks", else: "🔇 Muted" %>
+              </button>
+            <% end %>
           </div>
           <form phx-submit="ask" class="flex items-center gap-2 bg-white rounded-2xl border border-slate-200 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-500/20 p-1.5 pl-3 shadow-sm">
-            <input name="q" autocomplete="off" placeholder="Ask Luna…" class="flex-1 bg-transparent text-sm py-1.5 focus:outline-none placeholder:text-slate-400" />
+            <input name="q" autocomplete="off" placeholder={if @voice_state == "recording", do: "Listening… tap the mic to stop", else: "Ask Luna…"} class="flex-1 bg-transparent text-sm py-1.5 focus:outline-none placeholder:text-slate-400" />
+            <%= if @voice_enabled do %>
+              <button type="button" id="voice-rec" phx-hook="VoiceRecorder" disabled={@voice_state == "uploading"}
+                title={case @voice_state do "recording" -> "Stop and send"; "uploading" -> "Transcribing…"; _ -> "Ask by voice (Deepgram nova-3)" end}
+                class={["shrink-0 w-9 h-9 rounded-xl grid place-items-center border transition",
+                        case @voice_state do
+                          "recording" -> "bg-red-500 text-white border-red-500 animate-pulse shadow"
+                          "uploading" -> "bg-slate-100 text-slate-400 border-slate-200"
+                          _ -> "bg-white text-slate-500 border-slate-200 hover:border-violet-300 hover:text-violet-700"
+                        end]}>
+                <%= if @voice_state == "recording" do %>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                <% else %>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                <% end %>
+              </button>
+            <% else %>
+              <button type="button" disabled title="Voice is off — set DEEPGRAM_API_KEY on the UI service to enable"
+                class="shrink-0 w-9 h-9 rounded-xl grid place-items-center border border-slate-200 bg-slate-50 text-slate-300">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              </button>
+            <% end %>
             <button type="submit" disabled={@loading} class="shrink-0 w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 disabled:opacity-50 text-white grid place-items-center shadow transition">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
             </button>
@@ -990,6 +1198,174 @@ defmodule NccnUi.HomeLive do
   end
 end
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Voice — Deepgram REST, ported from nxt-teach (NxtTeach.Voice.Deepgram + its
+# VoiceController). Half-duplex: the browser records a clip, POSTs it to
+# /voice/transcribe, the transcript becomes a normal Luna question, and Luna's
+# answer is synthesized with Aura and pushed back as base64 for playback.
+# The Deepgram key stays server-side, is read at call time, and is never logged.
+# ─────────────────────────────────────────────────────────────────────────────
+defmodule NccnUi.Voice do
+  @moduledoc "Deepgram REST: `nova-3` STT and `aura-2-athena-en` TTS (env-overridable)."
+  require Logger
+
+  @listen_url "https://api.deepgram.com/v1/listen"
+  @speak_url "https://api.deepgram.com/v1/speak"
+
+  def listen_model, do: System.get_env("DEEPGRAM_LISTEN_MODEL", "nova-3")
+  def speak_model, do: System.get_env("DEEPGRAM_SPEAK_MODEL", "aura-2-athena-en")
+
+  def enabled?, do: api_key() != nil
+
+  def transcribe(audio, content_type) do
+    with {:ok, key} <- require_key() do
+      request =
+        Req.new(
+          url: @listen_url,
+          params: [model: listen_model(), smart_format: true],
+          headers: [{"authorization", "Token " <> key}, {"content-type", content_type}],
+          body: audio,
+          retry: false,
+          receive_timeout: 60_000
+        )
+
+      case Req.post(request) do
+        {:ok, %Req.Response{status: 200, body: body}} ->
+          transcript =
+            get_in(body, ["results", "channels", Access.at(0), "alternatives", Access.at(0), "transcript"]) || ""
+
+          {:ok, String.trim(transcript)}
+
+        {:ok, %Req.Response{status: status}} ->
+          Logger.warning("voice: deepgram listen returned #{status}")
+          {:error, {:http, status}}
+
+        {:error, reason} ->
+          Logger.warning("voice: transport error #{inspect(reason)}")
+          {:error, :transport}
+      end
+    end
+  end
+
+  @doc """
+  Word-level timestamps for a clip, by running it back through nova-3. Used to sync the
+  "Luna speaking" typewriter to the actual audio (Aura's speak endpoint returns no timings).
+  Returns [[start_s, end_s], ...] in spoken order; [] on any failure so playback never waits on it.
+  """
+  def word_timings(audio, content_type) do
+    with {:ok, key} <- require_key(),
+         {:ok, %Req.Response{status: 200, body: body}} <-
+           Req.post(
+             Req.new(
+               url: @listen_url,
+               params: [model: listen_model(), smart_format: true],
+               headers: [{"authorization", "Token " <> key}, {"content-type", content_type}],
+               body: audio,
+               retry: false,
+               receive_timeout: 60_000
+             )
+           ) do
+      words = get_in(body, ["results", "channels", Access.at(0), "alternatives", Access.at(0), "words"]) || []
+      Enum.map(words, &[&1["start"], &1["end"]])
+    else
+      _ -> []
+    end
+  end
+
+  def speak(text) do
+    with {:ok, key} <- require_key() do
+      request =
+        Req.new(
+          url: @speak_url,
+          params: [model: speak_model()],
+          headers: [{"authorization", "Token " <> key}],
+          json: %{text: text},
+          retry: false,
+          receive_timeout: 60_000
+        )
+
+      case Req.post(request) do
+        {:ok, %Req.Response{status: 200, body: audio} = resp} when is_binary(audio) ->
+          # trust the real content type; "audio/mpeg" is what Aura returns by default
+          mime = resp.headers |> Map.get("content-type", ["audio/mpeg"]) |> List.first() |> String.split(";") |> List.first()
+          {:ok, audio, mime}
+
+        {:ok, %Req.Response{status: status}} ->
+          Logger.warning("voice: deepgram speak returned #{status}")
+          {:error, {:http, status}}
+
+        {:error, reason} ->
+          Logger.warning("voice: transport error #{inspect(reason)}")
+          {:error, :transport}
+      end
+    end
+  end
+
+  defp require_key do
+    case api_key() do
+      nil -> {:error, :not_configured}
+      key -> {:ok, key}
+    end
+  end
+
+  defp api_key do
+    case System.get_env("DEEPGRAM_API_KEY") do
+      key when is_binary(key) and key != "" -> key
+      _ -> nil
+    end
+  end
+end
+
+defmodule NccnUi.VoiceController do
+  use Phoenix.Controller, formats: [:json]
+  import Plug.Conn
+
+  # audio/* is passed through Plug.Parsers unread (see the Endpoint), so the raw
+  # clip is still on the conn; read it ourselves with a hard cap (nxt-teach pattern).
+  @max_bytes 10_000_000
+
+  def status(conn, _params) do
+    json(conn, %{enabled: NccnUi.Voice.enabled?(), listen_model: NccnUi.Voice.listen_model(), speak_model: NccnUi.Voice.speak_model()})
+  end
+
+  @doc "STT only — the fast half, so the spoken words land in the chat before the answer exists."
+  def transcribe(conn, _params) do
+    content_type = List.first(get_req_header(conn, "content-type")) || "audio/webm"
+
+    cond do
+      not NccnUi.Voice.enabled?() ->
+        conn |> put_status(:service_unavailable) |> json(%{error: "voice is not configured on this server (DEEPGRAM_API_KEY)"})
+
+      not String.starts_with?(content_type, "audio/") ->
+        conn |> put_status(:unsupported_media_type) |> json(%{error: "send the recorded clip with an audio/* content type"})
+
+      true ->
+        case read_body(conn, length: @max_bytes) do
+          {:ok, audio, conn} when byte_size(audio) > 0 ->
+            case NccnUi.Voice.transcribe(audio, content_type) do
+              {:ok, ""} ->
+                conn |> put_status(:unprocessable_entity) |> json(%{error: "I couldn't hear anything in that clip — try again a little closer?"})
+
+              {:ok, transcript} ->
+                json(conn, %{transcript: transcript})
+
+              {:error, _} ->
+                conn |> put_status(:bad_gateway) |> json(%{error: "the voice service is unavailable right now"})
+            end
+
+          {:ok, _empty, conn} ->
+            conn |> put_status(:unprocessable_entity) |> json(%{error: "the clip was empty"})
+
+          {:more, _partial, conn} ->
+            conn |> put_status(:request_entity_too_large) |> json(%{error: "clips are limited to 10 MB"})
+
+          {:error, _reason} ->
+            conn |> put_status(:bad_request) |> json(%{error: "could not read the clip"})
+        end
+    end
+  end
+end
+
 defmodule NccnUi.Router do
   use Phoenix.Router
   import Phoenix.LiveView.Router
@@ -1006,6 +1382,13 @@ defmodule NccnUi.Router do
     pipe_through :browser
     live "/", NccnUi.HomeLive
   end
+
+  # Same session + CSRF as the LiveView: the hook sends the page's csrf meta as x-csrf-token.
+  scope "/voice" do
+    pipe_through :browser
+    get "/status", NccnUi.VoiceController, :status
+    post "/transcribe", NccnUi.VoiceController, :transcribe
+  end
 end
 
 defmodule NccnUi.Endpoint do
@@ -1014,6 +1397,8 @@ defmodule NccnUi.Endpoint do
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
   plug Plug.Static, at: "/js/phoenix", from: {:phoenix, "priv/static"}, only: ~w(phoenix.min.js)
   plug Plug.Static, at: "/js/lv", from: {:phoenix_live_view, "priv/static"}, only: ~w(phoenix_live_view.min.js)
+  # audio/* is deliberately not parsed so /voice/transcribe can read the raw clip body
+  plug Plug.Parsers, parsers: [:urlencoded, :multipart, :json], pass: ["audio/*"], json_decoder: Jason
   plug Plug.Session, @session_options
   plug NccnUi.Router
 end

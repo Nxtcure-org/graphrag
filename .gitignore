@@ -28,6 +28,9 @@ packages/graphrag-llm/notebooks/cache
 .env
 build.zip
 
+# Playwright browser profile used by scripts/isc_fhir_setup.py (stays signed in to the ISC portal)
+.playwright/
+
 .turbo
 
 __pycache__

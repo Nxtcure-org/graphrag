@@ -32,6 +32,7 @@ from graphrag import api as grag
 from graphrag.config.load_config import load_config
 
 import flowchart  # local module (api/flowchart.py)
+import patients  # local module (api/patients.py): FHIR roster + mock fallback
 
 REPO = Path(__file__).resolve().parent.parent
 HOST = os.environ.get("API_HOST", "127.0.0.1")
@@ -355,11 +356,42 @@ def graph_post(request):
 
 @app.route("/health", methods=["GET"])
 def health(request):
-    return _json(request, {"status": "ok", "default": DEFAULT_KEY, "guidelines": {
+    return _json(request, {"status": "ok", "default": DEFAULT_KEY,
+                           "patients_source": patients.configured_source(),
+                           "patients_auth": patients.configured_auth(),
+                           "patients_server": patients.CFG.host or None,
+                           "guidelines": {
         g.key: {"entities": len(g.entities), "reports": len(g.reports),
                 "pages": len(g.pages), "max_level": g.max_level}
         for g in GUIDELINES.values()
     }})
+
+
+@app.route("/patients", methods=["GET"])
+def patients_route(request):
+    """Oncology patient roster from the configured FHIR server (TrakCare / IRIS for Health /
+    FHIRaaS; see patients.py) or the built-in mock roster when none is configured.
+
+    Always 200; upstream failures come back as {"source": "error", ...} so the UI
+    can render a friendly state. ?refresh=1 bypasses the 60s server-side cache.
+    """
+    vals = request.args.get(b"refresh", [])
+    refresh = _truthy(vals[0].decode()) if vals else False
+    d = deferToThread(patients.load_roster, refresh)
+    d.addCallback(lambda payload: _json(request, payload))
+    d.addErrback(lambda f: _json(request, {"source": "error", "error": str(f.value),
+                                           "patients": [], "total": 0}))
+    return d
+
+
+@app.route("/patients/<string:pid>", methods=["GET"])
+def patient_detail_route(request, pid):
+    """One patient's FHIR record (Patient + Conditions + Encounters) plus the context line Luna uses."""
+    d = deferToThread(patients.load_patient, pid)
+    d.addCallback(lambda payload: _json(request, payload))
+    d.addErrback(lambda f: _json(request, {"source": "error", "error": str(f.value), "patient": None,
+                                           "conditions": [], "encounters": []}))
+    return d
 
 
 def _dispatch(request, g, query, method, level, response_type, include_raw):

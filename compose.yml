@@ -1,10 +1,15 @@
 # NCCN GraphRAG demo — backend API + Luna LiveView UI.
 #
 #   GRAPHRAG_API_KEY=sk-... docker compose up --build
-#   open http://localhost:4000
+#   open http://localhost:5901
 #
 # The API needs an OpenAI-compatible key (GRAPHRAG_API_KEY) for query + embeddings.
 # Put it in your shell env or a .env file next to this compose.yml.
+#
+# Optional: FHIR_BASE_URL (+ OAuth / Basic / API-key credentials) points the
+# patient roster (person icon next to Luna) at a FHIR R4 server — InterSystems
+# TrakCare via its IRIS for Health FHIR endpoint, or the cloud FHIR Server.
+# Unset -> a synthetic oncology roster is served instead. See api/patients.py.
 
 services:
   api:
@@ -18,6 +23,24 @@ services:
       GRAPHRAG_API_KEY: ${GRAPHRAG_API_KEY:-set-a-real-key-for-queries}
       API_HOST: 0.0.0.0
       API_PORT: "8899"
+      # Roster source. Defaults to the bundled `iris` dev FHIR server below (Basic auth).
+      # Point at TrakCare by setting in .env:  FHIR_BASE_URL=https://<host>/csp/healthshare/<ns>/fhir/r4
+      # plus FHIR_CLIENT_ID/FHIR_CLIENT_SECRET (OAuth) or FHIR_USERNAME/FHIR_PASSWORD, and FHIR_PROFILE=auto.
+      # Set FHIR_BASE_URL to an empty string to get the synthetic mock roster instead.
+      FHIR_BASE_URL: ${FHIR_BASE_URL-${INTELLICARE_FHIR_URL:-http://iris:52773/csp/healthshare/fhirserver/fhir/r4}}
+      FHIR_AUTH: ${FHIR_AUTH:-auto}                 # auto | oauth | basic | apikey | none
+      FHIR_CLIENT_ID: ${FHIR_CLIENT_ID:-}           # OAuth 2.0 client_credentials (TrakCare / IRIS)
+      FHIR_CLIENT_SECRET: ${FHIR_CLIENT_SECRET:-}
+      FHIR_TOKEN_URL: ${FHIR_TOKEN_URL:-}           # default: discovered, else <origin>/oauth2/token
+      FHIR_SCOPE: ${FHIR_SCOPE:-}
+      FHIR_USERNAME: ${FHIR_USERNAME:-luna_fhir}    # HTTP Basic (an IRIS user); dev default matches fhir-dev/iris.script
+      FHIR_PASSWORD: ${FHIR_PASSWORD:-lunapw}
+      FHIR_API_KEY: ${FHIR_API_KEY:-${INTELLICARE_API_KEY:-}}   # x-api-key (cloud FHIR Server)
+      FHIR_PROFILE: ${FHIR_PROFILE:-generic}        # generic for the dev server; auto/trakcare for a real TrakCare host
+      FHIR_VERIFY_TLS: ${FHIR_VERIFY_TLS:-true}     # "false" for self-signed TrakCare test hosts
+      # browser-reachable FHIR base for the "open resource" links in the Patient tab (inside compose the api
+      # talks to `iris`, but your browser reaches it on 127.0.0.1). Unset when FHIR_BASE_URL is a real host.
+      FHIR_PUBLIC_URL: ${FHIR_PUBLIC_URL-${FHIR_BASE_URL-http://127.0.0.1:52773/csp/healthshare/fhirserver/fhir/r4}}
     ports:
       - "8899:8899"
     healthcheck:
@@ -27,6 +50,46 @@ services:
       retries: 12
       start_period: 40s
 
+  # InterSystems IRIS for Health Community Edition — a TrakCare stand-in for development.
+  # Same FHIR repository / Management Portal / OAuth server TrakCare's FHIR layer runs on.
+  #   FHIR R4:            http://127.0.0.1:52773/csp/healthshare/fhirserver/fhir/r4
+  #   Management Portal:  http://127.0.0.1:52773/csp/sys/UtilHome.csp   (_SYSTEM / SYS)
+  #   Playwright:         scripts/trakcare_fhir_setup.py --host http://127.0.0.1:52773
+  iris:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: iris
+    ports:
+      - "52773:52773"   # web server: Management Portal + FHIR endpoint
+      - "1972:1972"     # superserver (IRIS clients / Studio); optional
+    healthcheck:
+      # FHIR endpoints answer 406 without a FHIR Accept header, hence the explicit Request
+      test: ["CMD", "/usr/irissys/bin/irispython", "-c",
+             "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:52773/csp/healthshare/fhirserver/fhir/r4/metadata', headers={'Accept': 'application/fhir+json'}))"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
+  # One-shot: load the 11 synthetic oncology patients into the dev FHIR server (skips if
+  # it already holds patients, so `compose up` is idempotent). Never point this at TrakCare.
+  fhir-seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    command: [".venv/bin/python", "api/make_oncology_bundle.py", "--upload", "--skip-if-populated"]
+    environment:
+      FHIR_BASE_URL: http://iris:52773/csp/healthshare/fhirserver/fhir/r4
+      FHIR_AUTH: basic
+      FHIR_USERNAME: luna_fhir
+      FHIR_PASSWORD: lunapw
+    depends_on:
+      iris:
+        condition: service_healthy
+    restart: "no"
+
   ui:
     build:
       context: .
@@ -35,9 +98,9 @@ services:
     environment:
       NCCN_API: http://api:8899
       HTTP_IP: 0.0.0.0
-      PORT: "4000"
+      PORT: "5901"
     ports:
-      - "4000:4000"
+      - "5901:5901"
     depends_on:
       api:
         condition: service_healthy

@@ -2,12 +2,12 @@
 # (testicular, breast, prostate, colon, NSCLC — switchable in the sidebar)
 # Phoenix LiveView (single-file, Mix.install). Backend: api/app.py on :8899.
 #   uv run --with klein python api/app.py
-#   NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs   → http://127.0.0.1:4000
+#   NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs   → http://127.0.0.1:5901
 
 _bind_ip = if System.get_env("HTTP_IP", "127.0.0.1") == "0.0.0.0", do: {0, 0, 0, 0}, else: {127, 0, 0, 1}
 
 Application.put_env(:nccn, NccnUi.Endpoint,
-  http: [ip: _bind_ip, port: String.to_integer(System.get_env("PORT", "4000"))],
+  http: [ip: _bind_ip, port: String.to_integer(System.get_env("PORT", "5901"))],
   server: true,
   adapter: Bandit.PhoenixAdapter,
   secret_key_base: String.duplicate("x", 64),
@@ -121,24 +121,100 @@ defmodule NccnUi.HomeLive do
   @api System.get_env("NCCN_API", "http://127.0.0.1:8899")
   @legend [{"Workup", "#dbeafe"}, {"Decision", "#fef9c3"}, {"Treatment", "#dcfce7"}, {"Recurrence", "#fee2e2"}, {"Salvage", "#fecaca"}]
   @suggestions ["Initial staging workup", "Primary treatment options", "Systemic therapy for advanced disease", "Recurrence & later-line options"]
-  # Generic solid-tumor workup checklist template (applies across guidelines)
-  @todo_template [
+  # Fallback checklist for a guideline we don't have a curated list for.
+  @todo_general [
     {"Patient & clinical", [{"History and physical (H&P)", "Clinician"}, {"Performance status & comorbidities", "Clinician"}]},
     {"Laboratory", [{"CBC + comprehensive chemistry", "Lab"}, {"Disease-specific tumor markers", "Lab"}]},
     {"Imaging", [{"Cross-sectional imaging (CT/MRI)", "Radiology"}, {"PET/CT or bone scan if indicated", "Radiology"}]},
     {"Pathology", [{"Biopsy / surgical specimen", "Pathology"}, {"Histology & grade confirmed", "Pathology"}]},
-    {"Molecular", [{"Biomarker / molecular testing", "Molecular"}]},
-    {"Staging & review", [{"AJCC TNM stage assigned", "Clinician"}, {"Risk stratification", "Clinician"}, {"Multidisciplinary review", "Tumor board"}]},
-    {"Planning", [{"Goals of care / shared decision", "Clinician"}, {"Fertility / supportive care referral", "Clinician"}]}
+    {"Staging & review", [{"AJCC TNM stage assigned", "Clinician"}, {"Multidisciplinary review", "Tumor board"}]}
   ]
+
+  # Per-guideline workup checklists, transcribed from each guideline's own
+  # workup pages (the same .dot flowcharts the graph on the right renders) —
+  # the group headers cite the page the tasks come from, so the To-Do list
+  # always reflects the clinical flow under review.
+  @todos_by_guideline %{
+    "testicular" => [
+      {"Diagnosis · TEST-1", [
+        {"History & physical (H&P)", "Clinician"},
+        {"Testicular ultrasound", "Radiology"},
+        {"AFP, beta-hCG (quantitative), LDH + chemistry", "Lab"}]},
+      {"Primary treatment · TEST-1", [
+        {"Radical inguinal orchiectomy", "Surgery"},
+        {"Sperm banking discussed, if indicated", "Clinician"}]},
+      {"Postdiagnostic staging · SEM-1 / NSEM-1", [
+        {"C/A/P CT or MRI", "Radiology"},
+        {"Repeat post-orchiectomy AFP, beta-hCG, LDH", "Lab"},
+        {"Brain MRI, if clinically indicated", "Radiology"},
+        {"Clinical stage + risk classification (TEST-D)", "Clinician"}]}
+    ],
+    "breast" => [
+      {"Workup · BINV-1", [
+        {"History & physical exam", "Clinician"},
+        {"Diagnostic bilateral mammogram ± ultrasound", "Radiology"},
+        {"Breast MRI (optional)", "Radiology"},
+        {"Pathology review", "Pathology"},
+        {"ER/PR and HER2 status", "Pathology"}]},
+      {"Risk & counseling · BINV-1", [
+        {"Genetic counseling/testing (at risk, TNBC, olaparib candidate)", "Molecular"},
+        {"Fertility & sexual health addressed", "Clinician"},
+        {"Pregnancy test if childbearing potential", "Lab"},
+        {"Distress assessment", "Clinician"}]},
+      {"Stage & pathway · BINV-1", [
+        {"Clinical stage assigned (cT, cN, M0)", "Clinician"},
+        {"Preoperative systemic therapy candidacy (BINV-L)", "Tumor board"}]}
+    ],
+    "prostate" => [
+      {"Workup · PROS-1", [
+        {"Physical exam + DRE to confirm clinical stage", "Clinician"},
+        {"PSA (PSADT if regional/metastatic)", "Lab"},
+        {"Diagnostic prostate biopsies reviewed", "Pathology"}]},
+      {"Risk context · PROS-1", [
+        {"Life expectancy estimate (PROS-A)", "Clinician"},
+        {"Germline/somatic testing & family history", "Molecular"},
+        {"Quality-of-life measures", "Clinician"}]},
+      {"Stratification · PROS-2", [
+        {"Bone & soft-tissue imaging for staging, if indicated", "Radiology"},
+        {"Initial risk group assigned", "Clinician"}]}
+    ],
+    "colon" => [
+      {"Workup · COL-1", [
+        {"Pathology review", "Pathology"},
+        {"Colonoscopy + marking of cancerous polyp site (≤2 wks)", "Endoscopy"},
+        {"MMR/MSI testing", "Molecular"}]},
+      {"Additional workup · COL-1", [
+        {"CBC, chemistry profile, CEA", "Lab"},
+        {"Chest/abdomen/pelvis CT (consider pelvis MRI)", "Radiology"}]},
+      {"Surgical decision · COL-1", [
+        {"Histologic features & margins assessed", "Pathology"},
+        {"Observe vs colectomy with en-bloc regional nodes", "Tumor board"}]}
+    ],
+    "nsclc" => [
+      {"Presentation · DIAG-1", [
+        {"Multidisciplinary evaluation", "Tumor board"},
+        {"Smoking cessation counseling", "Clinician"}]},
+      {"Risk assessment · DIAG-1", [
+        {"Patient factors: age, smoking, exposures, prior cancer", "Clinician"},
+        {"Radiologic factors: size, shape, density, FDG avidity", "Radiology"},
+        {"Compare against prior imaging (stability is decisive)", "Radiology"}]},
+      {"Nodule pathway · DIAG-1", [
+        {"Classify nodule: solid → DIAG-2, subsolid → DIAG-3", "Radiology"}]}
+    ]
+  }
+
+  defp build_todos(key) do
+    for {grp, items} <- Map.get(@todos_by_guideline, key, @todo_general),
+        {label, party} <- items do
+      %{group: grp, label: label, party: party, status: "pending"}
+    end
+  end
 
   def mount(_params, _session, socket) do
     hello = %{role: "luna", text: "I'm Luna — your clinical copilot.", sub: "Ask about staging, workup, treatment or recurrence. I'll walk the pathway step by step on the right."}
 
-    todos =
-      for {grp, items} <- @todo_template, {label, party} <- items do
-        %{group: grp, label: label, party: party, status: "pending"}
-      end
+    # The real guideline isn't known until cy_ready resolves it; start general.
+    todos = build_todos(nil)
 
     {:ok,
      assign(socket,
@@ -147,7 +223,9 @@ defmodule NccnUi.HomeLive do
        pages: [], method: "local", loading: false, error: nil, messages: [hello],
        page: nil, page_label: nil, track: "—", status: "Reference",
        evidence: nil, sections: [], graph: nil, selected: nil,
-       tab: "todo", todos: todos, history: []
+       tab: "todo", todos: todos, history: [],
+       patients_open: false, patients: nil, patients_loading: false, patients_error: nil, patients_filter: nil,
+       patient: nil, patient_detail: nil, patient_loading: false
      )}
   end
 
@@ -163,31 +241,61 @@ defmodule NccnUi.HomeLive do
     g = graph_for(key, code, [], [], false)
     {:noreply,
      socket
-     |> assign(guidelines: gs, guideline: key, guideline_label: gd["label"], pages: pages, graph: g)
+     |> assign(guidelines: gs, guideline: key, guideline_label: gd["label"], pages: pages, graph: g,
+               todos: build_todos(key))
      |> put_stage(code, g)
      |> push_event("graph", g)}
   end
 
-  def handle_event("guideline", %{"key" => key}, socket) do
-    gd = Enum.find(socket.assigns.guidelines, &(&1["key"] == key))
-    if gd do
-      pages = gd["pages"]
-      code = (List.first(pages) || %{})["code"]
-      g = graph_for(key, code, [], [], false)
-      {:noreply,
-       socket
-       |> assign(guideline: key, guideline_label: gd["label"], pages: pages, graph: g,
-                 selected: nil, sections: [], evidence: nil, status: "Reference")
-       |> put_stage(code, g)
-       |> luna("Switched to #{gd["label"]} — showing #{code}.", g["label"])
-       |> push_event("graph", g)}
+  def handle_event("guideline", %{"key" => key}, socket), do: {:noreply, switch_guideline(socket, key)}
+
+  def handle_event("method", %{"m" => m}, socket), do: {:noreply, assign(socket, method: m)}
+  def handle_event("tab", %{"t" => t}, socket), do: {:noreply, assign(socket, tab: t)}
+
+  # ---- patient roster modal (TrakCare / FHIR server, proxied by the API's /patients) ----
+  def handle_event("patients_open", _p, socket) do
+    loaded = socket.assigns.patients
+    if loaded && loaded["source"] != "error",
+      do: {:noreply, assign(socket, patients_open: true)},
+      else: {:noreply, fetch_patients(socket, false)}
+  end
+
+  def handle_event("patients_refresh", _p, socket), do: {:noreply, fetch_patients(socket, true)}
+  def handle_event("patients_close", _p, socket), do: {:noreply, assign(socket, patients_open: false)}
+
+  def handle_event("patients_filter", %{"key" => k}, socket),
+    do: {:noreply, assign(socket, patients_filter: if(k == "all", do: nil, else: k))}
+
+  # Selecting a patient makes them the active clinical context: switch to their guideline, open the
+  # Patient tab, fetch the full FHIR record, and ask Luna the pathway question for them (the answer's
+  # cited path lights up the flowchart). Every later question carries the patient context too.
+  def handle_event("patient_select", %{"id" => id}, socket) do
+    p = Enum.find((socket.assigns.patients || %{})["patients"] || [], &(&1["id"] == id))
+    if p do
+      key = p["guideline"]
+      socket = assign(socket, patients_open: false, patient: p, patient_detail: nil, patient_loading: true, tab: "patient")
+      socket = if key && key != socket.assigns.guideline, do: switch_guideline(socket, key), else: socket
+      dx = Enum.join(Enum.reject([p["stage"] && "stage #{p["stage"]}", p["diagnosis"]], &is_nil/1), " ")
+      sub = Enum.join(Enum.reject([p["sex"], p["age"] && "#{p["age"]} y", p["mrn"] && "MRN #{p["mrn"]}"], &is_nil/1), " · ")
+      url = "#{@api}/patients/#{URI.encode(id)}"
+      socket =
+        socket
+        |> luna("Now reviewing #{p["name"]}#{if dx != "", do: " — " <> dx, else: ""}.", sub)
+        |> log(%{page: socket.assigns.page, hln: [], hle: [], kind: "patient",
+                 label: "Patient: #{p["name"]} (#{guideline_label(socket.assigns.guidelines, key)})"})
+        |> start_async(:patient_detail, fn -> Req.get!(url, receive_timeout: 20_000, connect_options: [timeout: 5_000]).body end)
+      if key, do: do_ask(patient_question(p), socket), else: {:noreply, socket}
     else
       {:noreply, socket}
     end
   end
 
-  def handle_event("method", %{"m" => m}, socket), do: {:noreply, assign(socket, method: m)}
-  def handle_event("tab", %{"t" => t}, socket), do: {:noreply, assign(socket, tab: t)}
+  def handle_event("patient_clear", _p, socket) do
+    {:noreply,
+     socket
+     |> assign(patient: nil, patient_detail: nil, patient_loading: false, tab: if(socket.assigns.tab == "patient", do: "todo", else: socket.assigns.tab))
+     |> luna("Cleared the patient context — answers are general again.", nil)}
+  end
 
   def handle_event("page", %{"code" => code}, socket) do
     g = graph_for(socket.assigns.guideline, code, [], [], false)
@@ -235,11 +343,30 @@ defmodule NccnUi.HomeLive do
   defp do_ask(q, socket) do
     method = socket.assigns.method
     key = socket.assigns.guideline
-    msgs = socket.assigns.messages ++ [%{role: "user", text: q, sub: nil}]
+    p = socket.assigns.patient
+    # The chat shows what was typed; the API gets the patient context prepended when one is active.
+    full_q = if p, do: patient_context(p) <> "\n\nQuestion: " <> q, else: q
+    msgs = socket.assigns.messages ++ [%{role: "user", text: q, sub: p && "for #{p["name"]}"}]
     {:noreply,
      socket
      |> assign(loading: true, error: nil, messages: msgs, status: "Analyzing")
-     |> start_async(:run, fn -> run_query(key, q, method) end)}
+     |> start_async(:run, fn -> run_query(key, full_q, method) end)}
+  end
+
+  defp patient_context(p) do
+    who =
+      [p["age"] && "#{p["age"]}-year-old", p["sex"], p["diagnosis"] && "with #{p["diagnosis"]}#{if p["diagnosis_code"], do: " (#{p["diagnosis_code"]})", else: ""}",
+       p["stage"] && "stage #{p["stage"]}"]
+      |> Enum.reject(&is_nil/1)
+      |> Enum.join(", ")
+    last = if p["last_encounter"], do: " Last encounter #{p["last_encounter"]}.", else: ""
+    "Patient context: #{if who == "", do: "patient", else: who}.#{last} Answer for this patient specifically."
+  end
+
+  defp patient_question(p) do
+    stage = if p["stage"], do: " at stage #{p["stage"]}", else: ""
+    dx = p["diagnosis"] || "this diagnosis"
+    "What are the NCCN-recommended next steps in workup and treatment for #{dx}#{stage}?"
   end
 
   # ---------------- async ----------------
@@ -263,6 +390,18 @@ defmodule NccnUi.HomeLive do
   def handle_async(:run, {:exit, reason}, socket) do
     {:noreply, socket |> assign(loading: false, status: "Error") |> luna("Something went wrong.", inspect(reason))}
   end
+
+  def handle_async(:patients, {:ok, body}, socket),
+    do: {:noreply, assign(socket, patients: body, patients_loading: false, patients_error: body["error"])}
+
+  def handle_async(:patients, {:exit, reason}, socket),
+    do: {:noreply, assign(socket, patients_loading: false, patients_error: "API unreachable: #{inspect(reason)}")}
+
+  def handle_async(:patient_detail, {:ok, body}, socket),
+    do: {:noreply, assign(socket, patient_detail: body, patient_loading: false)}
+
+  def handle_async(:patient_detail, {:exit, reason}, socket),
+    do: {:noreply, assign(socket, patient_detail: %{"error" => "API unreachable: #{inspect(reason)}", "conditions" => [], "encounters" => []}, patient_loading: false)}
 
   # ---------------- backend ----------------
   defp run_query(key, q, method) do
@@ -293,6 +432,47 @@ defmodule NccnUi.HomeLive do
 
   defp luna(socket, text, sub), do: assign(socket, messages: socket.assigns.messages ++ [%{role: "luna", text: text, sub: sub}])
   defp log(socket, entry), do: assign(socket, history: [entry | socket.assigns.history] |> Enum.take(30))
+
+  # Switch the active guideline. Shared by the sidebar pills and patient selection;
+  # returns the socket unchanged for an unknown key.
+  defp switch_guideline(socket, key) do
+    gd = Enum.find(socket.assigns.guidelines, &(&1["key"] == key))
+    if gd do
+      pages = gd["pages"]
+      code = (List.first(pages) || %{})["code"]
+      g = graph_for(key, code, [], [], false)
+      socket
+      |> assign(guideline: key, guideline_label: gd["label"], pages: pages, graph: g,
+                selected: nil, sections: [], evidence: nil, status: "Reference",
+                # A new guideline is a new clinical flow — fresh checklist,
+                # sourced from that guideline's own workup pages.
+                todos: build_todos(key))
+      |> put_stage(code, g)
+      |> luna("Switched to #{gd["label"]} — showing #{code}.", g["label"])
+      |> push_event("graph", g)
+    else
+      socket
+    end
+  end
+
+  # Kick off the async roster fetch; the API answers 200 with source=error on upstream failure.
+  defp fetch_patients(socket, refresh) do
+    url = "#{@api}/patients" <> if(refresh, do: "?refresh=1", else: "")
+    socket
+    |> assign(patients_open: true, patients_loading: true, patients_error: nil)
+    |> start_async(:patients, fn -> Req.get!(url, receive_timeout: 20_000, connect_options: [timeout: 5_000]).body end)
+  end
+
+  defp visible_patients(%{"patients" => ps}, nil) when is_list(ps), do: ps
+  defp visible_patients(%{"patients" => ps}, filter) when is_list(ps), do: Enum.filter(ps, &(&1["guideline"] == filter))
+  defp visible_patients(_, _), do: []
+
+  defp guideline_label(guidelines, key) do
+    case Enum.find(guidelines || [], &(&1["key"] == key)) do
+      nil -> "Unmapped"
+      gd -> gd["label"]
+    end
+  end
 
   defp add_order(%{"nodes" => nodes, "edges" => edges} = g) do
     adj = Enum.reduce(edges, %{}, fn e, a -> Map.update(a, e["data"]["source"], [e["data"]["target"]], &[e["data"]["target"] | &1]) end)
@@ -348,6 +528,24 @@ defmodule NccnUi.HomeLive do
   defp status_color("Error"), do: "bg-red-100 text-red-700 border-red-200"
   defp status_color(_), do: "bg-slate-100 text-slate-600 border-slate-200"
 
+  defp guideline_tint("breast"), do: "bg-pink-100 text-pink-700 border-pink-200"
+  defp guideline_tint("prostate"), do: "bg-sky-100 text-sky-700 border-sky-200"
+  defp guideline_tint("colon"), do: "bg-amber-100 text-amber-700 border-amber-200"
+  defp guideline_tint("nsclc"), do: "bg-emerald-100 text-emerald-700 border-emerald-200"
+  defp guideline_tint("testicular"), do: "bg-violet-100 text-violet-700 border-violet-200"
+  defp guideline_tint(_), do: "bg-slate-100 text-slate-500 border-slate-200"
+
+  defp source_tint("trakcare"), do: "bg-sky-100 text-sky-700 border-sky-200"
+  defp source_tint("fhir"), do: "bg-emerald-100 text-emerald-700 border-emerald-200"
+  defp source_tint("mock"), do: "bg-amber-100 text-amber-700 border-amber-200"
+  defp source_tint(_), do: "bg-red-100 text-red-700 border-red-200"
+
+  defp source_label(%{"source" => "trakcare", "server" => h}), do: "InterSystems TrakCare · #{h}"
+  defp source_label(%{"source" => "fhir", "server" => h}), do: "FHIR R4 · #{h}"
+  defp source_label(%{"source" => "mock"}), do: "Synthetic roster (no FHIR server configured)"
+  defp source_label(%{"source" => "error", "server" => h}) when is_binary(h), do: "FHIR R4 · #{h}"
+  defp source_label(_), do: "Patient roster"
+
   defp done(todos), do: Enum.count(todos, &(&1.status == "complete"))
 
   defp node_type_color("Decision"), do: "#ca8a04"
@@ -384,6 +582,10 @@ defmodule NccnUi.HomeLive do
                 <%= if @loading, do: "Reasoning over the guideline…", else: "Ready · " <> @track %>
               </div>
             </div>
+            <button phx-click="patients_open" title="Patient roster (TrakCare / FHIR)"
+              class="ml-auto self-start w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-500 grid place-items-center transition hover:border-violet-300 hover:text-violet-700 hover:bg-violet-50">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
           </div>
           <div class="mt-4">
             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Guideline</div>
@@ -409,7 +611,12 @@ defmodule NccnUi.HomeLive do
                 </div>
               </div>
             <% else %>
-              <div class="fade-up flex justify-end"><div class="bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-sm px-3.5 py-2.5 max-w-[85%] text-sm">{m.text}</div></div>
+              <div class="fade-up flex justify-end">
+                <div class="bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-sm px-3.5 py-2.5 max-w-[85%] text-sm">
+                  {m.text}
+                  <%= if m.sub do %><div class="text-[10.5px] text-violet-100/90 mt-1 flex items-center gap-1"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{m.sub}</div><% end %>
+                </div>
+              </div>
             <% end %>
           <% end %>
           <%= if @loading do %>
@@ -455,6 +662,16 @@ defmodule NccnUi.HomeLive do
             <span class={["inline-flex items-center gap-1.5 text-xs font-semibold rounded-full border px-3 py-1", status_color(@status)]}>
               <span class="w-1.5 h-1.5 rounded-full bg-current opacity-70"></span>{@status}
             </span>
+            <%= if @patient do %>
+              <button phx-click="tab" phx-value-t="patient" title="Active patient — Luna answers for this patient. Open the Patient tab."
+                class="inline-flex items-center gap-2 text-xs rounded-full border border-sky-200 bg-sky-50 text-sky-800 pl-2.5 pr-1 py-0.5 transition hover:border-sky-400">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="font-semibold">{@patient["name"]}</span>
+                <span class="text-sky-600">{Enum.join(Enum.reject([@patient["age"] && "#{@patient["age"]} #{String.slice(@patient["sex"] || "", 0, 1) |> String.upcase()}", @patient["stage"] && "stage #{@patient["stage"]}"], &is_nil/1), " · ")}</span>
+                <span phx-click="patient_clear" onclick="event.stopPropagation()" title="Clear patient context"
+                  class="w-5 h-5 grid place-items-center rounded-full text-sky-500 hover:bg-sky-200 hover:text-sky-900 transition">×</span>
+              </button>
+            <% end %>
           </div>
           <div class="self-center flex items-center gap-3 flex-wrap justify-center">
             <label class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">Cancer
@@ -499,7 +716,7 @@ defmodule NccnUi.HomeLive do
 
       <section class="w-[320px] shrink-0 flex flex-col bg-white/70 backdrop-blur-md border-l border-white/60">
             <div class="flex text-xs font-medium border-b border-slate-100">
-              <%= for {t, label} <- [{"todo", "✓ To-Do"}, {"timeline", "🕑 Timeline"}, {"detail", "◇ Detail"}] do %>
+              <%= for {t, label} <- (if @patient, do: [{"patient", "⚕ Patient"}], else: []) ++ [{"todo", "✓ To-Do"}, {"timeline", "🕑 Timeline"}, {"detail", "◇ Detail"}] do %>
                 <button phx-click="tab" phx-value-t={t} class={["flex-1 py-2.5 transition", if(@tab == t, do: "text-violet-700 border-b-2 border-violet-600 bg-violet-50/40", else: "text-slate-500 hover:text-slate-700")]}>{label}</button>
               <% end %>
             </div>
@@ -525,7 +742,7 @@ defmodule NccnUi.HomeLive do
                       </button>
                     <% end %>
                   <% end %>
-                  <div class="mt-4 text-[10px] text-slate-400 italic">Template from NCCN workup — tick items completed for this case.</div>
+                  <div class="mt-4 text-[10px] text-slate-400 italic">From the {@guideline_label} workup pages — tick items completed for this case.</div>
 
                 <% @tab == "timeline" -> %>
                   <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-3">Case history · look-back</div>
@@ -543,6 +760,67 @@ defmodule NccnUi.HomeLive do
                         </li>
                       <% end %>
                     </ol>
+                  <% end %>
+
+                <% @tab == "patient" and not is_nil(@patient) -> %>
+                  <% d = @patient_detail || %{} %>
+                  <div class="flex items-start justify-between gap-2 mb-3">
+                    <div>
+                      <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Active patient</div>
+                      <div class="text-sm font-semibold text-slate-900 mt-0.5">{@patient["name"]}</div>
+                      <div class="text-[11px] text-slate-500">
+                        {Enum.join(Enum.reject([@patient["sex"], @patient["age"] && "#{@patient["age"]} y", @patient["mrn"] && "MRN #{@patient["mrn"]}", @patient["birth_date"] && "DOB #{@patient["birth_date"]}"], &is_nil/1), " · ")}
+                      </div>
+                    </div>
+                    <button phx-click="patient_clear" class="text-[11px] px-2 py-1 rounded-full border border-slate-200 bg-white text-slate-500 hover:border-red-300 hover:text-red-600 transition">Clear</button>
+                  </div>
+                  <div class="rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-2 mb-3">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-sky-700">Guideline</div>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class={["text-[10.5px] font-semibold px-2 py-0.5 rounded-full border", guideline_tint(@patient["guideline"])]}>{guideline_label(@guidelines, @patient["guideline"])}</span>
+                      <span class="text-[11px] text-slate-600">{@patient["diagnosis"] || "no oncologic diagnosis on record"}<%= if @patient["stage"], do: " · stage #{@patient["stage"]}", else: "" %></span>
+                    </div>
+                    <div class="text-[10.5px] text-sky-800/80 mt-1.5">Luna prepends this patient's context to every question while they are active.</div>
+                  </div>
+                  <%= cond do %>
+                    <% @patient_loading -> %>
+                      <div class="text-[12px] text-slate-500 flex items-center gap-2 py-3"><span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span> Loading FHIR record…</div>
+                    <% d["error"] -> %>
+                      <div class="rounded-lg border border-red-200 bg-red-50 p-2.5 text-[12px] text-red-700 break-all">Couldn't load the FHIR record: {d["error"]}</div>
+                    <% true -> %>
+                      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-2 mb-1">Conditions · {length(d["conditions"] || [])}</div>
+                      <%= if (d["conditions"] || []) == [] do %><div class="text-[12px] text-slate-400 italic">None on record.</div><% end %>
+                      <div class="space-y-1.5">
+                        <%= for c <- d["conditions"] || [] do %>
+                          <div class={["rounded-lg border px-2.5 py-1.5", if(c["oncologic"], do: "border-violet-200 bg-violet-50/50", else: "border-slate-200 bg-white")]}>
+                            <div class="text-[12px] font-medium text-slate-800">{c["display"] || "—"}</div>
+                            <div class="text-[10.5px] text-slate-500">
+                              {Enum.join(Enum.reject([c["code"] && "#{c["code"]}#{if c["system"], do: " (#{c["system"]})", else: ""}", c["stage"] && "stage #{c["stage"]}", c["status"], c["onset"] && "onset #{c["onset"]}"], &is_nil/1), " · ")}
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-3 mb-1">Encounters · {length(d["encounters"] || [])}</div>
+                      <%= if (d["encounters"] || []) == [] do %><div class="text-[12px] text-slate-400 italic">None on record.</div><% end %>
+                      <div class="space-y-1">
+                        <%= for e <- Enum.take(d["encounters"] || [], 8) do %>
+                          <div class="flex items-baseline gap-2 text-[11.5px]">
+                            <span class="text-slate-500 shrink-0 w-[78px]">{e["date"] || "—"}</span>
+                            <span class="text-slate-800">{e["type"] || e["class"] || "encounter"}</span>
+                            <span class="text-slate-400 ml-auto">{e["status"]}</span>
+                          </div>
+                        <% end %>
+                      </div>
+                      <div class="flex flex-wrap gap-1.5 mt-4">
+                        <button phx-click="suggest" phx-value-q={patient_question(@patient)} class="text-[11px] px-2.5 py-1 rounded-full border border-violet-300 bg-violet-50 text-violet-700 hover:bg-violet-100 transition">Ask Luna: next steps</button>
+                        <button phx-click="suggest" phx-value-q="Which surveillance schedule applies after treatment for this patient?" class="text-[11px] px-2.5 py-1 rounded-full border border-slate-200 bg-white text-slate-600 hover:border-violet-300 transition">Surveillance</button>
+                        <%= if d["resource_url"] do %>
+                          <a href={d["resource_url"]} target="_blank" rel="noopener" class="text-[11px] px-2.5 py-1 rounded-full border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 transition">Open FHIR Patient ↗</a>
+                        <% end %>
+                      </div>
+                      <%= if d["source"] do %>
+                        <div class="text-[10px] text-slate-400 mt-3">Source: {d["source"]}<%= if d["server"], do: " · #{d["server"]}", else: "" %></div>
+                      <% end %>
                   <% end %>
 
                 <% true -> %>
@@ -593,6 +871,119 @@ defmodule NccnUi.HomeLive do
             <% end %>
             </div>
           </section>
+
+      <%!-- ═══ Patient roster modal (TrakCare / FHIR R4 via API /patients) ═══ --%>
+      <%= if @patients_open do %>
+        <div class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm grid place-items-center fade-up">
+          <div phx-click-away="patients_close" phx-window-keydown="patients_close" phx-key="Escape"
+               class="w-[880px] max-w-[95vw] max-h-[85vh] flex flex-col rounded-2xl bg-white/90 backdrop-blur-xl shadow-2xl border border-white/60 overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100/80">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white grid place-items-center shadow-sm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="min-w-0">
+                <div class="font-bold text-slate-900 leading-none">Patient Roster</div>
+                <div class="text-[11px] text-slate-500 mt-1 truncate">
+                  {source_label(@patients)}<%= if @patients && @patients["fetched_at"], do: " · fetched #{@patients["fetched_at"]}#{if @patients["cached"], do: " (cached)", else: ""}", else: "" %>
+                </div>
+              </div>
+              <%= if @patients do %>
+                <span class={["text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", source_tint(@patients["source"])]}>{@patients["source"]}</span>
+              <% end %>
+              <div class="ml-auto flex items-center gap-1.5">
+                <button phx-click="patients_refresh" title="Refresh from source" disabled={@patients_loading}
+                  class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-500 grid place-items-center transition hover:border-violet-300 hover:text-violet-700 disabled:opacity-50">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={if(@patients_loading, do: "animate-spin", else: "")}><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+                </button>
+                <button phx-click="patients_close" title="Close (Esc)"
+                  class="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-500 grid place-items-center transition hover:border-red-300 hover:text-red-600">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-6 gap-2 px-5 pt-4">
+              <div class="rounded-xl border border-slate-200 bg-white/80 px-3 py-2">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Patients</div>
+                <div class="text-xl font-bold text-slate-900 leading-tight">{(@patients || %{})["total"] || 0}</div>
+              </div>
+              <%= for gd <- @guidelines do %>
+                <div class={["rounded-xl border px-3 py-2", guideline_tint(gd["key"])]}>
+                  <div class="text-[10px] font-bold uppercase tracking-wider opacity-70">{gd["label"]}</div>
+                  <div class="text-xl font-bold leading-tight">{((@patients || %{})["by_guideline"] || %{})[gd["key"]] || 0}</div>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5 px-5 pt-3 pb-2">
+              <button phx-click="patients_filter" phx-value-key="all"
+                class={["text-[11px] px-2.5 py-1 rounded-full border transition", if(is_nil(@patients_filter), do: "bg-gradient-to-br from-violet-600 to-indigo-600 text-white border-transparent shadow-sm", else: "bg-white text-slate-600 border-slate-200 hover:border-violet-300")]}>
+                All · {(@patients || %{})["total"] || 0}
+              </button>
+              <%= for gd <- @guidelines do %>
+                <button phx-click="patients_filter" phx-value-key={gd["key"]}
+                  class={["text-[11px] px-2.5 py-1 rounded-full border transition", if(@patients_filter == gd["key"], do: "bg-gradient-to-br from-violet-600 to-indigo-600 text-white border-transparent shadow-sm", else: "bg-white text-slate-600 border-slate-200 hover:border-violet-300")]}>
+                  {gd["label"]} · {((@patients || %{})["by_guideline"] || %{})[gd["key"]] || 0}
+                </button>
+              <% end %>
+            </div>
+
+            <div class="flex-1 min-h-0 overflow-auto px-5 pb-3">
+              <%= cond do %>
+                <% @patients_loading -> %>
+                  <div class="py-12 grid place-items-center text-slate-500 text-sm">
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-violet-500 animate-pulse"></span> Loading roster…</div>
+                  </div>
+                <% @patients_error -> %>
+                  <div class="my-4 rounded-xl border border-red-200 bg-red-50 p-4">
+                    <div class="text-sm font-semibold text-red-700">Couldn't load the roster</div>
+                    <div class="text-[12px] text-red-600 mt-1 break-all">{@patients_error}</div>
+                    <button phx-click="patients_refresh" class="mt-3 text-[11px] px-2.5 py-1 rounded-full border border-red-300 bg-white text-red-700 hover:bg-red-100 transition">Retry</button>
+                  </div>
+                <% true -> %>
+                  <table class="w-full text-left text-[12.5px]">
+                    <thead class="sticky top-0 bg-white/95 backdrop-blur text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      <tr>
+                        <th class="py-2 pr-3">Patient</th>
+                        <th class="py-2 pr-3">Sex / Age</th>
+                        <th class="py-2 pr-3">Diagnosis</th>
+                        <th class="py-2 pr-3">Guideline</th>
+                        <th class="py-2">Last encounter</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      <%= for p <- visible_patients(@patients, @patients_filter) do %>
+                        <tr phx-click="patient_select" phx-value-id={p["id"]} class={["cursor-pointer transition hover:bg-violet-50/60", if(@patient && @patient["id"] == p["id"], do: "bg-sky-50/80 ring-1 ring-inset ring-sky-200", else: "")]}>
+                          <td class="py-2.5 pr-3">
+                            <div class="font-semibold text-slate-800">{p["name"]}</div>
+                            <div class="text-[10.5px] text-slate-400">{p["mrn"] || "—"}</div>
+                          </td>
+                          <td class="py-2.5 pr-3 text-slate-600 capitalize">{p["sex"] || "—"}<%= if p["age"], do: " · #{p["age"]}", else: "" %></td>
+                          <td class="py-2.5 pr-3">
+                            <div class="text-slate-800">{p["diagnosis"] || "—"}</div>
+                            <div class="text-[10.5px] text-slate-400">{p["diagnosis_code"] || ""}<%= if p["stage"], do: " · stage #{p["stage"]}", else: "" %></div>
+                          </td>
+                          <td class="py-2.5 pr-3">
+                            <span class={["text-[10.5px] font-semibold px-2 py-0.5 rounded-full border", guideline_tint(p["guideline"])]}>{guideline_label(@guidelines, p["guideline"])}</span>
+                          </td>
+                          <td class="py-2.5 text-slate-600">{p["last_encounter"] || "—"}</td>
+                        </tr>
+                      <% end %>
+                      <%= if visible_patients(@patients, @patients_filter) == [] do %>
+                        <tr><td colspan="5" class="py-8 text-center text-slate-400 italic">No patients in this view.</td></tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+              <% end %>
+            </div>
+
+            <div class="flex items-center justify-between px-5 py-3 border-t border-slate-100/80 text-[11px] text-slate-500">
+              <span>{length(visible_patients(@patients, @patients_filter))} of {(@patients || %{})["total"] || 0} shown</span>
+              <span>Click a patient to switch Luna to their guideline</span>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
     <script>(()=>{const c=document.getElementById('chat');if(c)c.scrollTop=c.scrollHeight})();</script>
     """
@@ -628,5 +1019,5 @@ defmodule NccnUi.Endpoint do
 end
 
 {:ok, _} = Supervisor.start_link([{Phoenix.PubSub, name: NccnUi.PubSub}, NccnUi.Endpoint], strategy: :one_for_one)
-IO.puts("\nLuna copilot on http://127.0.0.1:#{System.get_env("PORT", "4000")}  (backend: #{System.get_env("NCCN_API", "http://127.0.0.1:8899")})")
+IO.puts("\nLuna copilot on http://127.0.0.1:#{System.get_env("PORT", "5901")}  (backend: #{System.get_env("NCCN_API", "http://127.0.0.1:8899")})")
 Process.sleep(:infinity)

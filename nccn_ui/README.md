@@ -19,7 +19,7 @@ the Python GraphRAG backend over HTTP.
 ## Architecture
 
 ```
-Browser ⇄ LiveView ws ⇄ Phoenix :4000 ⇄ HTTP/Req ⇄ Klein :8899 ⇄ GraphRAG
+Browser ⇄ LiveView ws ⇄ Phoenix :5901 ⇄ HTTP/Req ⇄ Klein :8899 ⇄ GraphRAG
   │  Cytoscape.js + dagre (JS hook)      ├ POST /query  → structured answer + evidence
   │  push_event("graph", elements) ──────┤ POST /graph  → Cytoscape elements (hl flags)
   └  chat drives the diagram             └ POST /flowchart → static SVG (legacy)
@@ -41,6 +41,24 @@ Browser ⇄ LiveView ws ⇄ Phoenix :4000 ⇄ HTTP/Req ⇄ Klein :8899 ⇄ Graph
   with criteria, "Ask Luna about this node"). Key-point bullets + cited-pathway
   chips pinned below.
 
+- **Patient roster** — the person icon next to Luna opens a modal dashboard
+  fed by the API's `/patients` (InterSystems TrakCare via its IRIS for Health
+  FHIR R4 endpoint, any other FHIR R4 server, or a synthetic roster when none
+  is configured — the badge shows `trakcare` / `fhir` / `mock`): stat tiles per guideline, filter
+  pills, and a table of name / MRN, sex / age, diagnosis + stage, matched
+  guideline, last encounter. Clicking a patient makes them the **active
+  patient**: the modal closes, Luna switches to their guideline, a **Patient**
+  tab opens in the right panel with the full FHIR record (conditions with
+  codes/stage/status, encounters, "Open FHIR Patient" link), a patient chip
+  appears in the stage header, and Luna is immediately asked the
+  NCCN-next-steps question for that diagnosis and stage so the cited path
+  lights up on the flowchart. While a patient is active every question you
+  type is sent with their context prepended (age, sex, diagnosis, stage, last
+  encounter) and the chat bubble is tagged "for <name>". Clear it from the
+  chip's × or the Patient tab. Esc or clicking the backdrop closes the modal. FHIR
+  credentials live only on the API side (`FHIR_BASE_URL` plus OAuth client,
+  Basic user, or API key — see `api/README.md`) — the UI needs nothing.
+
 The LiveView orchestrates: it fetches `/graph` (with highlight from the query's
 `evidence`) and `push_event`s the elements to the `Cyto` hook, which renders and
 runs the dagre layout with a smooth transition.
@@ -51,11 +69,11 @@ runs the dagre layout with a smooth transition.
 # 1. backend (repo root, GRAPHRAG_API_KEY exported)
 uv run --with klein python api/app.py                         # :8899
 # 2. this UI
-NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs     # :4000
+NCCN_API=http://127.0.0.1:8899 elixir nccn_ui/nccn_ui.exs     # :5901
 ```
 
-Open http://127.0.0.1:4000. First run compiles deps via `Mix.install` (~1–2 min).
-Env: `PORT` (default 4000), `NCCN_API` (default `http://127.0.0.1:8899`).
+Open http://127.0.0.1:5901. First run compiles deps via `Mix.install` (~1–2 min).
+Env: `PORT` (default 5901), `NCCN_API` (default `http://127.0.0.1:8899`).
 
 ## Styling
 

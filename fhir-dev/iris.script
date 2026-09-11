@@ -1,0 +1,44 @@
+// Provision the dev FHIR server inside InterSystems IRIS for Health Community Edition.
+// Runs once at image build (see Dockerfile target `iris`). Everything here mirrors what the
+// TrakCare Innovation Toolkit sets up on a TrakCare host, so the roster client and the
+// Playwright walkthrough behave the same against this container as against TrakCare:
+//
+//   FHIR R4 endpoint   http://<host>:52773/csp/healthshare/fhirserver/fhir/r4
+//   Management Portal  http://<host>:52773/csp/sys/UtilHome.csp   (_SYSTEM / SYS)
+//   Roster user        luna_fhir / lunapw   (HTTP Basic)
+//
+// DEV ONLY: fixed passwords, %All role, unauthenticated access allowed (DebugMode 4).
+
+zn "%SYS"
+// Community images ship with change-password-on-first-login; drop that so the Management
+// Portal login in the Playwright walkthrough is a plain _SYSTEM / SYS.
+do ##class(Security.Users).UnExpireUserPasswords("*")
+
+// Dev service account the api container uses for HTTP Basic against the FHIR endpoint.
+set sc = ##class(Security.Users).Create("luna_fhir", "%All", "lunapw", "Luna roster dev user")
+if $$$ISERR(sc) { write "luna_fhir: ", $system.Status.GetErrorText(sc), ! }
+set props("PasswordNeverExpires") = 1
+do ##class(Security.Users).Modify("luna_fhir", .props)
+
+// Foundation namespace + FHIR R4 repository endpoint (same installer TrakCare's toolkit uses).
+zn "HSLIB"
+set namespace = "FHIRSERVER"
+set sc = ##class(HS.Util.Installer.Foundation).Install(namespace)
+if $$$ISERR(sc) { write "Foundation.Install: ", $system.Status.GetErrorText(sc), ! halt }
+
+zn namespace
+set appKey = "/csp/healthshare/fhirserver/fhir/r4"
+set strategyClass = "HS.FHIRServer.Storage.Json.InteractionsStrategy"
+set metadataPackages = $listbuild("hl7.fhir.r4.core@4.0.1")
+do ##class(HS.FHIRServer.Installer).InstallNamespaceAuthority()
+// InstallInstance is a procedure (no return value); it throws on failure, which aborts the build.
+do ##class(HS.FHIRServer.Installer).InstallInstance(appKey, strategyClass, metadataPackages)
+
+// DebugMode 4 = accept unauthenticated requests too (handy for curl); Basic still works.
+set strategy = ##class(HS.FHIRServer.API.InteractionsStrategy).GetStrategyForEndpoint(appKey)
+set config = strategy.GetServiceConfigData()
+set config.DebugMode = 4
+do strategy.SaveServiceConfigData(config)
+
+write "FHIR R4 endpoint ready at ", appKey, !
+halt

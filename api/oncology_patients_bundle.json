@@ -1,0 +1,1678 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:f1d8a659-5167-5f14-a179-7da6e7d26549",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90001"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Testpatient",
+            "given": [
+              "Ada"
+            ],
+            "text": "Ada Testpatient"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1968-04-12"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:786a2dbb-0dfd-5224-8ec9-cda6c8096a15",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:f1d8a659-5167-5f14-a179-7da6e7d26549",
+          "display": "Ada Testpatient"
+        },
+        "period": {
+          "start": "2026-09-02T09:00:00Z",
+          "end": "2026-09-02T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:cbf07425-bddb-5486-89cb-a130788d2396",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C50.911",
+              "display": "Invasive ductal carcinoma of breast"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254837009",
+              "display": "Malignant neoplasm of breast (disorder)"
+            }
+          ],
+          "text": "Invasive ductal carcinoma of breast"
+        },
+        "subject": {
+          "reference": "urn:uuid:f1d8a659-5167-5f14-a179-7da6e7d26549",
+          "display": "Ada Testpatient"
+        },
+        "encounter": {
+          "reference": "urn:uuid:786a2dbb-0dfd-5224-8ec9-cda6c8096a15"
+        },
+        "onsetDateTime": "2026-05-02",
+        "recordedDate": "2026-05-02",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IIA"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:ccaa2d29-1c72-561a-83a7-9d8e49ea8992",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90002"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Demo-Rivera",
+            "given": [
+              "Sam"
+            ],
+            "text": "Sam Demo-Rivera"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1959-11-03"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:51224d95-d153-598d-a026-3e1f58b600cf",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:ccaa2d29-1c72-561a-83a7-9d8e49ea8992",
+          "display": "Sam Demo-Rivera"
+        },
+        "period": {
+          "start": "2026-08-28T09:00:00Z",
+          "end": "2026-08-28T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a916fc9f-5dee-5c8a-a0d0-f3b7ea7a2421",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C61",
+              "display": "Adenocarcinoma of prostate"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254900004",
+              "display": "Malignant tumor of prostate (disorder)"
+            }
+          ],
+          "text": "Adenocarcinoma of prostate"
+        },
+        "subject": {
+          "reference": "urn:uuid:ccaa2d29-1c72-561a-83a7-9d8e49ea8992",
+          "display": "Sam Demo-Rivera"
+        },
+        "encounter": {
+          "reference": "urn:uuid:51224d95-d153-598d-a026-3e1f58b600cf"
+        },
+        "onsetDateTime": "2026-04-28",
+        "recordedDate": "2026-04-28",
+        "stage": [
+          {
+            "summary": {
+              "text": "T2c, Gleason 7"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:1156517d-3c66-5239-a680-6dc132c601b4",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90003"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Sandbox",
+            "given": [
+              "Priya"
+            ],
+            "text": "Priya Sandbox"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1975-07-21"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:bfa2e7bd-b4d1-59ef-ab6a-0f45f2508b3c",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:1156517d-3c66-5239-a680-6dc132c601b4",
+          "display": "Priya Sandbox"
+        },
+        "period": {
+          "start": "2026-08-30T09:00:00Z",
+          "end": "2026-08-30T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:79776e05-76f3-598e-af05-f285da443978",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C18.7",
+              "display": "Adenocarcinoma of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "363351006",
+              "display": "Malignant tumor of colon (disorder)"
+            }
+          ],
+          "text": "Adenocarcinoma of sigmoid colon"
+        },
+        "subject": {
+          "reference": "urn:uuid:1156517d-3c66-5239-a680-6dc132c601b4",
+          "display": "Priya Sandbox"
+        },
+        "encounter": {
+          "reference": "urn:uuid:bfa2e7bd-b4d1-59ef-ab6a-0f45f2508b3c"
+        },
+        "onsetDateTime": "2026-04-28",
+        "recordedDate": "2026-04-28",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IIIB"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c3318486-efaf-53b3-84c9-1b05d57a15e7",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90004"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Placeholder",
+            "given": [
+              "Lars"
+            ],
+            "text": "Lars Placeholder"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1954-02-09"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:7d28d7b4-6371-5c16-9d93-5bf1f1134823",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:c3318486-efaf-53b3-84c9-1b05d57a15e7",
+          "display": "Lars Placeholder"
+        },
+        "period": {
+          "start": "2026-09-04T09:00:00Z",
+          "end": "2026-09-04T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:f25c90c9-d5cb-57a3-8a45-ff9c5f0ee165",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C34.11",
+              "display": "Non-small cell lung carcinoma, right upper lobe"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254632001",
+              "display": "Non-small cell lung cancer (disorder)"
+            }
+          ],
+          "text": "Non-small cell lung carcinoma, right upper lobe"
+        },
+        "subject": {
+          "reference": "urn:uuid:c3318486-efaf-53b3-84c9-1b05d57a15e7",
+          "display": "Lars Placeholder"
+        },
+        "encounter": {
+          "reference": "urn:uuid:7d28d7b4-6371-5c16-9d93-5bf1f1134823"
+        },
+        "onsetDateTime": "2026-05-04",
+        "recordedDate": "2026-05-04",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IIIA"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e4ef894a-deaa-5cc3-8cfb-f8e382a23826",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90005"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Specimen",
+            "given": [
+              "Theo"
+            ],
+            "text": "Theo Specimen"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1996-05-30"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:70527925-10cc-56e6-b9bb-3da582d74a0a",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:e4ef894a-deaa-5cc3-8cfb-f8e382a23826",
+          "display": "Theo Specimen"
+        },
+        "period": {
+          "start": "2026-08-19T09:00:00Z",
+          "end": "2026-08-19T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:0c94f5ae-36e4-52e2-b356-04090a422634",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C62.91",
+              "display": "Seminoma of testis"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "363449006",
+              "display": "Malignant tumor of testis (disorder)"
+            }
+          ],
+          "text": "Seminoma of testis"
+        },
+        "subject": {
+          "reference": "urn:uuid:e4ef894a-deaa-5cc3-8cfb-f8e382a23826",
+          "display": "Theo Specimen"
+        },
+        "encounter": {
+          "reference": "urn:uuid:70527925-10cc-56e6-b9bb-3da582d74a0a"
+        },
+        "onsetDateTime": "2026-04-19",
+        "recordedDate": "2026-04-19",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IS"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9d7a2dc3-88f3-5dff-84d5-1e88f79af9b8",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90006"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Fixture",
+            "given": [
+              "Mira"
+            ],
+            "text": "Mira Fixture"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1981-12-14"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2c77c6b6-c724-573a-a154-d0a271cc1013",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:9d7a2dc3-88f3-5dff-84d5-1e88f79af9b8",
+          "display": "Mira Fixture"
+        },
+        "period": {
+          "start": "2026-07-25T09:00:00Z",
+          "end": "2026-07-25T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5e5a452b-52b7-5540-b984-137ee9d046e0",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "D05.11",
+              "display": "Ductal carcinoma in situ of breast"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254837009",
+              "display": "Malignant neoplasm of breast (disorder)"
+            }
+          ],
+          "text": "Ductal carcinoma in situ of breast"
+        },
+        "subject": {
+          "reference": "urn:uuid:9d7a2dc3-88f3-5dff-84d5-1e88f79af9b8",
+          "display": "Mira Fixture"
+        },
+        "encounter": {
+          "reference": "urn:uuid:2c77c6b6-c724-573a-a154-d0a271cc1013"
+        },
+        "onsetDateTime": "2026-03-25",
+        "recordedDate": "2026-03-25",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage 0"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:46250331-fc7b-55a9-83f7-ad035a81c24c",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90007"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Dummydata",
+            "given": [
+              "Omar"
+            ],
+            "text": "Omar Dummydata"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1948-08-02"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:59687574-5a8b-5b7d-a5bd-560fe64c1968",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:46250331-fc7b-55a9-83f7-ad035a81c24c",
+          "display": "Omar Dummydata"
+        },
+        "period": {
+          "start": "2026-09-06T09:00:00Z",
+          "end": "2026-09-06T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e1265b99-ef9e-525c-9102-52e763a9f509",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C61",
+              "display": "Adenocarcinoma of prostate, metastatic"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254900004",
+              "display": "Malignant tumor of prostate (disorder)"
+            }
+          ],
+          "text": "Adenocarcinoma of prostate, metastatic"
+        },
+        "subject": {
+          "reference": "urn:uuid:46250331-fc7b-55a9-83f7-ad035a81c24c",
+          "display": "Omar Dummydata"
+        },
+        "encounter": {
+          "reference": "urn:uuid:59687574-5a8b-5b7d-a5bd-560fe64c1968"
+        },
+        "onsetDateTime": "2026-05-06",
+        "recordedDate": "2026-05-06",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IV"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e757b8e8-7051-516f-8511-f17336bccbc2",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90008"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Synthetic",
+            "given": [
+              "Greta"
+            ],
+            "text": "Greta Synthetic"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1962-03-17"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9aae2204-36db-5629-8932-848df7acb7c8",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:e757b8e8-7051-516f-8511-f17336bccbc2",
+          "display": "Greta Synthetic"
+        },
+        "period": {
+          "start": "2026-09-01T09:00:00Z",
+          "end": "2026-09-01T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:bb7a3b1e-74ee-5311-aab7-1935601d02b1",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C18.2",
+              "display": "Adenocarcinoma of ascending colon, dMMR"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "363351006",
+              "display": "Malignant tumor of colon (disorder)"
+            }
+          ],
+          "text": "Adenocarcinoma of ascending colon, dMMR"
+        },
+        "subject": {
+          "reference": "urn:uuid:e757b8e8-7051-516f-8511-f17336bccbc2",
+          "display": "Greta Synthetic"
+        },
+        "encounter": {
+          "reference": "urn:uuid:9aae2204-36db-5629-8932-848df7acb7c8"
+        },
+        "onsetDateTime": "2026-05-01",
+        "recordedDate": "2026-05-01",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IV"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b070a22a-343d-56ed-b2ee-ad3f5f6915d5",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90009"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Exampleton",
+            "given": [
+              "Hana"
+            ],
+            "text": "Hana Exampleton"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1970-10-05"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:cbc5b13a-62a3-503b-a16b-0f79be3df9dd",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:b070a22a-343d-56ed-b2ee-ad3f5f6915d5",
+          "display": "Hana Exampleton"
+        },
+        "period": {
+          "start": "2026-08-12T09:00:00Z",
+          "end": "2026-08-12T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c52b3534-2c38-5a94-ba2f-c03162cf77ac",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C34.90",
+              "display": "Non-small cell lung carcinoma, EGFR+"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254632001",
+              "display": "Non-small cell lung cancer (disorder)"
+            }
+          ],
+          "text": "Non-small cell lung carcinoma, EGFR+"
+        },
+        "subject": {
+          "reference": "urn:uuid:b070a22a-343d-56ed-b2ee-ad3f5f6915d5",
+          "display": "Hana Exampleton"
+        },
+        "encounter": {
+          "reference": "urn:uuid:cbc5b13a-62a3-503b-a16b-0f79be3df9dd"
+        },
+        "onsetDateTime": "2026-04-12",
+        "recordedDate": "2026-04-12",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IB"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:efd0182b-142a-5204-86b5-0dcbd0d2e02e",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90010"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Stubfield",
+            "given": [
+              "Ivo"
+            ],
+            "text": "Ivo Stubfield"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1991-01-26"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:7aa3a75d-b939-58a1-95fa-0c2192e74bfd",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:efd0182b-142a-5204-86b5-0dcbd0d2e02e",
+          "display": "Ivo Stubfield"
+        },
+        "period": {
+          "start": "2026-08-22T09:00:00Z",
+          "end": "2026-08-22T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e8de7297-fcfa-545b-b2c2-bceaaf69476f",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C62.11",
+              "display": "Nonseminomatous germ cell tumor of testis"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "363449006",
+              "display": "Malignant tumor of testis (disorder)"
+            }
+          ],
+          "text": "Nonseminomatous germ cell tumor of testis"
+        },
+        "subject": {
+          "reference": "urn:uuid:efd0182b-142a-5204-86b5-0dcbd0d2e02e",
+          "display": "Ivo Stubfield"
+        },
+        "encounter": {
+          "reference": "urn:uuid:7aa3a75d-b939-58a1-95fa-0c2192e74bfd"
+        },
+        "onsetDateTime": "2026-04-22",
+        "recordedDate": "2026-04-22",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IIB"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:20af151c-574e-5cc8-8eb2-0c6a7870c07a",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "urn:nccn-demo:mrn",
+            "value": "MRN-90011"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Mockwell",
+            "given": [
+              "Nadia"
+            ],
+            "text": "Nadia Mockwell"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1957-06-08"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6cca7055-d285-592b-af21-e152ca39986c",
+      "resource": {
+        "resourceType": "Encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185347001",
+                "display": "Encounter for problem (procedure)"
+              }
+            ],
+            "text": "Oncology follow-up"
+          }
+        ],
+        "serviceType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/service-type",
+              "code": "165",
+              "display": "Cancer Services"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "urn:uuid:20af151c-574e-5cc8-8eb2-0c6a7870c07a",
+          "display": "Nadia Mockwell"
+        },
+        "period": {
+          "start": "2026-08-15T09:00:00Z",
+          "end": "2026-08-15T09:45:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c71eac9-46b5-5b91-b6c2-d8ebc9fef445",
+      "resource": {
+        "resourceType": "Condition",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C50.412",
+              "display": "Invasive lobular carcinoma of breast, HR+/HER2-"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "254837009",
+              "display": "Malignant neoplasm of breast (disorder)"
+            }
+          ],
+          "text": "Invasive lobular carcinoma of breast, HR+/HER2-"
+        },
+        "subject": {
+          "reference": "urn:uuid:20af151c-574e-5cc8-8eb2-0c6a7870c07a",
+          "display": "Nadia Mockwell"
+        },
+        "encounter": {
+          "reference": "urn:uuid:6cca7055-d285-592b-af21-e152ca39986c"
+        },
+        "onsetDateTime": "2026-04-15",
+        "recordedDate": "2026-04-15",
+        "stage": [
+          {
+            "summary": {
+              "text": "Stage IIIB"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    }
+  ]
+}
